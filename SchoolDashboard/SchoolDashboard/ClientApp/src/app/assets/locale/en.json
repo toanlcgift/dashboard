@@ -1,0 +1,40 @@
+{
+    "app": {
+        "Welcome": "Welcome",
+        "Notifications": "Notifications",
+        "New": "New"
+    },
+    "login": {
+        "SignIn": "sign in",
+        "Remem": "Remember me",
+        "Forgot": "Forgot pass?",
+        "NoAcc": "Don't have an account yet?",
+        "SignUp": "Sign Up"
+    },
+    "signup": {
+        "IAgree": "i agree the",
+        "Terms": "terms and conditions"
+    },
+    "mainMenu": {
+        "Logout": "Logout"
+    },
+    "pageHeader": {
+        "Dashboard": "Dashboard"
+    },
+    "home": {
+        "NoWidgets1": "You have no widgets displayed. Goto",
+        "NoWidgets2": "to configure available widgets",
+        "StatisticsTitle": "Some Important Stuff"
+    },
+    "notFound": {
+        "404": "404",
+        "pageNotFound": "The page you are looking for does not exist",
+        "backToHome": "Back to home"
+    },
+    "notifications": {
+        "Delete": "Delete notification",
+        "Pin": "Pin notification",
+        "Date": "Date",
+        "Notification": "Notification"
+    }
+}

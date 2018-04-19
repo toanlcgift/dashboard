@@ -1,0 +1,32 @@
+.center {
+    text-align: center;
+}
+.left {
+    text-align: left;
+}
+.right {
+    text-align: right;
+}
+.logo__login--margin {
+    margin-bottom: 50px;
+}
+.input__login--margin {
+    margin-bottom: 30px;
+}
+.link_a_href {
+    color: #337ab7;
+    text-decoration: underline;
+}
+.btn__login--signin {
+    background: #dddddd;
+    border: 1px solid #666666;
+    border-radius: 3px !important;
+}
+.btn__login--cancel {
+    background: white;
+    border: 1px solid #666666;
+    border-radius: 3px !important;
+}
+.sign-up-form {
+    display: none;
+}

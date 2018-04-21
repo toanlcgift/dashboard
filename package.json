@@ -1,18 +1,18 @@
 {
-    "name": "default",
-    "version": "0.0.0",
-    "license": "MIT",
-    "scripts": {
-        "ng": "ng",
-        "start": "ng serve",
-        "build": "ng build --prod",
-        "test": "ng test",
-        "lint": "ng lint",
-        "e2e": "ng e2e",
-        "postinstall": "npm run tsformat",
-        "tsformat": "tsfmt -r"
-    },
-    "private": true,
+  "name": "default",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build --prod",
+    "test": "ng test",
+    "lint": "ng lint",
+    "e2e": "ng e2e",
+    "postinstall": "npm run tsformat",
+    "tsformat": "tsfmt -r"
+  },
+  "private": true,
   "dependencies": {
     "@angular/animations": "^5.2.0",
     "@angular/common": "^5.2.0",

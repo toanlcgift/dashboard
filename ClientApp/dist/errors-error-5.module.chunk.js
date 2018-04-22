@@ -3,7 +3,7 @@ webpackJsonp(["errors-error-5.module"],{
 /***/ "./ClientApp/app/theme/pages/self-layout-blank/snippets/pages/errors/errors-error-5/errors-error-5.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"m-grid__item m-grid__item--fluid m-grid  m-error-5\" style=\"background-image: url(./assets/app/media/img//error/bg5.jpg);\" appunwraptag=\"\">\r\n\t<div class=\"m-error_container\">\r\n\t\t<span class=\"m-error_title\">\r\n\t\t\t<h1>\r\n\t\t\t\tOops!\r\n\t\t\t</h1>\r\n\t\t</span>\r\n\t\t<p class=\"m-error_subtitle\">\r\n\t\t\tSomething went wrong here.\r\n\t\t</p>\r\n\t\t<p class=\"m-error_description\">\r\n\t\t\tWe're working on it and we'll get it fixed\r\n\t\t\t<br>\r\n\t\t\tas soon possible.\r\n\t\t\t<br>\r\n\t\t\tYou can back or use our Help Center.\r\n\t\t</p>\r\n\t</div>\r\n</div>\r\n"
+module.exports = "<div class=\"m-grid__item m-grid__item--fluid m-grid  m-error-5\" style=\"background-image: url(./assets/app/media/img//error/bg5.jpg);\" appunwraptag=\"\">\n\t<div class=\"m-error_container\">\n\t\t<span class=\"m-error_title\">\n\t\t\t<h1>\n\t\t\t\tOops!\n\t\t\t</h1>\n\t\t</span>\n\t\t<p class=\"m-error_subtitle\">\n\t\t\tSomething went wrong here.\n\t\t</p>\n\t\t<p class=\"m-error_description\">\n\t\t\tWe're working on it and we'll get it fixed\n\t\t\t<br>\n\t\t\tas soon possible.\n\t\t\t<br>\n\t\t\tYou can back or use our Help Center.\n\t\t</p>\n\t</div>\n</div>\n"
 
 /***/ }),
 

@@ -23,7 +23,7 @@ namespace SchoolDashboard.Controllers
             }
             var response = new IndexTable()
             {
-                meta = new Meta() { page = 1, pages = 10, perpage = -1, total = 100, sort = "asc", field = "RecordId" },
+                meta = new Meta() { page = 1, pages = 4, perpage = 25, total = 25, sort = "asc", field = "RecordId" },
                 data = list
             };
             return response;
@@ -48,7 +48,7 @@ namespace SchoolDashboard.Controllers
             }
             var response = new TeacherTable()
             {
-                meta = new Meta() { page = 1, pages = 10, perpage = -1, total = 100, sort = "asc", field = "RecordId" },
+                meta = new Meta() { page = 1, pages = 4, perpage = 25, total = 25, sort = "asc", field = "RecordId" },
                 data = list
             };
             return response;
@@ -73,7 +73,7 @@ namespace SchoolDashboard.Controllers
             }
             var response = new BranchTable()
             {
-                meta = new Meta() { page = 1, pages = 10, perpage = -1, total = 100, sort = "asc", field = "RecordId" },
+                meta = new Meta() { page = 1, pages = 4, perpage = 25, total = 25, sort = "asc", field = "RecordId" },
                 data = list
             };
             return response;

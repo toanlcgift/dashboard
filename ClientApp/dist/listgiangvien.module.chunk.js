@@ -33,6 +33,69 @@ var ListgiangvienComponent = /** @class */ (function () {
     };
     ListgiangvienComponent.prototype.ngAfterViewInit = function () {
         this._script.loadScripts('app-listgiangvien', ['assets/app/js/dashboard.js']);
+        var datatable = $('#m_datatable_latest_orders').mDatatable({
+            data: {
+                type: "remote",
+                source: {
+                    read: {
+                        url: "/api/TestApi/Teacher"
+                    }
+                },
+                pageSize: 10,
+                saveState: {
+                    cookie: !1,
+                    webstorage: !0
+                },
+                serverPaging: !0,
+                serverFiltering: !0,
+                serverSorting: !0
+            },
+            layout: {
+                theme: "default",
+                class: "",
+                scroll: !0,
+                height: 380,
+                footer: !1
+            },
+            sortable: !0,
+            filterable: !1,
+            pagination: !0,
+            columns: [{
+                    field: "RecordID",
+                    title: "Stt",
+                    sortable: !1,
+                    width: 40,
+                    selector: {
+                        class: "m-checkbox--solid m-checkbox--brand"
+                    },
+                    textAlign: "center"
+                }, {
+                    field: "name",
+                    title: "Tên",
+                    sortable: "asc",
+                    filterable: !1,
+                    width: 150
+                }, {
+                    field: "address",
+                    title: "Địa chỉ",
+                    width: 150,
+                    responsive: {
+                        visible: "lg"
+                    }
+                }, {
+                    field: "regcourse",
+                    title: "Đăng ký khóa học"
+                },
+                {
+                    field: "workplace",
+                    title: "Nơi công tác",
+                    width: 100
+                }, {
+                    field: "classes",
+                    title: "Danh sách lớp",
+                    width: 100
+                }]
+        });
     };
     ListgiangvienComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({

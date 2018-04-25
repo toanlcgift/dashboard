@@ -1,1 +1,1 @@
-ng serve --open
+dotnet run

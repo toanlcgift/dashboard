@@ -38,7 +38,7 @@ var IndexComponent = /** @class */ (function () {
                 type: "remote",
                 source: {
                     read: {
-                        url: "/api/TestApi"
+                        url: "/api/TestApi/Index"
                     }
                 },
                 pageSize: 10,

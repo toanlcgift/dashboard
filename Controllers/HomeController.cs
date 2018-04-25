@@ -1,10 +1,6 @@
-using System;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
 
 namespace SchoolDashboard.Controllers
 {
@@ -26,7 +22,7 @@ namespace SchoolDashboard.Controllers
 
 
         // GET api/values
-        [Route("api/[controller]"), Authorize, HttpGet]
+        [Route("api/[controller]"), HttpGet]
         public IEnumerable<string> Get()
         {
             return new string[] { "value1", "value2" };

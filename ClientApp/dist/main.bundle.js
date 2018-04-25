@@ -527,9 +527,21 @@ var map = {
 		"./ClientApp/app/theme/pages/default/index/index.module.ts",
 		"index.module"
 	],
+	"./pages/default/listgiangvien/listgiangvien.module": [
+		"./ClientApp/app/theme/pages/default/listgiangvien/listgiangvien.module.ts",
+		"listgiangvien.module"
+	],
+	"./pages/default/lopphutrach/lopphutrach.module": [
+		"./ClientApp/app/theme/pages/default/lopphutrach/lopphutrach.module.ts",
+		"lopphutrach.module"
+	],
 	"./pages/default/not-found/not-found.module": [
 		"./ClientApp/app/theme/pages/default/not-found/not-found.module.ts",
 		"not-found.module"
+	],
+	"./pages/default/settings/settings.module": [
+		"./ClientApp/app/theme/pages/default/settings/settings.module.ts",
+		"settings.module"
 	],
 	"./pages/default/snippets/faq/faq-faq-1/faq-faq-1.module": [
 		"./ClientApp/app/theme/pages/default/snippets/faq/faq-faq-1/faq-faq-1.module.ts",
@@ -542,6 +554,14 @@ var map = {
 	"./pages/default/snippets/invoices/invoices-invoice-2/invoices-invoice-2.module": [
 		"./ClientApp/app/theme/pages/default/snippets/invoices/invoices-invoice-2/invoices-invoice-2.module.ts",
 		"invoices-invoice-2.module"
+	],
+	"./pages/default/themgiaovien/themgiaovien.module": [
+		"./ClientApp/app/theme/pages/default/themgiaovien/themgiaovien.module.ts",
+		"themgiaovien.module"
+	],
+	"./pages/default/thongke/thongke.module": [
+		"./ClientApp/app/theme/pages/default/thongke/thongke.module.ts",
+		"thongke.module"
 	],
 	"./pages/self-layout-blank/snippets/pages/errors/errors-error-1/errors-error-1.module": [
 		"./ClientApp/app/theme/pages/self-layout-blank/snippets/pages/errors/errors-error-1/errors-error-1.module.ts",
@@ -793,6 +813,438 @@ var TranslateLanguageLoader = /** @class */ (function () {
 
 /***/ }),
 
+/***/ "./ClientApp/app/_services/configuration.service.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ConfigurationService; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__app_translation_service__ = __webpack_require__("./ClientApp/app/_services/app-translation.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__local_store_manager_service__ = __webpack_require__("./ClientApp/app/_services/local-store-manager.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__db_Keys__ = __webpack_require__("./ClientApp/app/_services/db-Keys.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utilities__ = __webpack_require__("./ClientApp/app/_services/utilities.ts");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+
+
+
+var ConfigurationService = /** @class */ (function () {
+    function ConfigurationService(localStorage, translationService) {
+        this.localStorage = localStorage;
+        this.translationService = translationService;
+        //***End of defaults***  
+        this._language = null;
+        this.loadLocalChanges();
+    }
+    ConfigurationService_1 = ConfigurationService;
+    ConfigurationService.prototype.loadLocalChanges = function () {
+        if (this.localStorage.exists(__WEBPACK_IMPORTED_MODULE_3__db_Keys__["a" /* DBkeys */].LANGUAGE)) {
+            this._language = this.localStorage.getDataObject(__WEBPACK_IMPORTED_MODULE_3__db_Keys__["a" /* DBkeys */].LANGUAGE);
+            this.translationService.changeLanguage(this._language);
+        }
+        else {
+            this.resetLanguage();
+        }
+    };
+    ConfigurationService.prototype.saveToLocalStore = function (data, key) {
+        var _this = this;
+        setTimeout(function () { return _this.localStorage.savePermanentData(data, key); });
+    };
+    ConfigurationService.prototype.import = function (jsonValue) {
+        this.clearLocalChanges();
+        if (!jsonValue)
+            return;
+        var importValue = __WEBPACK_IMPORTED_MODULE_4__utilities__["a" /* Utilities */].JSonTryParse(jsonValue);
+        if (importValue.language != null)
+            this.language = importValue.language;
+    };
+    ConfigurationService.prototype.export = function (changesOnly) {
+        if (changesOnly === void 0) { changesOnly = true; }
+        var exportValue = {
+            language: changesOnly ? this._language : this.language
+        };
+        return JSON.stringify(exportValue);
+    };
+    ConfigurationService.prototype.clearLocalChanges = function () {
+        this._language = null;
+        this.localStorage.deleteData(__WEBPACK_IMPORTED_MODULE_3__db_Keys__["a" /* DBkeys */].LANGUAGE);
+        this.resetLanguage();
+    };
+    ConfigurationService.prototype.resetLanguage = function () {
+        var language = this.translationService.useBrowserLanguage();
+        if (language) {
+            this._language = language;
+        }
+        else {
+            this._language = this.translationService.changeLanguage();
+        }
+    };
+    Object.defineProperty(ConfigurationService.prototype, "language", {
+        get: function () {
+            if (this._language != null)
+                return this._language;
+            return ConfigurationService_1.defaultLanguage;
+        },
+        set: function (value) {
+            this._language = value;
+            this.saveToLocalStore(value, __WEBPACK_IMPORTED_MODULE_3__db_Keys__["a" /* DBkeys */].LANGUAGE);
+            this.translationService.changeLanguage(value);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    //***Specify default configurations here***
+    ConfigurationService.defaultLanguage = "en";
+    ConfigurationService = ConfigurationService_1 = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Injectable"])(),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_2__local_store_manager_service__["a" /* LocalStoreManager */], __WEBPACK_IMPORTED_MODULE_1__app_translation_service__["a" /* AppTranslationService */]])
+    ], ConfigurationService);
+    return ConfigurationService;
+    var ConfigurationService_1;
+}());
+
+
+
+/***/ }),
+
+/***/ "./ClientApp/app/_services/db-Keys.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return DBkeys; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+
+var DBkeys = /** @class */ (function () {
+    function DBkeys() {
+    }
+    DBkeys.CURRENT_USER = "current_user";
+    DBkeys.USER_PERMISSIONS = "user_permissions";
+    DBkeys.ACCESS_TOKEN = "access_token";
+    DBkeys.ID_TOKEN = "id_token";
+    DBkeys.REFRESH_TOKEN = "refresh_token";
+    DBkeys.TOKEN_EXPIRES_IN = "expires_in";
+    DBkeys.REMEMBER_ME = "remember_me";
+    DBkeys.LANGUAGE = "language";
+    DBkeys.HOME_URL = "home_url";
+    DBkeys.THEME = "theme";
+    DBkeys.SHOW_DASHBOARD_STATISTICS = "show_dashboard_statistics";
+    DBkeys.SHOW_DASHBOARD_NOTIFICATIONS = "show_dashboard_notifications";
+    DBkeys.SHOW_DASHBOARD_TODO = "show_dashboard_todo";
+    DBkeys.SHOW_DASHBOARD_BANNER = "show_dashboard_banner";
+    DBkeys = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Injectable"])()
+    ], DBkeys);
+    return DBkeys;
+}());
+
+
+
+/***/ }),
+
+/***/ "./ClientApp/app/_services/local-store-manager.service.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return LocalStoreManager; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_rxjs_Subject__ = __webpack_require__("./node_modules/rxjs/_esm5/Subject.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utilities__ = __webpack_require__("./ClientApp/app/_services/utilities.ts");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+
+
+
+var LocalStoreManager = /** @class */ (function () {
+    function LocalStoreManager() {
+        var _this = this;
+        this.syncKeys = [];
+        this.initEvent = new __WEBPACK_IMPORTED_MODULE_1_rxjs_Subject__["Subject"]();
+        this.reservedKeys = ['sync_keys', 'addToSyncKeys', 'removeFromSyncKeys',
+            'getSessionStorage', 'setSessionStorage', 'addToSessionStorage', 'removeFromSessionStorage', 'clearAllSessionsStorage'];
+        this.sessionStorageTransferHandler = function (event) {
+            if (!event.newValue)
+                return;
+            if (event.key == 'getSessionStorage') {
+                if (sessionStorage.length) {
+                    _this.localStorageSetItem('setSessionStorage', sessionStorage);
+                    localStorage.removeItem('setSessionStorage');
+                }
+            }
+            else if (event.key == 'setSessionStorage') {
+                if (!_this.syncKeys.length)
+                    _this.loadSyncKeys();
+                var data = JSON.parse(event.newValue);
+                //console.info("Set => Key: Transfer setSessionStorage" + ",  data: " + JSON.stringify(data));
+                for (var key in data) {
+                    if (_this.syncKeysContains(key))
+                        _this.sessionStorageSetItem(key, JSON.parse(data[key]));
+                }
+                _this.onInit();
+            }
+            else if (event.key == 'addToSessionStorage') {
+                var data = JSON.parse(event.newValue);
+                //console.warn("Set => Key: Transfer addToSessionStorage" + ",  data: " + JSON.stringify(data));
+                _this.addToSessionStorageHelper(data["data"], data["key"]);
+            }
+            else if (event.key == 'removeFromSessionStorage') {
+                _this.removeFromSessionStorageHelper(event.newValue);
+            }
+            else if (event.key == 'clearAllSessionsStorage' && sessionStorage.length) {
+                _this.clearInstanceSessionStorage();
+            }
+            else if (event.key == 'addToSyncKeys') {
+                _this.addToSyncKeysHelper(event.newValue);
+            }
+            else if (event.key == 'removeFromSyncKeys') {
+                _this.removeFromSyncKeysHelper(event.newValue);
+            }
+        };
+    }
+    LocalStoreManager_1 = LocalStoreManager;
+    //Todo: Implement EventListeners for the various event operations and a SessionStorageEvent for specific data keys
+    LocalStoreManager.prototype.initialiseStorageSyncListener = function () {
+        if (LocalStoreManager_1.syncListenerInitialised == true)
+            return;
+        LocalStoreManager_1.syncListenerInitialised = true;
+        window.addEventListener("storage", this.sessionStorageTransferHandler, false);
+        this.syncSessionStorage();
+    };
+    LocalStoreManager.prototype.deinitialiseStorageSyncListener = function () {
+        window.removeEventListener("storage", this.sessionStorageTransferHandler, false);
+        LocalStoreManager_1.syncListenerInitialised = false;
+    };
+    LocalStoreManager.prototype.syncSessionStorage = function () {
+        localStorage.setItem('getSessionStorage', '_dummy');
+        localStorage.removeItem('getSessionStorage');
+    };
+    LocalStoreManager.prototype.clearAllStorage = function () {
+        this.clearAllSessionsStorage();
+        this.clearLocalStorage();
+    };
+    LocalStoreManager.prototype.clearAllSessionsStorage = function () {
+        this.clearInstanceSessionStorage();
+        localStorage.removeItem(LocalStoreManager_1.DBKEY_SYNC_KEYS);
+        localStorage.setItem('clearAllSessionsStorage', '_dummy');
+        localStorage.removeItem('clearAllSessionsStorage');
+    };
+    LocalStoreManager.prototype.clearInstanceSessionStorage = function () {
+        sessionStorage.clear();
+        this.syncKeys = [];
+    };
+    LocalStoreManager.prototype.clearLocalStorage = function () {
+        localStorage.clear();
+    };
+    LocalStoreManager.prototype.addToSessionStorage = function (data, key) {
+        this.addToSessionStorageHelper(data, key);
+        this.addToSyncKeysBackup(key);
+        this.localStorageSetItem('addToSessionStorage', { key: key, data: data });
+        localStorage.removeItem('addToSessionStorage');
+    };
+    LocalStoreManager.prototype.addToSessionStorageHelper = function (data, key) {
+        this.addToSyncKeysHelper(key);
+        this.sessionStorageSetItem(key, data);
+    };
+    LocalStoreManager.prototype.removeFromSessionStorage = function (keyToRemove) {
+        this.removeFromSessionStorageHelper(keyToRemove);
+        this.removeFromSyncKeysBackup(keyToRemove);
+        localStorage.setItem('removeFromSessionStorage', keyToRemove);
+        localStorage.removeItem('removeFromSessionStorage');
+    };
+    LocalStoreManager.prototype.removeFromSessionStorageHelper = function (keyToRemove) {
+        sessionStorage.removeItem(keyToRemove);
+        this.removeFromSyncKeysHelper(keyToRemove);
+    };
+    LocalStoreManager.prototype.testForInvalidKeys = function (key) {
+        if (!key)
+            throw new Error("key cannot be empty");
+        if (this.reservedKeys.some(function (x) { return x == key; }))
+            throw new Error("The storage key \"" + key + "\" is reserved and cannot be used. Please use a different key");
+    };
+    LocalStoreManager.prototype.syncKeysContains = function (key) {
+        return this.syncKeys.some(function (x) { return x == key; });
+    };
+    LocalStoreManager.prototype.loadSyncKeys = function () {
+        if (this.syncKeys.length)
+            return;
+        this.syncKeys = this.getSyncKeysFromStorage();
+    };
+    LocalStoreManager.prototype.getSyncKeysFromStorage = function (defaultValue) {
+        if (defaultValue === void 0) { defaultValue = []; }
+        var data = this.localStorageGetItem(LocalStoreManager_1.DBKEY_SYNC_KEYS);
+        if (data == null)
+            return defaultValue;
+        else
+            return data;
+    };
+    LocalStoreManager.prototype.addToSyncKeys = function (key) {
+        this.addToSyncKeysHelper(key);
+        this.addToSyncKeysBackup(key);
+        localStorage.setItem('addToSyncKeys', key);
+        localStorage.removeItem('addToSyncKeys');
+    };
+    LocalStoreManager.prototype.addToSyncKeysBackup = function (key) {
+        var storedSyncKeys = this.getSyncKeysFromStorage();
+        if (!storedSyncKeys.some(function (x) { return x == key; })) {
+            storedSyncKeys.push(key);
+            this.localStorageSetItem(LocalStoreManager_1.DBKEY_SYNC_KEYS, storedSyncKeys);
+        }
+    };
+    LocalStoreManager.prototype.removeFromSyncKeysBackup = function (key) {
+        var storedSyncKeys = this.getSyncKeysFromStorage();
+        var index = storedSyncKeys.indexOf(key);
+        if (index > -1) {
+            storedSyncKeys.splice(index, 1);
+            this.localStorageSetItem(LocalStoreManager_1.DBKEY_SYNC_KEYS, storedSyncKeys);
+        }
+    };
+    LocalStoreManager.prototype.addToSyncKeysHelper = function (key) {
+        if (!this.syncKeysContains(key))
+            this.syncKeys.push(key);
+    };
+    LocalStoreManager.prototype.removeFromSyncKeys = function (key) {
+        this.removeFromSyncKeysHelper(key);
+        this.removeFromSyncKeysBackup(key);
+        localStorage.setItem('removeFromSyncKeys', key);
+        localStorage.removeItem('removeFromSyncKeys');
+    };
+    LocalStoreManager.prototype.removeFromSyncKeysHelper = function (key) {
+        var index = this.syncKeys.indexOf(key);
+        if (index > -1) {
+            this.syncKeys.splice(index, 1);
+        }
+    };
+    LocalStoreManager.prototype.saveSessionData = function (data, key) {
+        if (key === void 0) { key = LocalStoreManager_1.DBKEY_USER_DATA; }
+        this.testForInvalidKeys(key);
+        this.removeFromSyncKeys(key);
+        localStorage.removeItem(key);
+        this.sessionStorageSetItem(key, data);
+    };
+    LocalStoreManager.prototype.saveSyncedSessionData = function (data, key) {
+        if (key === void 0) { key = LocalStoreManager_1.DBKEY_USER_DATA; }
+        this.testForInvalidKeys(key);
+        localStorage.removeItem(key);
+        this.addToSessionStorage(data, key);
+    };
+    LocalStoreManager.prototype.savePermanentData = function (data, key) {
+        if (key === void 0) { key = LocalStoreManager_1.DBKEY_USER_DATA; }
+        this.testForInvalidKeys(key);
+        this.removeFromSessionStorage(key);
+        this.localStorageSetItem(key, data);
+    };
+    LocalStoreManager.prototype.moveDataToSessionStorage = function (key) {
+        if (key === void 0) { key = LocalStoreManager_1.DBKEY_USER_DATA; }
+        this.testForInvalidKeys(key);
+        var data = this.getData(key);
+        if (data == null)
+            return;
+        this.saveSessionData(data, key);
+    };
+    LocalStoreManager.prototype.moveDataToSyncedSessionStorage = function (key) {
+        if (key === void 0) { key = LocalStoreManager_1.DBKEY_USER_DATA; }
+        this.testForInvalidKeys(key);
+        var data = this.getData(key);
+        if (data == null)
+            return;
+        this.saveSyncedSessionData(data, key);
+    };
+    LocalStoreManager.prototype.moveDataToPermanentStorage = function (key) {
+        if (key === void 0) { key = LocalStoreManager_1.DBKEY_USER_DATA; }
+        this.testForInvalidKeys(key);
+        var data = this.getData(key);
+        if (data == null)
+            return;
+        this.savePermanentData(data, key);
+    };
+    LocalStoreManager.prototype.exists = function (key) {
+        if (key === void 0) { key = LocalStoreManager_1.DBKEY_USER_DATA; }
+        var data = sessionStorage.getItem(key);
+        if (data == null)
+            data = localStorage.getItem(key);
+        return data != null;
+    };
+    LocalStoreManager.prototype.getData = function (key) {
+        if (key === void 0) { key = LocalStoreManager_1.DBKEY_USER_DATA; }
+        this.testForInvalidKeys(key);
+        var data = this.sessionStorageGetItem(key);
+        if (data == null)
+            data = this.localStorageGetItem(key);
+        return data;
+    };
+    LocalStoreManager.prototype.getDataObject = function (key, isDateType) {
+        if (key === void 0) { key = LocalStoreManager_1.DBKEY_USER_DATA; }
+        if (isDateType === void 0) { isDateType = false; }
+        var data = this.getData(key);
+        if (data != null) {
+            if (isDateType)
+                data = new Date(data);
+            return data;
+        }
+        else {
+            return null;
+        }
+    };
+    LocalStoreManager.prototype.deleteData = function (key) {
+        if (key === void 0) { key = LocalStoreManager_1.DBKEY_USER_DATA; }
+        this.testForInvalidKeys(key);
+        this.removeFromSessionStorage(key);
+        localStorage.removeItem(key);
+    };
+    LocalStoreManager.prototype.localStorageSetItem = function (key, data) {
+        localStorage.setItem(key, JSON.stringify(data));
+    };
+    LocalStoreManager.prototype.sessionStorageSetItem = function (key, data) {
+        sessionStorage.setItem(key, JSON.stringify(data));
+    };
+    LocalStoreManager.prototype.localStorageGetItem = function (key) {
+        return __WEBPACK_IMPORTED_MODULE_2__utilities__["a" /* Utilities */].JSonTryParse(localStorage.getItem(key));
+    };
+    LocalStoreManager.prototype.sessionStorageGetItem = function (key) {
+        return __WEBPACK_IMPORTED_MODULE_2__utilities__["a" /* Utilities */].JSonTryParse(sessionStorage.getItem(key));
+    };
+    LocalStoreManager.prototype.onInit = function () {
+        var _this = this;
+        setTimeout(function () {
+            _this.initEvent.next();
+            _this.initEvent.complete();
+        });
+    };
+    LocalStoreManager.prototype.getInitEvent = function () {
+        return this.initEvent.asObservable();
+    };
+    LocalStoreManager.syncListenerInitialised = false;
+    LocalStoreManager.DBKEY_USER_DATA = "user_data";
+    LocalStoreManager.DBKEY_SYNC_KEYS = "sync_keys";
+    LocalStoreManager = LocalStoreManager_1 = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Injectable"])()
+    ], LocalStoreManager);
+    return LocalStoreManager;
+    var LocalStoreManager_1;
+}());
+
+
+
+/***/ }),
+
 /***/ "./ClientApp/app/_services/script-loader.service.ts":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -892,6 +1344,482 @@ var ScriptLoaderService = /** @class */ (function () {
 
 /***/ }),
 
+/***/ "./ClientApp/app/_services/utilities.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Utilities; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_common_http__ = __webpack_require__("./node_modules/@angular/common/esm5/http.js");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+
+
+var Utilities = /** @class */ (function () {
+    function Utilities() {
+    }
+    Utilities_1 = Utilities;
+    Utilities.getHttpResponseMessage = function (data) {
+        var responses = [];
+        if (data instanceof __WEBPACK_IMPORTED_MODULE_1__angular_common_http__["f" /* HttpResponseBase */]) {
+            if (this.checkNoNetwork(data)) {
+                responses.push("" + this.noNetworkMessageCaption + this.captionAndMessageSeparator + " " + this.noNetworkMessageDetail);
+            }
+            else {
+                var responseObject = this.getResponseBody(data);
+                if (responseObject && (typeof responseObject === 'object' || responseObject instanceof Object)) {
+                    for (var key in responseObject) {
+                        if (key)
+                            responses.push("" + key + this.captionAndMessageSeparator + " " + responseObject[key]);
+                        else if (responseObject[key])
+                            responses.push(responseObject[key].toString());
+                    }
+                }
+            }
+            if (!responses.length && this.getResponseBody(data))
+                responses.push(data.statusText + ": " + this.getResponseBody(data).toString());
+        }
+        if (!responses.length)
+            responses.push(data.toString());
+        if (this.checkAccessDenied(data))
+            responses.splice(0, 0, "" + this.accessDeniedMessageCaption + this.captionAndMessageSeparator + " " + this.accessDeniedMessageDetail);
+        return responses;
+    };
+    Utilities.findHttpResponseMessage = function (messageToFind, data, seachInCaptionOnly, includeCaptionInResult) {
+        if (seachInCaptionOnly === void 0) { seachInCaptionOnly = true; }
+        if (includeCaptionInResult === void 0) { includeCaptionInResult = false; }
+        var searchString = messageToFind.toLowerCase();
+        var httpMessages = this.getHttpResponseMessage(data);
+        for (var _i = 0, httpMessages_1 = httpMessages; _i < httpMessages_1.length; _i++) {
+            var message = httpMessages_1[_i];
+            var fullMessage = Utilities_1.splitInTwo(message, this.captionAndMessageSeparator);
+            if (fullMessage.firstPart && fullMessage.firstPart.toLowerCase().indexOf(searchString) != -1) {
+                return includeCaptionInResult ? message : fullMessage.secondPart || fullMessage.firstPart;
+            }
+        }
+        if (!seachInCaptionOnly) {
+            for (var _a = 0, httpMessages_2 = httpMessages; _a < httpMessages_2.length; _a++) {
+                var message = httpMessages_2[_a];
+                if (message.toLowerCase().indexOf(searchString) != -1) {
+                    if (includeCaptionInResult) {
+                        return message;
+                    }
+                    else {
+                        var fullMessage = Utilities_1.splitInTwo(message, this.captionAndMessageSeparator);
+                        return fullMessage.secondPart || fullMessage.firstPart;
+                    }
+                }
+            }
+        }
+        return null;
+    };
+    Utilities.getResponseBody = function (response) {
+        if (response instanceof __WEBPACK_IMPORTED_MODULE_1__angular_common_http__["e" /* HttpResponse */])
+            return response.body;
+        if (response instanceof __WEBPACK_IMPORTED_MODULE_1__angular_common_http__["c" /* HttpErrorResponse */])
+            return response.error || response.message || response.statusText;
+    };
+    Utilities.checkNoNetwork = function (response) {
+        if (response instanceof __WEBPACK_IMPORTED_MODULE_1__angular_common_http__["f" /* HttpResponseBase */]) {
+            return response.status == 0;
+        }
+        return false;
+    };
+    Utilities.checkAccessDenied = function (response) {
+        if (response instanceof __WEBPACK_IMPORTED_MODULE_1__angular_common_http__["f" /* HttpResponseBase */]) {
+            return response.status == 403;
+        }
+        return false;
+    };
+    Utilities.checkNotFound = function (response) {
+        if (response instanceof __WEBPACK_IMPORTED_MODULE_1__angular_common_http__["f" /* HttpResponseBase */]) {
+            return response.status == 404;
+        }
+        return false;
+    };
+    Utilities.checkIsLocalHost = function (url, base) {
+        if (url) {
+            var location_1 = new URL(url, base);
+            return location_1.hostname === "localhost" || location_1.hostname === "127.0.0.1";
+        }
+        return false;
+    };
+    Utilities.getQueryParamsFromString = function (paramString) {
+        if (!paramString)
+            return null;
+        var params = {};
+        for (var _i = 0, _a = paramString.split("&"); _i < _a.length; _i++) {
+            var param = _a[_i];
+            var keyValue = Utilities_1.splitInTwo(param, "=");
+            params[keyValue.firstPart] = keyValue.secondPart;
+        }
+        return params;
+    };
+    Utilities.splitInTwo = function (text, separator) {
+        var separatorIndex = text.indexOf(separator);
+        if (separatorIndex == -1)
+            return { firstPart: text, secondPart: null };
+        var part1 = text.substr(0, separatorIndex).trim();
+        var part2 = text.substr(separatorIndex + 1).trim();
+        return { firstPart: part1, secondPart: part2 };
+    };
+    Utilities.safeStringify = function (object) {
+        var result;
+        try {
+            result = JSON.stringify(object);
+            return result;
+        }
+        catch (error) {
+        }
+        var simpleObject = {};
+        for (var prop in object) {
+            if (!object.hasOwnProperty(prop)) {
+                continue;
+            }
+            if (typeof (object[prop]) == 'object') {
+                continue;
+            }
+            if (typeof (object[prop]) == 'function') {
+                continue;
+            }
+            simpleObject[prop] = object[prop];
+        }
+        result = "[***Sanitized Object***]: " + JSON.stringify(simpleObject);
+        return result;
+    };
+    Utilities.JSonTryParse = function (value) {
+        try {
+            return JSON.parse(value);
+        }
+        catch (e) {
+            if (value === "undefined")
+                return void 0;
+            return value;
+        }
+    };
+    Utilities.TestIsObjectEmpty = function (obj) {
+        for (var prop in obj) {
+            if (obj.hasOwnProperty(prop)) {
+                return false;
+            }
+        }
+        return true;
+    };
+    Utilities.TestIsUndefined = function (value) {
+        return typeof value === 'undefined';
+        //return value === undefined;
+    };
+    Utilities.TestIsString = function (value) {
+        return typeof value === 'string' || value instanceof String;
+    };
+    Utilities.capitalizeFirstLetter = function (text) {
+        if (text)
+            return text.charAt(0).toUpperCase() + text.slice(1);
+        else
+            return text;
+    };
+    Utilities.toTitleCase = function (text) {
+        return text.replace(/\w\S*/g, function (subString) {
+            return subString.charAt(0).toUpperCase() + subString.substr(1).toLowerCase();
+        });
+    };
+    Utilities.toLowerCase = function (items) {
+        if (items instanceof Array) {
+            var loweredRoles = [];
+            for (var i = 0; i < items.length; i++) {
+                loweredRoles[i] = items[i].toLowerCase();
+            }
+            return loweredRoles;
+        }
+        else if (typeof items === 'string' || items instanceof String) {
+            return items.toLowerCase();
+        }
+    };
+    Utilities.uniqueId = function () {
+        return this.randomNumber(1000000, 9000000).toString();
+    };
+    Utilities.randomNumber = function (min, max) {
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    };
+    Utilities.baseUrl = function () {
+        var base = '';
+        if (window.location.origin)
+            base = window.location.origin;
+        else
+            base = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
+        return base.replace(/\/$/, '');
+    };
+    Utilities.printDateOnly = function (date) {
+        date = new Date(date);
+        var dayNames = new Array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday");
+        var monthNames = new Array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+        var dayOfWeek = date.getDay();
+        var dayOfMonth = date.getDate();
+        var sup = "";
+        var month = date.getMonth();
+        var year = date.getFullYear();
+        if (dayOfMonth == 1 || dayOfMonth == 21 || dayOfMonth == 31) {
+            sup = "st";
+        }
+        else if (dayOfMonth == 2 || dayOfMonth == 22) {
+            sup = "nd";
+        }
+        else if (dayOfMonth == 3 || dayOfMonth == 23) {
+            sup = "rd";
+        }
+        else {
+            sup = "th";
+        }
+        var dateString = dayNames[dayOfWeek] + ", " + dayOfMonth + sup + " " + monthNames[month] + " " + year;
+        return dateString;
+    };
+    Utilities.printTimeOnly = function (date) {
+        date = new Date(date);
+        var period = "";
+        var minute = date.getMinutes().toString();
+        var hour = date.getHours();
+        period = hour < 12 ? "AM" : "PM";
+        if (hour == 0) {
+            hour = 12;
+        }
+        if (hour > 12) {
+            hour = hour - 12;
+        }
+        if (minute.length == 1) {
+            minute = "0" + minute;
+        }
+        var timeString = hour + ":" + minute + " " + period;
+        return timeString;
+    };
+    Utilities.printDate = function (date, separator) {
+        if (separator === void 0) { separator = "at"; }
+        return Utilities_1.printDateOnly(date) + " " + separator + " " + Utilities_1.printTimeOnly(date);
+    };
+    Utilities.printFriendlyDate = function (date, separator) {
+        if (separator === void 0) { separator = "-"; }
+        var today = new Date();
+        today.setHours(0, 0, 0, 0);
+        var yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+        var test = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        if (test.toDateString() == today.toDateString())
+            return "Today " + separator + " " + Utilities_1.printTimeOnly(date);
+        if (test.toDateString() == yesterday.toDateString())
+            return "Yesterday " + separator + " " + Utilities_1.printTimeOnly(date);
+        else
+            return Utilities_1.printDate(date, separator);
+    };
+    Utilities.printShortDate = function (date, separator, dateTimeSeparator) {
+        if (separator === void 0) { separator = "/"; }
+        if (dateTimeSeparator === void 0) { dateTimeSeparator = "-"; }
+        var day = date.getDate().toString();
+        var month = (date.getMonth() + 1).toString();
+        var year = date.getFullYear();
+        if (day.length == 1)
+            day = "0" + day;
+        if (month.length == 1)
+            month = "0" + month;
+        return "" + month + separator + day + separator + year + " " + dateTimeSeparator + " " + Utilities_1.printTimeOnly(date);
+    };
+    Utilities.parseDate = function (date) {
+        if (date) {
+            if (date instanceof Date) {
+                return date;
+            }
+            if (typeof date === 'string' || date instanceof String) {
+                if (date.search(/[a-su-z+]/i) == -1)
+                    date = date + "Z";
+                return new Date(date);
+            }
+            if (typeof date === 'number' || date instanceof Number) {
+                return new Date(date);
+            }
+        }
+    };
+    Utilities.printDuration = function (start, end) {
+        start = new Date(start);
+        end = new Date(end);
+        // get total seconds between the times
+        var delta = Math.abs(start.valueOf() - end.valueOf()) / 1000;
+        // calculate (and subtract) whole days
+        var days = Math.floor(delta / 86400);
+        delta -= days * 86400;
+        // calculate (and subtract) whole hours
+        var hours = Math.floor(delta / 3600) % 24;
+        delta -= hours * 3600;
+        // calculate (and subtract) whole minutes
+        var minutes = Math.floor(delta / 60) % 60;
+        delta -= minutes * 60;
+        // what's left is seconds
+        var seconds = delta % 60; // in theory the modulus is not required
+        var printedDays = "";
+        if (days)
+            printedDays = days + " days";
+        if (hours)
+            printedDays += printedDays ? ", " + hours + " hours" : hours + " hours";
+        if (minutes)
+            printedDays += printedDays ? ", " + minutes + " minutes" : minutes + " minutes";
+        if (seconds)
+            printedDays += printedDays ? " and " + seconds + " seconds" : seconds + " seconds";
+        if (!printedDays)
+            printedDays = "0";
+        return printedDays;
+    };
+    Utilities.getAge = function (birthDate, otherDate) {
+        birthDate = new Date(birthDate);
+        otherDate = new Date(otherDate);
+        var years = (otherDate.getFullYear() - birthDate.getFullYear());
+        if (otherDate.getMonth() < birthDate.getMonth() ||
+            otherDate.getMonth() == birthDate.getMonth() && otherDate.getDate() < birthDate.getDate()) {
+            years--;
+        }
+        return years;
+    };
+    Utilities.searchArray = function (searchTerm, caseSensitive) {
+        var values = [];
+        for (var _i = 2; _i < arguments.length; _i++) {
+            values[_i - 2] = arguments[_i];
+        }
+        if (!searchTerm)
+            return true;
+        if (!caseSensitive)
+            searchTerm = searchTerm.toLowerCase();
+        for (var _a = 0, values_1 = values; _a < values_1.length; _a++) {
+            var value = values_1[_a];
+            if (value != null) {
+                var strValue = value.toString();
+                if (!caseSensitive)
+                    strValue = strValue.toLowerCase();
+                if (strValue.indexOf(searchTerm) !== -1)
+                    return true;
+            }
+        }
+        return false;
+    };
+    Utilities.moveArrayItem = function (array, oldIndex, newIndex) {
+        while (oldIndex < 0) {
+            oldIndex += this.length;
+        }
+        while (newIndex < 0) {
+            newIndex += this.length;
+        }
+        if (newIndex >= this.length) {
+            var k = newIndex - this.length;
+            while ((k--) + 1) {
+                array.push(undefined);
+            }
+        }
+        array.splice(newIndex, 0, array.splice(oldIndex, 1)[0]);
+    };
+    Utilities.expandCamelCase = function (text) {
+        if (!text)
+            return text;
+        return text.replace(/([A-Z][a-z]+)/g, " $1")
+            .replace(/([A-Z][A-Z]+)/g, " $1")
+            .replace(/([^A-Za-z ]+)/g, " $1");
+    };
+    Utilities.testIsAbsoluteUrl = function (url) {
+        var r = new RegExp('^(?:[a-z]+:)?//', 'i');
+        return r.test(url);
+    };
+    Utilities.convertToAbsoluteUrl = function (url) {
+        return Utilities_1.testIsAbsoluteUrl(url) ? url : '//' + url;
+    };
+    Utilities.removeNulls = function (obj) {
+        var isArray = obj instanceof Array;
+        for (var k in obj) {
+            if (obj[k] === null) {
+                isArray ? obj.splice(k, 1) : delete obj[k];
+            }
+            else if (typeof obj[k] == "object") {
+                Utilities_1.removeNulls(obj[k]);
+            }
+            if (isArray && obj.length == k) {
+                Utilities_1.removeNulls(obj);
+            }
+        }
+        return obj;
+    };
+    Utilities.debounce = function (func, wait, immediate) {
+        var timeout;
+        return function () {
+            var context = this;
+            var args_ = arguments;
+            var later = function () {
+                timeout = null;
+                if (!immediate)
+                    func.apply(context, args_);
+            };
+            var callNow = immediate && !timeout;
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+            if (callNow)
+                func.apply(context, args_);
+        };
+    };
+    Utilities.captionAndMessageSeparator = ":";
+    Utilities.noNetworkMessageCaption = "No Network";
+    Utilities.noNetworkMessageDetail = "The server cannot be reached";
+    Utilities.accessDeniedMessageCaption = "Access Denied!";
+    Utilities.accessDeniedMessageDetail = "";
+    Utilities.cookies = {
+        getItem: function (sKey) {
+            return decodeURIComponent(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1")) || null;
+        },
+        setItem: function (sKey, sValue, vEnd, sPath, sDomain, bSecure) {
+            if (!sKey || /^(?:expires|max\-age|path|domain|secure)$/i.test(sKey)) {
+                return false;
+            }
+            var sExpires = "";
+            if (vEnd) {
+                switch (vEnd.constructor) {
+                    case Number:
+                        sExpires = vEnd === Infinity ? "; expires=Fri, 31 Dec 9999 23:59:59 GMT" : "; max-age=" + vEnd;
+                        break;
+                    case String:
+                        sExpires = "; expires=" + vEnd;
+                        break;
+                    case Date:
+                        sExpires = "; expires=" + vEnd.toUTCString();
+                        break;
+                }
+            }
+            document.cookie = encodeURIComponent(sKey) + "=" + encodeURIComponent(sValue) + sExpires + (sDomain ? "; domain=" + sDomain : "") + (sPath ? "; path=" + sPath : "") + (bSecure ? "; secure" : "");
+            return true;
+        },
+        removeItem: function (sKey, sPath, sDomain) {
+            if (!sKey) {
+                return false;
+            }
+            document.cookie = encodeURIComponent(sKey) + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT" + (sDomain ? "; domain=" + sDomain : "") + (sPath ? "; path=" + sPath : "");
+            return true;
+        },
+        hasItem: function (sKey) {
+            return (new RegExp("(?:^|;\\s*)" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=")).test(document.cookie);
+        },
+        keys: function () {
+            var aKeys = document.cookie.replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, "").split(/\s*(?:\=[^;]*)?;\s*/);
+            for (var nIdx = 0; nIdx < aKeys.length; nIdx++) {
+                aKeys[nIdx] = decodeURIComponent(aKeys[nIdx]);
+            }
+            return aKeys;
+        }
+    };
+    Utilities = Utilities_1 = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Injectable"])()
+    ], Utilities);
+    return Utilities;
+    var Utilities_1;
+}());
+
+
+
+/***/ }),
+
 /***/ "./ClientApp/app/app-routing.module.ts":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -946,6 +1874,7 @@ module.exports = "<!-- begin::Page loader -->\r\n<div class=\"m-page-loader m-pa
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_router__ = __webpack_require__("./node_modules/@angular/router/esm5/router.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__helpers__ = __webpack_require__("./ClientApp/app/helpers.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__services_app_translation_service__ = __webpack_require__("./ClientApp/app/_services/app-translation.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__services_configuration_service__ = __webpack_require__("./ClientApp/app/_services/configuration.service.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -959,17 +1888,20 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+
 var AppComponent = /** @class */ (function () {
-    function AppComponent(_router, translationService) {
+    function AppComponent(_router, translationService, _configurationService) {
         this._router = _router;
         this.translationService = translationService;
+        this._configurationService = _configurationService;
         this.title = 'app';
         this.globalBodyClass = 'm-page--loading-non-block m-page--fluid m--skin- m-content--skin-light2 m-header--fixed m-header--fixed-mobile m-aside-left--enabled m-aside-left--skin-dark m-aside-left--offcanvas m-footer--push m-aside--offcanvas-default';
-        translationService.addLanguages(["en", "vi"]);
-        translationService.setDefaultLanguage('vi');
     }
     AppComponent.prototype.ngOnInit = function () {
         var _this = this;
+        this.translationService.addLanguages(["en", "vi"]);
+        this.translationService.setDefaultLanguage('vi');
+        this._configurationService.language = 'vi';
         this._router.events.subscribe(function (route) {
             if (route instanceof __WEBPACK_IMPORTED_MODULE_1__angular_router__["NavigationStart"]) {
                 __WEBPACK_IMPORTED_MODULE_2__helpers__["a" /* Helpers */].setLoading(true);
@@ -986,7 +1918,7 @@ var AppComponent = /** @class */ (function () {
             template: __webpack_require__("./ClientApp/app/app.component.html"),
             encapsulation: __WEBPACK_IMPORTED_MODULE_0__angular_core__["ViewEncapsulation"].None,
         }),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_router__["Router"], __WEBPACK_IMPORTED_MODULE_3__services_app_translation_service__["a" /* AppTranslationService */]])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_router__["Router"], __WEBPACK_IMPORTED_MODULE_3__services_app_translation_service__["a" /* AppTranslationService */], __WEBPACK_IMPORTED_MODULE_4__services_configuration_service__["a" /* ConfigurationService */]])
     ], AppComponent);
     return AppComponent;
 }());
@@ -1012,12 +1944,20 @@ var AppComponent = /** @class */ (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__auth_auth_module__ = __webpack_require__("./ClientApp/app/auth/auth.module.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__services_app_translation_service__ = __webpack_require__("./ClientApp/app/_services/app-translation.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__ngx_translate_core__ = __webpack_require__("./node_modules/@ngx-translate/core/@ngx-translate/core.es5.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__shared_service_proxies_service_proxies__ = __webpack_require__("./ClientApp/shared/service-proxies/service-proxies.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__angular_common_http__ = __webpack_require__("./node_modules/@angular/common/esm5/http.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__services_configuration_service__ = __webpack_require__("./ClientApp/app/_services/configuration.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__services_local_store_manager_service__ = __webpack_require__("./ClientApp/app/_services/local-store-manager.service.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+
+
+
+
 
 
 
@@ -1046,6 +1986,7 @@ var AppModule = /** @class */ (function () {
                 __WEBPACK_IMPORTED_MODULE_5__app_routing_module__["a" /* AppRoutingModule */],
                 __WEBPACK_IMPORTED_MODULE_8__theme_theme_routing_module__["a" /* ThemeRoutingModule */],
                 __WEBPACK_IMPORTED_MODULE_9__auth_auth_module__["AuthModule"],
+                __WEBPACK_IMPORTED_MODULE_13__angular_common_http__["b" /* HttpClientModule */],
                 __WEBPACK_IMPORTED_MODULE_11__ngx_translate_core__["b" /* TranslateModule */].forRoot({
                     loader: {
                         provide: __WEBPACK_IMPORTED_MODULE_11__ngx_translate_core__["a" /* TranslateLoader */],
@@ -1055,7 +1996,11 @@ var AppModule = /** @class */ (function () {
             ],
             providers: [
                 __WEBPACK_IMPORTED_MODULE_7__services_script_loader_service__["a" /* ScriptLoaderService */],
-                __WEBPACK_IMPORTED_MODULE_10__services_app_translation_service__["a" /* AppTranslationService */]
+                __WEBPACK_IMPORTED_MODULE_10__services_app_translation_service__["a" /* AppTranslationService */],
+                __WEBPACK_IMPORTED_MODULE_12__shared_service_proxies_service_proxies__["a" /* AccountServiceProxy */],
+                __WEBPACK_IMPORTED_MODULE_13__angular_common_http__["a" /* HttpClient */],
+                __WEBPACK_IMPORTED_MODULE_14__services_configuration_service__["a" /* ConfigurationService */],
+                __WEBPACK_IMPORTED_MODULE_15__services_local_store_manager_service__["a" /* LocalStoreManager */]
             ],
             bootstrap: [__WEBPACK_IMPORTED_MODULE_6__app_component__["a" /* AppComponent */]]
         })
@@ -1751,6 +2696,7 @@ var AuthRoutingModule = /** @class */ (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__helpers_login_custom__ = __webpack_require__("./ClientApp/app/auth/_helpers/login-custom.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__helpers__ = __webpack_require__("./ClientApp/app/helpers.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__services_app_translation_service__ = __webpack_require__("./ClientApp/app/_services/app-translation.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__shared_service_proxies_service_proxies__ = __webpack_require__("./ClientApp/shared/service-proxies/service-proxies.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1770,8 +2716,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+
 var AuthComponent = /** @class */ (function () {
-    function AuthComponent(_router, _script, _userService, _route, _authService, _alertService, cfr, translationService) {
+    function AuthComponent(_router, _script, _userService, _route, _authService, _alertService, cfr, _accountService, translationService) {
         this._router = _router;
         this._script = _script;
         this._userService = _userService;
@@ -1779,11 +2726,13 @@ var AuthComponent = /** @class */ (function () {
         this._authService = _authService;
         this._alertService = _alertService;
         this.cfr = cfr;
+        this._accountService = _accountService;
         this.translationService = translationService;
         this.model = {};
         this.loading = false;
         translationService.addLanguages(["en", "vi"]);
         translationService.setDefaultLanguage('vi');
+        translationService.changeLanguage('en');
     }
     AuthComponent.prototype.ngOnInit = function () {
         this.model.remember = true;
@@ -1799,8 +2748,20 @@ var AuthComponent = /** @class */ (function () {
         });
     };
     AuthComponent.prototype.signin = function () {
+        //this.loading = true;
+        //let pa = new LoginParam();
+        //pa.username = this.model.email;
+        //pa.password = this.model.password;
+        //this._accountService.login(pa).subscribe(
+        //    data => {
+        //        this._router.navigate([this.returnUrl]);
+        //    },
+        //    error => {
+        //        this.showAlert('alertSignin');
+        //        this._alertService.error(error);
+        //        this.loading = false;
+        //    });
         var _this = this;
-        this.loading = true;
         this._authService.login(this.model.email, this.model.password).subscribe(function (data) {
             _this._router.navigate([_this.returnUrl]);
         }, function (error) {
@@ -1860,7 +2821,7 @@ var AuthComponent = /** @class */ (function () {
     AuthComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
             selector: '.m-grid.m-grid--hor.m-grid--root.m-page',
-            template: __webpack_require__("./ClientApp/app/auth/templates/login-1.component.html"),
+            template: __webpack_require__("./ClientApp/app/auth/templates/login.component.html"),
             encapsulation: __WEBPACK_IMPORTED_MODULE_0__angular_core__["ViewEncapsulation"].None,
         }),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_router__["Router"],
@@ -1870,6 +2831,7 @@ var AuthComponent = /** @class */ (function () {
             __WEBPACK_IMPORTED_MODULE_3__services_authentication_service__["a" /* AuthenticationService */],
             __WEBPACK_IMPORTED_MODULE_4__services_alert_service__["a" /* AlertService */],
             __WEBPACK_IMPORTED_MODULE_0__angular_core__["ComponentFactoryResolver"],
+            __WEBPACK_IMPORTED_MODULE_10__shared_service_proxies_service_proxies__["a" /* AccountServiceProxy */],
             __WEBPACK_IMPORTED_MODULE_9__services_app_translation_service__["a" /* AppTranslationService */]])
     ], AuthComponent);
     return AuthComponent;
@@ -2021,10 +2983,10 @@ var LogoutComponent = /** @class */ (function () {
 
 /***/ }),
 
-/***/ "./ClientApp/app/auth/templates/login-1.component.html":
+/***/ "./ClientApp/app/auth/templates/login.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"m-grid__item m-grid__item--fluid m-grid m-grid--ver-desktop m-grid--desktop m-grid--tablet-and-mobile m-grid--hor-tablet-and-mobile m-login m-login--1 m-login--signin\" id=\"m_login\">\r\n\t<div class=\"m-grid__item m-grid__item--order-tablet-and-mobile-2 m-login__aside\">\r\n\t\t<div class=\"m-stack m-stack--hor m-stack--desktop\">\r\n\t\t\t<div class=\"m-stack__item m-stack__item--fluid\">\r\n\t\t\t\t<div class=\"m-login__wrapper\">\r\n\t\t\t\t\t<div class=\"m-login__logo\">\r\n\t\t\t\t\t\t<a href=\"#\">\r\n\t\t\t\t\t\t\t<img src=\"./assets/app/media/img//logos/logo.png\">\r\n\t\t\t\t\t\t</a>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"m-login__signin\">\r\n\t\t\t\t\t\t<form (ngSubmit)=\"f.form.valid && signin()\" #f=\"ngForm\" class=\"m-login__form m-form\" action=\"\">\r\n\t\t\t\t\t\t\t<ng-template #alertSignin></ng-template>\r\n\t\t\t\t\t\t\t<div class=\"form-group m-form__group\">\r\n\t\t\t\t\t\t\t\t<input class=\"form-control m-input\" type=\"text\" placeholder=\"Phone\" name=\"email\" [(ngModel)]=\"model.email\" #email=\"ngModel\" autocomplete=\"off\">\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"form-group m-form__group\">\r\n\t\t\t\t\t\t\t\t<input class=\"form-control m-input m-login__form-input--last\" type=\"password\" placeholder=\"Password\" name=\"password\" [(ngModel)]=\"model.password\" #password=\"ngModel\">\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"row m-login__form-sub\">\r\n\t\t\t\t\t\t\t\t<div class=\"col m--align-left\">\r\n\t\t\t\t\t\t\t\t\t<label class=\"m-checkbox m-checkbox--focus\">\r\n\t\t\t\t\t\t\t\t\t\t<input type=\"checkbox\" name=\"remember\" [(ngModel)]=\"model.remember\" #remember=\"ngModel\">\r\n\t\t\t\t\t\t\t\t\t\tRemember me\r\n\t\t\t\t\t\t\t\t\t\t<span></span>\r\n\t\t\t\t\t\t\t\t\t</label>\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t<div class=\"col m--align-right\">\r\n\t\t\t\t\t\t\t\t\t<a href=\"javascript:;\" id=\"m_login_forget_password\" class=\"m-link\">\r\n\t\t\t\t\t\t\t\t\t\tForget Password ?\r\n\t\t\t\t\t\t\t\t\t</a>\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"m-login__form-action\">\r\n\t\t\t\t\t\t\t\t<button [disabled]=\"loading\" [ngClass]=\"{'m-loader m-loader--right m-loader--light': loading}\" id=\"m_login_signin_submit\" class=\"btn btn-focus m-btn m-btn--pill m-btn--custom m-btn--air\">\r\n\t\t\t\t\t\t\t\t\tSign In\r\n\t\t\t\t\t\t\t\t</button>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</form>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"m-login__signup\">\r\n\t\t\t\t\t\t<form (ngSubmit)=\"f.form.valid && signup()\" #f=\"ngForm\" class=\"m-login__form m-form\" action=\"\">\r\n\t\t\t\t\t\t\t<ng-template #alertSignup></ng-template>\r\n\t\t\t\t\t\t\t<div class=\"form-group m-form__group\">\r\n\t\t\t\t\t\t\t\t<input class=\"form-control m-input\" type=\"text\" placeholder=\"Fullname\" name=\"fullname\" [(ngModel)]=\"model.fullname\" #fullname=\"ngModel\">\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"form-group m-form__group\">\r\n\t\t\t\t\t\t\t\t<input class=\"form-control m-input\" type=\"text\" placeholder=\"Phone\" name=\"phone\" >\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"form-group m-form__group\">\r\n\t\t\t\t\t\t\t\t<input class=\"form-control m-input\" type=\"text\" placeholder=\"Email\" name=\"email\" [(ngModel)]=\"model.email\" #email=\"ngModel\" autocomplete=\"off\">\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"form-group m-form__group\">\r\n\t\t\t\t\t\t\t\t<input class=\"form-control m-input\" type=\"password\" placeholder=\"Password\" name=\"password\" [(ngModel)]=\"model.password\" #password=\"ngModel\">\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"form-group m-form__group\">\r\n\t\t\t\t\t\t\t\t<input class=\"form-control m-input m-login__form-input--last\" type=\"password\" placeholder=\"Re-Password\" name=\"rpassword\" [(ngModel)]=\"model.rpassword\" #rpassword=\"ngModel\">\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"row form-group m-form__group m-login__form-sub\">\r\n\t\t\t\t\t\t\t\t<div class=\"col m--align-left\">\r\n\t\t\t\t\t\t\t\t\t<label class=\"m-checkbox m-checkbox--focus\">\r\n\t\t\t\t\t\t\t\t\t\t<input type=\"checkbox\" name=\"agree\" [(ngModel)]=\"model.agree\" #agree=\"ngModel\">\r\n\t\t\t\t\t\t\t\t\t\tI Agree the\r\n\t\t\t\t\t\t\t\t\t\t<a href=\"#\" class=\"m-link m-link--focus\">\r\n\t\t\t\t\t\t\t\t\t\t\tterms and conditions\r\n\t\t\t\t\t\t\t\t\t\t</a>\r\n\t\t\t\t\t\t\t\t\t\t.\r\n\t\t\t\t\t\t\t\t\t\t<span></span>\r\n\t\t\t\t\t\t\t\t\t</label>\r\n\t\t\t\t\t\t\t\t\t<span class=\"m-form__help\"></span>\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"m-login__form-action\">\r\n\t\t\t\t\t\t\t\t<button [disabled]=\"loading\" [ngClass]=\"{'m-loader m-loader--right m-loader--light': loading}\" id=\"m_login_signup_submit\" class=\"btn btn-focus m-btn m-btn--pill m-btn--custom m-btn--air\">\r\n\t\t\t\t\t\t\t\t\tSign Up\r\n\t\t\t\t\t\t\t\t</button>\r\n\t\t\t\t\t\t\t\t<button [disabled]=\"loading\"  id=\"m_login_signup_cancel\" class=\"btn btn-outline-focus  m-btn m-btn--pill m-btn--custom\">\r\n\t\t\t\t\t\t\t\t\tCancel\r\n\t\t\t\t\t\t\t\t</button>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</form>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"m-login__forget-password\">\r\n\t\t\t\t\t\t<form (ngSubmit)=\"f.form.valid && forgotPass()\" #f=\"ngForm\" class=\"m-login__form m-form\" action=\"\">\r\n\t\t\t\t\t\t\t<ng-template #alertForgotPass></ng-template>\r\n\t\t\t\t\t\t\t<div class=\"form-group m-form__group\">\r\n\t\t\t\t\t\t\t\t<input class=\"form-control m-input\" type=\"text\" placeholder=\"Email\" name=\"email\" [(ngModel)]=\"model.email\" #email=\"ngModel\" id=\"m_email\" autocomplete=\"off\">\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"m-login__form-action\">\r\n\t\t\t\t\t\t\t\t<button [disabled]=\"loading\" [ngClass]=\"{'m-loader m-loader--right m-loader--light': loading}\" id=\"m_login_forget_password_submit\" class=\"btn btn-focus m-btn m-btn--pill m-btn--custom m-btn--air\">\r\n\t\t\t\t\t\t\t\t\tSubmit\r\n\t\t\t\t\t\t\t\t</button>\r\n\t\t\t\t\t\t\t\t<button [disabled]=\"loading\"  id=\"m_login_forget_password_cancel\" class=\"btn btn-outline-focus m-btn m-btn--pill m-btn--custom\">\r\n\t\t\t\t\t\t\t\t\tCancel\r\n\t\t\t\t\t\t\t\t</button>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</form>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div class=\"m-stack__item m-stack__item--center\">\r\n\t\t\t\t<div class=\"m-login__account\">\r\n\t\t\t\t\t<span class=\"m-login__account-msg\">\r\n\t\t\t\t\t\tDon't have an account yet ?\r\n\t\t\t\t\t</span>\r\n\t\t\t\t\t&nbsp;&nbsp;\r\n\t\t\t\t\t<a href=\"javascript:;\" id=\"m_login_signup\" class=\"m-link m-link--focus m-login__account-link\">\r\n\t\t\t\t\t\tSign Up\r\n\t\t\t\t\t</a>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t</div>\r\n\t<div class=\"m-grid__item m-grid__item--fluid m-grid m-grid--center m-grid--hor m-grid__item--order-tablet-and-mobile-1\tm-login__content\" style=\"background-image: url(./assets/app/media/img//bg/bg-4.jpg)\">\r\n\t\t<div class=\"m-grid__item m-grid__item--middle\">\r\n\t\t\t<h3 class=\"m-login__welcome\">\r\n\t\t\t\tJoin Our Community\r\n\t\t\t</h3>\r\n\t\t\t<p class=\"m-login__msg\">\r\n\t\t\t\tLorem ipsum dolor sit amet, coectetuer adipiscing\r\n\t\t\t\t<br>\r\n\t\t\t\telit sed diam nonummy et nibh euismod\r\n\t\t\t</p>\r\n\t\t</div>\r\n\t</div>\r\n</div>\r\n"
+module.exports = "<div class=\"m-grid__item m-grid__item--fluid m-grid m-grid--ver-desktop m-grid--desktop m-grid--tablet-and-mobile m-grid--hor-tablet-and-mobile m-login m-login--1 m-login--signin\" id=\"m_login\">\r\n\t<div class=\"m-grid__item m-grid__item--order-tablet-and-mobile-2 m-login__aside\">\r\n\t\t<div class=\"m-stack m-stack--hor m-stack--desktop\">\r\n\t\t\t<div class=\"m-stack__item m-stack__item--fluid\">\r\n\t\t\t\t<div class=\"m-login__wrapper\">\r\n\t\t\t\t\t<div class=\"m-login__logo\">\r\n\t\t\t\t\t\t<a href=\"#\">\r\n\t\t\t\t\t\t\t<img src=\"./assets/app/media/img//logos/logo.png\">\r\n\t\t\t\t\t\t</a>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"m-login__signin\">\r\n\t\t\t\t\t\t<form (ngSubmit)=\"f.form.valid && signin()\" #f=\"ngForm\" class=\"m-login__form m-form\" action=\"\">\r\n\t\t\t\t\t\t\t<ng-template #alertSignin></ng-template>\r\n\t\t\t\t\t\t\t<div class=\"form-group m-form__group\">\r\n\t\t\t\t\t\t\t\t<input class=\"form-control m-input\" type=\"text\" placeholder=\"Phone\" name=\"email\" [(ngModel)]=\"model.email\" #email=\"ngModel\" autocomplete=\"off\">\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"form-group m-form__group\">\r\n\t\t\t\t\t\t\t\t<input class=\"form-control m-input m-login__form-input--last\" type=\"password\" placeholder=\"Password\" name=\"password\" [(ngModel)]=\"model.password\" #password=\"ngModel\">\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"row m-login__form-sub\">\r\n\t\t\t\t\t\t\t\t<div class=\"col m--align-left\">\r\n                                    <label class=\"m-checkbox m-checkbox--focus\">\r\n                                        <input type=\"checkbox\" name=\"remember\" [(ngModel)]=\"model.remember\" #remember=\"ngModel\">\r\n                                        {{'login.Remember' | translate}}\r\n                                        <span></span>\r\n                                    </label>\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t\t<div class=\"col m--align-right\">\r\n\t\t\t\t\t\t\t\t\t<a href=\"javascript:;\" id=\"m_login_forget_password\" class=\"m-link\">\r\n\t\t\t\t\t\t\t\t\t\tForget Password ?\r\n\t\t\t\t\t\t\t\t\t</a>\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"m-login__form-action\">\r\n\t\t\t\t\t\t\t\t<button [disabled]=\"loading\" [ngClass]=\"{'m-loader m-loader--right m-loader--light': loading}\" id=\"m_login_signin_submit\" class=\"btn btn-focus m-btn m-btn--pill m-btn--custom m-btn--air\">\r\n\t\t\t\t\t\t\t\t\tSign In\r\n\t\t\t\t\t\t\t\t</button>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</form>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"m-login__signup\">\r\n\t\t\t\t\t\t<form (ngSubmit)=\"f.form.valid && signup()\" #f=\"ngForm\" class=\"m-login__form m-form\" action=\"\">\r\n\t\t\t\t\t\t\t<ng-template #alertSignup></ng-template>\r\n\t\t\t\t\t\t\t<div class=\"form-group m-form__group\">\r\n\t\t\t\t\t\t\t\t<input class=\"form-control m-input\" type=\"text\" placeholder=\"Fullname\" name=\"fullname\" [(ngModel)]=\"model.fullname\" #fullname=\"ngModel\">\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"form-group m-form__group\">\r\n\t\t\t\t\t\t\t\t<input class=\"form-control m-input\" type=\"text\" placeholder=\"Phone\" name=\"phone\" >\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"form-group m-form__group\">\r\n\t\t\t\t\t\t\t\t<input class=\"form-control m-input\" type=\"text\" placeholder=\"Email\" name=\"email\" [(ngModel)]=\"model.email\" #email=\"ngModel\" autocomplete=\"off\">\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"form-group m-form__group\">\r\n\t\t\t\t\t\t\t\t<input class=\"form-control m-input\" type=\"password\" placeholder=\"Password\" name=\"password\" [(ngModel)]=\"model.password\" #password=\"ngModel\">\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"form-group m-form__group\">\r\n\t\t\t\t\t\t\t\t<input class=\"form-control m-input m-login__form-input--last\" type=\"password\" placeholder=\"Re-Password\" name=\"rpassword\" [(ngModel)]=\"model.rpassword\" #rpassword=\"ngModel\">\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"row form-group m-form__group m-login__form-sub\">\r\n\t\t\t\t\t\t\t\t<div class=\"col m--align-left\">\r\n\t\t\t\t\t\t\t\t\t<label class=\"m-checkbox m-checkbox--focus\">\r\n\t\t\t\t\t\t\t\t\t\t<input type=\"checkbox\" name=\"agree\" [(ngModel)]=\"model.agree\" #agree=\"ngModel\">\r\n\t\t\t\t\t\t\t\t\t\tI Agree the\r\n\t\t\t\t\t\t\t\t\t\t<a href=\"#\" class=\"m-link m-link--focus\">\r\n\t\t\t\t\t\t\t\t\t\t\tterms and conditions\r\n\t\t\t\t\t\t\t\t\t\t</a>\r\n\t\t\t\t\t\t\t\t\t\t.\r\n\t\t\t\t\t\t\t\t\t\t<span></span>\r\n\t\t\t\t\t\t\t\t\t</label>\r\n\t\t\t\t\t\t\t\t\t<span class=\"m-form__help\"></span>\r\n\t\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"m-login__form-action\">\r\n\t\t\t\t\t\t\t\t<button [disabled]=\"loading\" [ngClass]=\"{'m-loader m-loader--right m-loader--light': loading}\" id=\"m_login_signup_submit\" class=\"btn btn-focus m-btn m-btn--pill m-btn--custom m-btn--air\">\r\n\t\t\t\t\t\t\t\t\tSign Up\r\n\t\t\t\t\t\t\t\t</button>\r\n\t\t\t\t\t\t\t\t<button [disabled]=\"loading\"  id=\"m_login_signup_cancel\" class=\"btn btn-outline-focus  m-btn m-btn--pill m-btn--custom\">\r\n\t\t\t\t\t\t\t\t\tCancel\r\n\t\t\t\t\t\t\t\t</button>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</form>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div class=\"m-login__forget-password\">\r\n\t\t\t\t\t\t<form (ngSubmit)=\"f.form.valid && forgotPass()\" #f=\"ngForm\" class=\"m-login__form m-form\" action=\"\">\r\n\t\t\t\t\t\t\t<ng-template #alertForgotPass></ng-template>\r\n\t\t\t\t\t\t\t<div class=\"form-group m-form__group\">\r\n\t\t\t\t\t\t\t\t<input class=\"form-control m-input\" type=\"text\" placeholder=\"Email\" name=\"email\" [(ngModel)]=\"model.email\" #email=\"ngModel\" id=\"m_email\" autocomplete=\"off\">\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t\t<div class=\"m-login__form-action\">\r\n\t\t\t\t\t\t\t\t<button [disabled]=\"loading\" [ngClass]=\"{'m-loader m-loader--right m-loader--light': loading}\" id=\"m_login_forget_password_submit\" class=\"btn btn-focus m-btn m-btn--pill m-btn--custom m-btn--air\">\r\n\t\t\t\t\t\t\t\t\tSubmit\r\n\t\t\t\t\t\t\t\t</button>\r\n\t\t\t\t\t\t\t\t<button [disabled]=\"loading\"  id=\"m_login_forget_password_cancel\" class=\"btn btn-outline-focus m-btn m-btn--pill m-btn--custom\">\r\n\t\t\t\t\t\t\t\t\tCancel\r\n\t\t\t\t\t\t\t\t</button>\r\n\t\t\t\t\t\t\t</div>\r\n\t\t\t\t\t\t</form>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t\t<div class=\"m-stack__item m-stack__item--center\">\r\n\t\t\t\t<div class=\"m-login__account\">\r\n\t\t\t\t\t<span class=\"m-login__account-msg\">\r\n\t\t\t\t\t\tDon't have an account yet ?\r\n\t\t\t\t\t</span>\r\n\t\t\t\t\t&nbsp;&nbsp;\r\n\t\t\t\t\t<a href=\"javascript:;\" id=\"m_login_signup\" class=\"m-link m-link--focus m-login__account-link\">\r\n\t\t\t\t\t\tSign Up\r\n\t\t\t\t\t</a>\r\n\t\t\t\t</div>\r\n\t\t\t</div>\r\n\t\t</div>\r\n\t</div>\r\n\t<div class=\"m-grid__item m-grid__item--fluid m-grid m-grid--center m-grid--hor m-grid__item--order-tablet-and-mobile-1\tm-login__content\" style=\"background-image: url(./assets/app/media/img//bg/bg-4.jpg)\">\r\n\t\t<div class=\"m-grid__item m-grid__item--middle\">\r\n\t\t\t\r\n\t\t</div>\r\n\t</div>\r\n</div>\r\n"
 
 /***/ }),
 
@@ -3138,6 +4100,26 @@ var routes = [
                 "loadChildren": ".\/pages\/default\/not-found\/not-found.module#NotFoundModule"
             },
             {
+                "path": "thongke",
+                "loadChildren": ".\/pages\/default\/thongke\/thongke.module#ThongkeModule"
+            },
+            {
+                "path": "settings",
+                "loadChildren": ".\/pages\/default\/settings\/settings.module#SettingsModule"
+            },
+            {
+                "path": "listgiangvien",
+                "loadChildren": ".\/pages\/default\/listgiangvien\/listgiangvien.module#ListgiangvienModule"
+            },
+            {
+                "path": "lopphutrach",
+                "loadChildren": ".\/pages\/default\/lopphutrach\/lopphutrach.module#LopphutrachModule"
+            },
+            {
+                "path": "themgiaovien",
+                "loadChildren": ".\/pages\/default\/themgiaovien\/themgiaovien.module#ThemgiaovienModule"
+            },
+            {
                 "path": "",
                 "redirectTo": "index",
                 "pathMatch": "full"
@@ -3213,7 +4195,7 @@ var ThemeRoutingModule = /** @class */ (function () {
 /***/ "./ClientApp/app/theme/theme.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<app-header-nav></app-header-nav>\n<!-- begin::Body -->\n<router-outlet></router-outlet>\n<!-- end:: Body -->\n<app-footer></app-footer>\n"
+module.exports = "<app-header-nav></app-header-nav>\n<!-- begin::Body -->\n<router-outlet></router-outlet>\n<!-- end:: Body -->\n<!--<app-footer></app-footer>-->\n"
 
 /***/ }),
 
@@ -3292,14 +4274,14 @@ var ThemeComponent = /** @class */ (function () {
 /***/ "./ClientApp/assets/locale/en.json":
 /***/ (function(module, exports) {
 
-module.exports = {"Main":{}}
+module.exports = {"main":{"Welcome":"Hello Toàn"},"login":{"Remember":"Remember me"}}
 
 /***/ }),
 
 /***/ "./ClientApp/assets/locale/vi.json":
 /***/ (function(module, exports) {
 
-module.exports = {"Main":{"Welcome":"Hello Toàn"}}
+module.exports = {"main":{"Welcome":"Hello Toàn"},"login":{"Remember":"Ghi nhớ"}}
 
 /***/ }),
 
@@ -3338,6 +4320,12945 @@ if (__WEBPACK_IMPORTED_MODULE_3__environments_environment__["a" /* environment *
 Object(__WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_dynamic__["a" /* platformBrowserDynamic */])().bootstrapModule(__WEBPACK_IMPORTED_MODULE_2__app_app_module__["a" /* AppModule */])
     .catch(function (err) { return console.log(err); });
 
+
+/***/ }),
+
+/***/ "./ClientApp/shared/service-proxies/service-proxies.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* unused harmony export API_BASE_URL */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AccountServiceProxy; });
+/* unused harmony export ActivityServiceProxy */
+/* unused harmony export BaseApiServiceProxy */
+/* unused harmony export ClassServiceProxy */
+/* unused harmony export ConfigurationServiceProxy */
+/* unused harmony export CourseServiceProxy */
+/* unused harmony export GameTypeServiceProxy */
+/* unused harmony export MetadataServiceProxy */
+/* unused harmony export PrincipalServiceProxy */
+/* unused harmony export SchoolServiceProxy */
+/* unused harmony export SchoolOwnerServiceProxy */
+/* unused harmony export StudentServiceProxy */
+/* unused harmony export SubscriberServiceProxy */
+/* unused harmony export TeacherServiceProxy */
+/* unused harmony export UnitServiceProxy */
+/* unused harmony export LoginParam */
+/* unused harmony export ResponseOfUserModel */
+/* unused harmony export UserModel */
+/* unused harmony export UpdateStudentProfileParam */
+/* unused harmony export ResponseOfString */
+/* unused harmony export ResponseOfListOfPermissionModel */
+/* unused harmony export PermissionModel */
+/* unused harmony export ResponseOfListOfMenuItem */
+/* unused harmony export MenuItem */
+/* unused harmony export ModelState */
+/* unused harmony export ModelError */
+/* unused harmony export ValueProviderResult */
+/* unused harmony export HandleActivityDatatableParam */
+/* unused harmony export MDatatableActivitytParam */
+/* unused harmony export MPagination */
+/* unused harmony export MSort */
+/* unused harmony export MActivityQuery */
+/* unused harmony export MDataTableResponseOfActivityModel */
+/* unused harmony export ActivityModel */
+/* unused harmony export GameDataModel */
+/* unused harmony export FieldDataModel */
+/* unused harmony export GameStageModel */
+/* unused harmony export SaveActivityParam */
+/* unused harmony export GameDataParam */
+/* unused harmony export FieldParam */
+/* unused harmony export GameStageParam */
+/* unused harmony export ResponseOfActivityModel */
+/* unused harmony export GetByIdParam */
+/* unused harmony export DeleteParam */
+/* unused harmony export ReOrderParam */
+/* unused harmony export ResponseOfObject */
+/* unused harmony export GetByIdsParam */
+/* unused harmony export ResponseOfListOfFieldConfigurationModel */
+/* unused harmony export FieldConfigurationModel */
+/* unused harmony export ResponseOfListOfActivityCacheModel */
+/* unused harmony export ActivityCacheModel */
+/* unused harmony export GetClassByCurrentUser */
+/* unused harmony export ResponseOfListOfClassModel */
+/* unused harmony export ClassModel */
+/* unused harmony export SaveClassParam */
+/* unused harmony export ResponseOfClassModel */
+/* unused harmony export AssignClassParam */
+/* unused harmony export ResponseOfDictionaryOfStringAndString */
+/* unused harmony export SaveConfigurationParam */
+/* unused harmony export MDataTableParamModel */
+/* unused harmony export MDatatableParam */
+/* unused harmony export MQuery */
+/* unused harmony export MDataTableResponseOfCourseModel */
+/* unused harmony export CourseModel */
+/* unused harmony export SaveCourseParam */
+/* unused harmony export UploadBase64Param */
+/* unused harmony export ResponseOfCourseModel */
+/* unused harmony export ResponseOfListOfSchoolCourseModel */
+/* unused harmony export SchoolCourseModel */
+/* unused harmony export ActiveSchoolCourseParam */
+/* unused harmony export ChangeSellSchoolCoursePriceParam */
+/* unused harmony export ResponseOfListOfCourseCacheModel */
+/* unused harmony export CourseCacheModel */
+/* unused harmony export UnitCourseCacheModel */
+/* unused harmony export ActivityCourseCacheModel */
+/* unused harmony export GetStudentCourseParam */
+/* unused harmony export GetFieldConfigurationByGameTypeParam */
+/* unused harmony export ResponseOfGameTypeModel */
+/* unused harmony export GameTypeModel */
+/* unused harmony export MetadataSetModel */
+/* unused harmony export GameDataTypeModel */
+/* unused harmony export MetadataModel */
+/* unused harmony export ResponseOfListOfGameTypeModel */
+/* unused harmony export SaveGameTypeParam */
+/* unused harmony export MDataTableResponseOfGameTypeModel */
+/* unused harmony export ResponseOfListOfMetadataSetModel */
+/* unused harmony export ResponseOfListOfMetadataModel */
+/* unused harmony export ResponseOfMetadataSetModel */
+/* unused harmony export SaveMetadataParam */
+/* unused harmony export ResponseOfMetadataModel */
+/* unused harmony export ResponseOfListOfMetadataSetCacheModel */
+/* unused harmony export MetadataSetCacheModel */
+/* unused harmony export MetadataCacheModel */
+/* unused harmony export ResponseOfListOfMetadataCacheDetailModel */
+/* unused harmony export MetadataCacheDetailModel */
+/* unused harmony export ResponseOfMobileCacheHistoryModel */
+/* unused harmony export MobileCacheHistoryModel */
+/* unused harmony export MDataTableResponseOfPrincipalModel */
+/* unused harmony export PrincipalModel */
+/* unused harmony export SavePricipalParam */
+/* unused harmony export ResponseOfPrincipalModel */
+/* unused harmony export MDataTableResponseOfSchoolModel */
+/* unused harmony export SchoolModel */
+/* unused harmony export ActiveSchoolParam */
+/* unused harmony export GetSchoolByCurrentUser */
+/* unused harmony export ResponseOfListOfSchoolModel */
+/* unused harmony export SaveSchoolParam */
+/* unused harmony export ResponseOfSchoolModel */
+/* unused harmony export AssignSchoolParam */
+/* unused harmony export MDataTableResponseOfSchoolOwnerModel */
+/* unused harmony export SchoolOwnerModel */
+/* unused harmony export SchoolSystemModel */
+/* unused harmony export SaveSchoolOwnerParam */
+/* unused harmony export ResponseOfSchoolOwnerModel */
+/* unused harmony export RegisterSchoolParam */
+/* unused harmony export HandleStudentDatatableParam */
+/* unused harmony export MDatatableStudentParam */
+/* unused harmony export MStudentQuery */
+/* unused harmony export MDataTableResponseOfStudentModel */
+/* unused harmony export StudentModel */
+/* unused harmony export StudentSchool */
+/* unused harmony export StudentRegistedCourseModel */
+/* unused harmony export StudentSchoolClass */
+/* unused harmony export SaveStudentParam */
+/* unused harmony export ResponseOfStudentModel */
+/* unused harmony export DeleteStudentParam */
+/* unused harmony export ActiveStudentCourseParam */
+/* unused harmony export SaveSubscribeParam */
+/* unused harmony export ResponseOfSubscriberModel */
+/* unused harmony export SubscriberModel */
+/* unused harmony export HandleTeacherDatatableParam */
+/* unused harmony export MDatatableTeachertParam */
+/* unused harmony export MTeacherQuery */
+/* unused harmony export MDataTableResponseOfTeacherModel */
+/* unused harmony export TeacherModel */
+/* unused harmony export SaveTeacherParam */
+/* unused harmony export ResponseOfTeacherModel */
+/* unused harmony export HandleUnitDatatableParam */
+/* unused harmony export MDatatableUnitParam */
+/* unused harmony export MUnitQuery */
+/* unused harmony export MDataTableResponseOfUnitModel */
+/* unused harmony export UnitModel */
+/* unused harmony export SaveUnitParam */
+/* unused harmony export ResponseOfUnitModel */
+/* unused harmony export SwaggerException */
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_rxjs_add_observable_fromPromise__ = __webpack_require__("./node_modules/rxjs/_esm5/add/observable/fromPromise.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_rxjs_add_observable_of__ = __webpack_require__("./node_modules/rxjs/_esm5/add/observable/of.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_add_observable_throw__ = __webpack_require__("./node_modules/rxjs/_esm5/add/observable/throw.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_add_operator_map__ = __webpack_require__("./node_modules/rxjs/_esm5/add/operator/map.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_add_operator_toPromise__ = __webpack_require__("./node_modules/rxjs/_esm5/add/operator/toPromise.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_rxjs_add_operator_toPromise___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_rxjs_add_operator_toPromise__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_rxjs_add_operator_mergeMap__ = __webpack_require__("./node_modules/rxjs/_esm5/add/operator/mergeMap.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_rxjs_add_operator_catch__ = __webpack_require__("./node_modules/rxjs/_esm5/add/operator/catch.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__ = __webpack_require__("./node_modules/rxjs/_esm5/Observable.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__angular_core__ = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__angular_common_http__ = __webpack_require__("./node_modules/@angular/common/esm5/http.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_moment__ = __webpack_require__("./node_modules/moment/moment.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_moment___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_10_moment__);
+/* tslint:disable */
+//----------------------
+// <auto-generated>
+//     Generated using the NSwag toolchain v11.12.7.0 (NJsonSchema v9.10.6.0 (Newtonsoft.Json v9.0.0.0)) (http://NSwag.org)
+// </auto-generated>
+//----------------------
+// ReSharper disable InconsistentNaming
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+
+
+
+
+
+
+
+
+
+
+
+var API_BASE_URL = new __WEBPACK_IMPORTED_MODULE_8__angular_core__["InjectionToken"]('API_BASE_URL');
+var AccountServiceProxy = /** @class */ (function () {
+    function AccountServiceProxy(http, baseUrl) {
+        this.jsonParseReviver = undefined;
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "http://whale.land";
+    }
+    /**
+     * @return OK
+     */
+    AccountServiceProxy.prototype.login = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Account/Login";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processLogin(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processLogin(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    AccountServiceProxy.prototype.processLogin = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfUserModel.fromJS(resultData200) : new ResponseOfUserModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    AccountServiceProxy.prototype.updateStudentProfile = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Account/UpdateStudentProfile";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processUpdateStudentProfile(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processUpdateStudentProfile(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    AccountServiceProxy.prototype.processUpdateStudentProfile = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfUserModel.fromJS(resultData200) : new ResponseOfUserModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    AccountServiceProxy.prototype.adminLogin = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Account/AdminLogin";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processAdminLogin(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processAdminLogin(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    AccountServiceProxy.prototype.processAdminLogin = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfString.fromJS(resultData200) : new ResponseOfString();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    AccountServiceProxy.prototype.logOut = function () {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Account/LogOut";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processLogOut(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processLogOut(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    AccountServiceProxy.prototype.processLogOut = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfString.fromJS(resultData200) : new ResponseOfString();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    AccountServiceProxy.prototype.getCurrentUserPermission = function () {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Account/GetCurrentUserPermission";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processGetCurrentUserPermission(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processGetCurrentUserPermission(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    AccountServiceProxy.prototype.processGetCurrentUserPermission = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfListOfPermissionModel.fromJS(resultData200) : new ResponseOfListOfPermissionModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    AccountServiceProxy.prototype.getUserMenu = function () {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Account/GetUserMenu";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processGetUserMenu(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processGetUserMenu(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    AccountServiceProxy.prototype.processGetUserMenu = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfListOfMenuItem.fromJS(resultData200) : new ResponseOfListOfMenuItem();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @isThrow (optional)
+     * @return OK
+     */
+    AccountServiceProxy.prototype.validateParam = function (isThrow) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Account/ValidateParam?";
+        if (isThrow !== undefined)
+            url_ += "isThrow=" + encodeURIComponent("" + isThrow) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processValidateParam(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processValidateParam(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    AccountServiceProxy.prototype.processValidateParam = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                if (resultData200) {
+                    result200 = {};
+                    for (var key in resultData200) {
+                        if (resultData200.hasOwnProperty(key))
+                            result200[key] = resultData200[key] ? ModelState.fromJS(resultData200[key]) : new ModelState();
+                    }
+                }
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    AccountServiceProxy.prototype.parseGuid = function (stringVal) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Account/ParseGuid?";
+        if (stringVal === undefined || stringVal === null)
+            throw new Error("The parameter 'stringVal' must be defined and cannot be null.");
+        else
+            url_ += "stringVal=" + encodeURIComponent("" + stringVal) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processParseGuid(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processParseGuid(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    AccountServiceProxy.prototype.processParseGuid = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : null;
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    AccountServiceProxy = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Injectable"])(),
+        __param(0, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Inject"])(__WEBPACK_IMPORTED_MODULE_9__angular_common_http__["a" /* HttpClient */])), __param(1, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Optional"])()), __param(1, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Inject"])(API_BASE_URL)),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_9__angular_common_http__["a" /* HttpClient */], String])
+    ], AccountServiceProxy);
+    return AccountServiceProxy;
+}());
+
+var ActivityServiceProxy = /** @class */ (function () {
+    function ActivityServiceProxy(http, baseUrl) {
+        this.jsonParseReviver = undefined;
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "http://whale.land";
+    }
+    /**
+     * @return OK
+     */
+    ActivityServiceProxy.prototype.handleDatatable = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Activity/HandleDatatable";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processHandleDatatable(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processHandleDatatable(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    ActivityServiceProxy.prototype.processHandleDatatable = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? MDataTableResponseOfActivityModel.fromJS(resultData200) : new MDataTableResponseOfActivityModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    ActivityServiceProxy.prototype.save = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Activity/Save";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processSave(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processSave(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    ActivityServiceProxy.prototype.processSave = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfActivityModel.fromJS(resultData200) : new ResponseOfActivityModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    ActivityServiceProxy.prototype.clone = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Activity/Clone";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processClone(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processClone(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    ActivityServiceProxy.prototype.processClone = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfActivityModel.fromJS(resultData200) : new ResponseOfActivityModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    ActivityServiceProxy.prototype.delete = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Activity/Delete";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processDelete(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processDelete(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    ActivityServiceProxy.prototype.processDelete = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfActivityModel.fromJS(resultData200) : new ResponseOfActivityModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @param_ids (optional)
+     * @param_accessToken (optional)
+     * @return OK
+     */
+    ActivityServiceProxy.prototype.reOrder = function (param_ids, param_accessToken) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Activity/ReOrder?";
+        if (param_ids !== undefined)
+            param_ids && param_ids.forEach(function (item) { url_ += "param.ids=" + encodeURIComponent("" + item) + "&"; });
+        if (param_accessToken !== undefined)
+            url_ += "param.accessToken=" + encodeURIComponent("" + param_accessToken) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processReOrder(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processReOrder(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    ActivityServiceProxy.prototype.processReOrder = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfString.fromJS(resultData200) : new ResponseOfString();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @param_accessToken (optional)
+     * @return OK
+     */
+    ActivityServiceProxy.prototype.getById = function (param_id, param_accessToken) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Activity/GetById/{Id}?";
+        if (param_id === undefined || param_id === null)
+            throw new Error("The parameter 'param_id' must be defined and cannot be null.");
+        else
+            url_ += "param.id=" + encodeURIComponent("" + param_id) + "&";
+        if (param_accessToken !== undefined)
+            url_ += "param.accessToken=" + encodeURIComponent("" + param_accessToken) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processGetById(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processGetById(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    ActivityServiceProxy.prototype.processGetById = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfActivityModel.fromJS(resultData200) : new ResponseOfActivityModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    ActivityServiceProxy.prototype.getCourseCache = function () {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Activity/GetCourseCache";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processGetCourseCache(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processGetCourseCache(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    ActivityServiceProxy.prototype.processGetCourseCache = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfObject.fromJS(resultData200) : new ResponseOfObject();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @param_accessToken (optional)
+     * @return OK
+     */
+    ActivityServiceProxy.prototype.getFieldConfigurationByIds = function (param_ids, param_accessToken) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Activity/GetFieldConfigurationByIds?";
+        if (param_ids === undefined || param_ids === null)
+            throw new Error("The parameter 'param_ids' must be defined and cannot be null.");
+        else
+            param_ids && param_ids.forEach(function (item) { url_ += "param.ids=" + encodeURIComponent("" + item) + "&"; });
+        if (param_accessToken !== undefined)
+            url_ += "param.accessToken=" + encodeURIComponent("" + param_accessToken) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processGetFieldConfigurationByIds(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processGetFieldConfigurationByIds(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    ActivityServiceProxy.prototype.processGetFieldConfigurationByIds = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfListOfFieldConfigurationModel.fromJS(resultData200) : new ResponseOfListOfFieldConfigurationModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     * @deprecated
+     */
+    ActivityServiceProxy.prototype.saveCourseCache = function (id) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Activity/SaveCourseCache/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processSaveCourseCache(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processSaveCourseCache(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    ActivityServiceProxy.prototype.processSaveCourseCache = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfObject.fromJS(resultData200) : new ResponseOfObject();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @param_accessToken (optional)
+     * @return OK
+     */
+    ActivityServiceProxy.prototype.getGameCacheByIds = function (param_ids, param_accessToken) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Activity/GetGameCacheByIds?";
+        if (param_ids === undefined || param_ids === null)
+            throw new Error("The parameter 'param_ids' must be defined and cannot be null.");
+        else
+            param_ids && param_ids.forEach(function (item) { url_ += "param.ids=" + encodeURIComponent("" + item) + "&"; });
+        if (param_accessToken !== undefined)
+            url_ += "param.accessToken=" + encodeURIComponent("" + param_accessToken) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processGetGameCacheByIds(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processGetGameCacheByIds(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    ActivityServiceProxy.prototype.processGetGameCacheByIds = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfListOfActivityCacheModel.fromJS(resultData200) : new ResponseOfListOfActivityCacheModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     * @deprecated
+     */
+    ActivityServiceProxy.prototype.renderCache = function () {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Activity/RenderCache";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processRenderCache(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processRenderCache(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    ActivityServiceProxy.prototype.processRenderCache = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : null;
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @isThrow (optional)
+     * @return OK
+     */
+    ActivityServiceProxy.prototype.validateParam = function (isThrow) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Activity/ValidateParam?";
+        if (isThrow !== undefined)
+            url_ += "isThrow=" + encodeURIComponent("" + isThrow) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processValidateParam(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processValidateParam(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    ActivityServiceProxy.prototype.processValidateParam = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                if (resultData200) {
+                    result200 = {};
+                    for (var key in resultData200) {
+                        if (resultData200.hasOwnProperty(key))
+                            result200[key] = resultData200[key] ? ModelState.fromJS(resultData200[key]) : new ModelState();
+                    }
+                }
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    ActivityServiceProxy.prototype.parseGuid = function (stringVal) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Activity/ParseGuid?";
+        if (stringVal === undefined || stringVal === null)
+            throw new Error("The parameter 'stringVal' must be defined and cannot be null.");
+        else
+            url_ += "stringVal=" + encodeURIComponent("" + stringVal) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processParseGuid(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processParseGuid(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    ActivityServiceProxy.prototype.processParseGuid = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : null;
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    ActivityServiceProxy = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Injectable"])(),
+        __param(0, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Inject"])(__WEBPACK_IMPORTED_MODULE_9__angular_common_http__["a" /* HttpClient */])), __param(1, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Optional"])()), __param(1, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Inject"])(API_BASE_URL)),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_9__angular_common_http__["a" /* HttpClient */], String])
+    ], ActivityServiceProxy);
+    return ActivityServiceProxy;
+}());
+
+var BaseApiServiceProxy = /** @class */ (function () {
+    function BaseApiServiceProxy(http, baseUrl) {
+        this.jsonParseReviver = undefined;
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "http://whale.land";
+    }
+    /**
+     * @isThrow (optional)
+     * @return OK
+     */
+    BaseApiServiceProxy.prototype.validateParam = function (isThrow) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/BaseApi/ValidateParam?";
+        if (isThrow !== undefined)
+            url_ += "isThrow=" + encodeURIComponent("" + isThrow) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processValidateParam(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processValidateParam(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    BaseApiServiceProxy.prototype.processValidateParam = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                if (resultData200) {
+                    result200 = {};
+                    for (var key in resultData200) {
+                        if (resultData200.hasOwnProperty(key))
+                            result200[key] = resultData200[key] ? ModelState.fromJS(resultData200[key]) : new ModelState();
+                    }
+                }
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    BaseApiServiceProxy.prototype.parseGuid = function (stringVal) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/BaseApi/ParseGuid?";
+        if (stringVal === undefined || stringVal === null)
+            throw new Error("The parameter 'stringVal' must be defined and cannot be null.");
+        else
+            url_ += "stringVal=" + encodeURIComponent("" + stringVal) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processParseGuid(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processParseGuid(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    BaseApiServiceProxy.prototype.processParseGuid = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : null;
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    BaseApiServiceProxy = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Injectable"])(),
+        __param(0, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Inject"])(__WEBPACK_IMPORTED_MODULE_9__angular_common_http__["a" /* HttpClient */])), __param(1, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Optional"])()), __param(1, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Inject"])(API_BASE_URL)),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_9__angular_common_http__["a" /* HttpClient */], String])
+    ], BaseApiServiceProxy);
+    return BaseApiServiceProxy;
+}());
+
+var ClassServiceProxy = /** @class */ (function () {
+    function ClassServiceProxy(http, baseUrl) {
+        this.jsonParseReviver = undefined;
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "http://whale.land";
+    }
+    /**
+     * @param_isLoadActiveOnly (optional)
+     * @param_accessToken (optional)
+     * @return OK
+     */
+    ClassServiceProxy.prototype.loadBySchoolId = function (param_schoolId, param_isLoadActiveOnly, param_accessToken) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Class/LoadBySchoolId?";
+        if (param_schoolId === undefined || param_schoolId === null)
+            throw new Error("The parameter 'param_schoolId' must be defined and cannot be null.");
+        else
+            url_ += "param.schoolId=" + encodeURIComponent("" + param_schoolId) + "&";
+        if (param_isLoadActiveOnly !== undefined)
+            url_ += "param.isLoadActiveOnly=" + encodeURIComponent("" + param_isLoadActiveOnly) + "&";
+        if (param_accessToken !== undefined)
+            url_ += "param.accessToken=" + encodeURIComponent("" + param_accessToken) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processLoadBySchoolId(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processLoadBySchoolId(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    ClassServiceProxy.prototype.processLoadBySchoolId = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfListOfClassModel.fromJS(resultData200) : new ResponseOfListOfClassModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    ClassServiceProxy.prototype.save = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Class/Save";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processSave(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processSave(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    ClassServiceProxy.prototype.processSave = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfClassModel.fromJS(resultData200) : new ResponseOfClassModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @param_accessToken (optional)
+     * @return OK
+     */
+    ClassServiceProxy.prototype.getById = function (param_id, param_accessToken) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Class/GetById/{Id}?";
+        if (param_id === undefined || param_id === null)
+            throw new Error("The parameter 'param_id' must be defined and cannot be null.");
+        else
+            url_ += "param.id=" + encodeURIComponent("" + param_id) + "&";
+        if (param_accessToken !== undefined)
+            url_ += "param.accessToken=" + encodeURIComponent("" + param_accessToken) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processGetById(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processGetById(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    ClassServiceProxy.prototype.processGetById = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfClassModel.fromJS(resultData200) : new ResponseOfClassModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    ClassServiceProxy.prototype.deactiveClass = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Class/DeactiveClass";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processDeactiveClass(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processDeactiveClass(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    ClassServiceProxy.prototype.processDeactiveClass = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfClassModel.fromJS(resultData200) : new ResponseOfClassModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    ClassServiceProxy.prototype.activeClass = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Class/ActiveClass";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processActiveClass(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processActiveClass(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    ClassServiceProxy.prototype.processActiveClass = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfClassModel.fromJS(resultData200) : new ResponseOfClassModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    ClassServiceProxy.prototype.assign = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Class/Assign";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processAssign(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processAssign(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    ClassServiceProxy.prototype.processAssign = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfString.fromJS(resultData200) : new ResponseOfString();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @isThrow (optional)
+     * @return OK
+     */
+    ClassServiceProxy.prototype.validateParam = function (isThrow) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Class/ValidateParam?";
+        if (isThrow !== undefined)
+            url_ += "isThrow=" + encodeURIComponent("" + isThrow) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processValidateParam(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processValidateParam(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    ClassServiceProxy.prototype.processValidateParam = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                if (resultData200) {
+                    result200 = {};
+                    for (var key in resultData200) {
+                        if (resultData200.hasOwnProperty(key))
+                            result200[key] = resultData200[key] ? ModelState.fromJS(resultData200[key]) : new ModelState();
+                    }
+                }
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    ClassServiceProxy.prototype.parseGuid = function (stringVal) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Class/ParseGuid?";
+        if (stringVal === undefined || stringVal === null)
+            throw new Error("The parameter 'stringVal' must be defined and cannot be null.");
+        else
+            url_ += "stringVal=" + encodeURIComponent("" + stringVal) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processParseGuid(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processParseGuid(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    ClassServiceProxy.prototype.processParseGuid = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : null;
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    ClassServiceProxy = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Injectable"])(),
+        __param(0, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Inject"])(__WEBPACK_IMPORTED_MODULE_9__angular_common_http__["a" /* HttpClient */])), __param(1, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Optional"])()), __param(1, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Inject"])(API_BASE_URL)),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_9__angular_common_http__["a" /* HttpClient */], String])
+    ], ClassServiceProxy);
+    return ClassServiceProxy;
+}());
+
+var ConfigurationServiceProxy = /** @class */ (function () {
+    function ConfigurationServiceProxy(http, baseUrl) {
+        this.jsonParseReviver = undefined;
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "http://whale.land";
+    }
+    /**
+     * @return OK
+     */
+    ConfigurationServiceProxy.prototype.getAll = function () {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Configuration/GetAll";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processGetAll(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processGetAll(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    ConfigurationServiceProxy.prototype.processGetAll = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfDictionaryOfStringAndString.fromJS(resultData200) : new ResponseOfDictionaryOfStringAndString();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    ConfigurationServiceProxy.prototype.save = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Configuration/Save";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processSave(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processSave(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    ConfigurationServiceProxy.prototype.processSave = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfString.fromJS(resultData200) : new ResponseOfString();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @isThrow (optional)
+     * @return OK
+     */
+    ConfigurationServiceProxy.prototype.validateParam = function (isThrow) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Configuration/ValidateParam?";
+        if (isThrow !== undefined)
+            url_ += "isThrow=" + encodeURIComponent("" + isThrow) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processValidateParam(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processValidateParam(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    ConfigurationServiceProxy.prototype.processValidateParam = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                if (resultData200) {
+                    result200 = {};
+                    for (var key in resultData200) {
+                        if (resultData200.hasOwnProperty(key))
+                            result200[key] = resultData200[key] ? ModelState.fromJS(resultData200[key]) : new ModelState();
+                    }
+                }
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    ConfigurationServiceProxy.prototype.parseGuid = function (stringVal) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Configuration/ParseGuid?";
+        if (stringVal === undefined || stringVal === null)
+            throw new Error("The parameter 'stringVal' must be defined and cannot be null.");
+        else
+            url_ += "stringVal=" + encodeURIComponent("" + stringVal) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processParseGuid(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processParseGuid(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    ConfigurationServiceProxy.prototype.processParseGuid = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : null;
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    ConfigurationServiceProxy = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Injectable"])(),
+        __param(0, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Inject"])(__WEBPACK_IMPORTED_MODULE_9__angular_common_http__["a" /* HttpClient */])), __param(1, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Optional"])()), __param(1, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Inject"])(API_BASE_URL)),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_9__angular_common_http__["a" /* HttpClient */], String])
+    ], ConfigurationServiceProxy);
+    return ConfigurationServiceProxy;
+}());
+
+var CourseServiceProxy = /** @class */ (function () {
+    function CourseServiceProxy(http, baseUrl) {
+        this.jsonParseReviver = undefined;
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "http://whale.land";
+    }
+    /**
+     * @return OK
+     */
+    CourseServiceProxy.prototype.handleDatatable = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Course/HandleDatatable";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processHandleDatatable(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processHandleDatatable(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    CourseServiceProxy.prototype.processHandleDatatable = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? MDataTableResponseOfCourseModel.fromJS(resultData200) : new MDataTableResponseOfCourseModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    CourseServiceProxy.prototype.save = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Course/Save";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processSave(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processSave(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    CourseServiceProxy.prototype.processSave = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfCourseModel.fromJS(resultData200) : new ResponseOfCourseModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @param_accessToken (optional)
+     * @return OK
+     */
+    CourseServiceProxy.prototype.getById = function (param_id, param_accessToken) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Course/GetById/{Id}?";
+        if (param_id === undefined || param_id === null)
+            throw new Error("The parameter 'param_id' must be defined and cannot be null.");
+        else
+            url_ += "param.id=" + encodeURIComponent("" + param_id) + "&";
+        if (param_accessToken !== undefined)
+            url_ += "param.accessToken=" + encodeURIComponent("" + param_accessToken) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processGetById(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processGetById(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    CourseServiceProxy.prototype.processGetById = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfCourseModel.fromJS(resultData200) : new ResponseOfCourseModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    CourseServiceProxy.prototype.delete = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Course/Delete";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processDelete(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processDelete(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    CourseServiceProxy.prototype.processDelete = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfCourseModel.fromJS(resultData200) : new ResponseOfCourseModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    CourseServiceProxy.prototype.getCourseBySchoolId = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Course/GetCourseBySchoolId";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processGetCourseBySchoolId(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processGetCourseBySchoolId(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    CourseServiceProxy.prototype.processGetCourseBySchoolId = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfListOfSchoolCourseModel.fromJS(resultData200) : new ResponseOfListOfSchoolCourseModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    CourseServiceProxy.prototype.activeSchoolCourse = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Course/ActiveSchoolCourse";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processActiveSchoolCourse(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processActiveSchoolCourse(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    CourseServiceProxy.prototype.processActiveSchoolCourse = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfListOfSchoolCourseModel.fromJS(resultData200) : new ResponseOfListOfSchoolCourseModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    CourseServiceProxy.prototype.changeSellPrice = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Course/ChangeSellPrice";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processChangeSellPrice(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processChangeSellPrice(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    CourseServiceProxy.prototype.processChangeSellPrice = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfListOfSchoolCourseModel.fromJS(resultData200) : new ResponseOfListOfSchoolCourseModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @param_accessToken (optional)
+     * @return OK
+     */
+    CourseServiceProxy.prototype.getCourseCacheByIds = function (param_ids, param_accessToken) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Course/GetCourseCacheByIds?";
+        if (param_ids === undefined || param_ids === null)
+            throw new Error("The parameter 'param_ids' must be defined and cannot be null.");
+        else
+            param_ids && param_ids.forEach(function (item) { url_ += "param.ids=" + encodeURIComponent("" + item) + "&"; });
+        if (param_accessToken !== undefined)
+            url_ += "param.accessToken=" + encodeURIComponent("" + param_accessToken) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processGetCourseCacheByIds(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processGetCourseCacheByIds(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    CourseServiceProxy.prototype.processGetCourseCacheByIds = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfListOfCourseCacheModel.fromJS(resultData200) : new ResponseOfListOfCourseCacheModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @param_type (optional)
+     * @param_accessToken (optional)
+     * @return OK
+     */
+    CourseServiceProxy.prototype.getAllCourse = function (param_type, param_accessToken) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Course/GetAllCourse?";
+        if (param_type !== undefined)
+            url_ += "param.type=" + encodeURIComponent("" + param_type) + "&";
+        if (param_accessToken !== undefined)
+            url_ += "param.accessToken=" + encodeURIComponent("" + param_accessToken) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processGetAllCourse(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processGetAllCourse(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    CourseServiceProxy.prototype.processGetAllCourse = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfListOfCourseCacheModel.fromJS(resultData200) : new ResponseOfListOfCourseCacheModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     * @deprecated
+     */
+    CourseServiceProxy.prototype.renderCache = function () {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Course/RenderCache";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processRenderCache(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processRenderCache(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    CourseServiceProxy.prototype.processRenderCache = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : null;
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @isThrow (optional)
+     * @return OK
+     */
+    CourseServiceProxy.prototype.validateParam = function (isThrow) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Course/ValidateParam?";
+        if (isThrow !== undefined)
+            url_ += "isThrow=" + encodeURIComponent("" + isThrow) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processValidateParam(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processValidateParam(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    CourseServiceProxy.prototype.processValidateParam = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                if (resultData200) {
+                    result200 = {};
+                    for (var key in resultData200) {
+                        if (resultData200.hasOwnProperty(key))
+                            result200[key] = resultData200[key] ? ModelState.fromJS(resultData200[key]) : new ModelState();
+                    }
+                }
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    CourseServiceProxy.prototype.parseGuid = function (stringVal) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Course/ParseGuid?";
+        if (stringVal === undefined || stringVal === null)
+            throw new Error("The parameter 'stringVal' must be defined and cannot be null.");
+        else
+            url_ += "stringVal=" + encodeURIComponent("" + stringVal) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processParseGuid(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processParseGuid(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    CourseServiceProxy.prototype.processParseGuid = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : null;
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    CourseServiceProxy = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Injectable"])(),
+        __param(0, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Inject"])(__WEBPACK_IMPORTED_MODULE_9__angular_common_http__["a" /* HttpClient */])), __param(1, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Optional"])()), __param(1, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Inject"])(API_BASE_URL)),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_9__angular_common_http__["a" /* HttpClient */], String])
+    ], CourseServiceProxy);
+    return CourseServiceProxy;
+}());
+
+var GameTypeServiceProxy = /** @class */ (function () {
+    function GameTypeServiceProxy(http, baseUrl) {
+        this.jsonParseReviver = undefined;
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "http://whale.land";
+    }
+    /**
+     * @param_accessToken (optional)
+     * @return OK
+     */
+    GameTypeServiceProxy.prototype.getFieldConfigurationByGameType = function (param_gameTypeId, param_accessToken) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/GameType/GetFieldConfigurationByGameType?";
+        if (param_gameTypeId === undefined || param_gameTypeId === null)
+            throw new Error("The parameter 'param_gameTypeId' must be defined and cannot be null.");
+        else
+            url_ += "param.gameTypeId=" + encodeURIComponent("" + param_gameTypeId) + "&";
+        if (param_accessToken !== undefined)
+            url_ += "param.accessToken=" + encodeURIComponent("" + param_accessToken) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processGetFieldConfigurationByGameType(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processGetFieldConfigurationByGameType(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    GameTypeServiceProxy.prototype.processGetFieldConfigurationByGameType = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfGameTypeModel.fromJS(resultData200) : new ResponseOfGameTypeModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    GameTypeServiceProxy.prototype.getAllGameType = function () {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/GameType/GetAllGameType";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processGetAllGameType(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processGetAllGameType(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    GameTypeServiceProxy.prototype.processGetAllGameType = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfListOfGameTypeModel.fromJS(resultData200) : new ResponseOfListOfGameTypeModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    GameTypeServiceProxy.prototype.save = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/GameType/Save";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processSave(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processSave(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    GameTypeServiceProxy.prototype.processSave = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfGameTypeModel.fromJS(resultData200) : new ResponseOfGameTypeModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    GameTypeServiceProxy.prototype.handleDatatable = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/GameType/HandleDatatable";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processHandleDatatable(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processHandleDatatable(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    GameTypeServiceProxy.prototype.processHandleDatatable = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? MDataTableResponseOfGameTypeModel.fromJS(resultData200) : new MDataTableResponseOfGameTypeModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @param_accessToken (optional)
+     * @return OK
+     */
+    GameTypeServiceProxy.prototype.getById = function (param_id, param_accessToken) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/GameType/GetById/{Id}?";
+        if (param_id === undefined || param_id === null)
+            throw new Error("The parameter 'param_id' must be defined and cannot be null.");
+        else
+            url_ += "param.id=" + encodeURIComponent("" + param_id) + "&";
+        if (param_accessToken !== undefined)
+            url_ += "param.accessToken=" + encodeURIComponent("" + param_accessToken) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processGetById(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processGetById(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    GameTypeServiceProxy.prototype.processGetById = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfGameTypeModel.fromJS(resultData200) : new ResponseOfGameTypeModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @isThrow (optional)
+     * @return OK
+     */
+    GameTypeServiceProxy.prototype.validateParam = function (isThrow) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/GameType/ValidateParam?";
+        if (isThrow !== undefined)
+            url_ += "isThrow=" + encodeURIComponent("" + isThrow) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processValidateParam(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processValidateParam(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    GameTypeServiceProxy.prototype.processValidateParam = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                if (resultData200) {
+                    result200 = {};
+                    for (var key in resultData200) {
+                        if (resultData200.hasOwnProperty(key))
+                            result200[key] = resultData200[key] ? ModelState.fromJS(resultData200[key]) : new ModelState();
+                    }
+                }
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    GameTypeServiceProxy.prototype.parseGuid = function (stringVal) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/GameType/ParseGuid?";
+        if (stringVal === undefined || stringVal === null)
+            throw new Error("The parameter 'stringVal' must be defined and cannot be null.");
+        else
+            url_ += "stringVal=" + encodeURIComponent("" + stringVal) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processParseGuid(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processParseGuid(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    GameTypeServiceProxy.prototype.processParseGuid = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : null;
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    GameTypeServiceProxy = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Injectable"])(),
+        __param(0, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Inject"])(__WEBPACK_IMPORTED_MODULE_9__angular_common_http__["a" /* HttpClient */])), __param(1, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Optional"])()), __param(1, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Inject"])(API_BASE_URL)),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_9__angular_common_http__["a" /* HttpClient */], String])
+    ], GameTypeServiceProxy);
+    return GameTypeServiceProxy;
+}());
+
+var MetadataServiceProxy = /** @class */ (function () {
+    function MetadataServiceProxy(http, baseUrl) {
+        this.jsonParseReviver = undefined;
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "http://whale.land";
+    }
+    /**
+     * @return OK
+     */
+    MetadataServiceProxy.prototype.getMetadataSetFieldConfiguration = function () {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Metadata/GetMetadataSetFieldConfiguration";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processGetMetadataSetFieldConfiguration(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processGetMetadataSetFieldConfiguration(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    MetadataServiceProxy.prototype.processGetMetadataSetFieldConfiguration = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfListOfMetadataSetModel.fromJS(resultData200) : new ResponseOfListOfMetadataSetModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    MetadataServiceProxy.prototype.getAll = function () {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Metadata/GetAll";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processGetAll(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processGetAll(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    MetadataServiceProxy.prototype.processGetAll = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfListOfMetadataModel.fromJS(resultData200) : new ResponseOfListOfMetadataModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @param_accessToken (optional)
+     * @return OK
+     */
+    MetadataServiceProxy.prototype.getMetadataSetById = function (param_id, param_accessToken) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Metadata/GetMetadataSetById/{Id}?";
+        if (param_id === undefined || param_id === null)
+            throw new Error("The parameter 'param_id' must be defined and cannot be null.");
+        else
+            url_ += "param.id=" + encodeURIComponent("" + param_id) + "&";
+        if (param_accessToken !== undefined)
+            url_ += "param.accessToken=" + encodeURIComponent("" + param_accessToken) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processGetMetadataSetById(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processGetMetadataSetById(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    MetadataServiceProxy.prototype.processGetMetadataSetById = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfMetadataSetModel.fromJS(resultData200) : new ResponseOfMetadataSetModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    MetadataServiceProxy.prototype.save = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Metadata/Save";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processSave(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processSave(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    MetadataServiceProxy.prototype.processSave = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfMetadataModel.fromJS(resultData200) : new ResponseOfMetadataModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    MetadataServiceProxy.prototype.deleteMetadata = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Metadata/DeleteMetadata";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processDeleteMetadata(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processDeleteMetadata(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    MetadataServiceProxy.prototype.processDeleteMetadata = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfString.fromJS(resultData200) : new ResponseOfString();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @param_accessToken (optional)
+     * @return OK
+     */
+    MetadataServiceProxy.prototype.getMetadataSetByIds = function (param_ids, param_accessToken) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Metadata/GetMetadataSetByIds?";
+        if (param_ids === undefined || param_ids === null)
+            throw new Error("The parameter 'param_ids' must be defined and cannot be null.");
+        else
+            param_ids && param_ids.forEach(function (item) { url_ += "param.ids=" + encodeURIComponent("" + item) + "&"; });
+        if (param_accessToken !== undefined)
+            url_ += "param.accessToken=" + encodeURIComponent("" + param_accessToken) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processGetMetadataSetByIds(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processGetMetadataSetByIds(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    MetadataServiceProxy.prototype.processGetMetadataSetByIds = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfListOfMetadataSetModel.fromJS(resultData200) : new ResponseOfListOfMetadataSetModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    MetadataServiceProxy.prototype.getAllMetadataUpdateHistory = function () {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Metadata/GetAllMetadataUpdateHistory";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processGetAllMetadataUpdateHistory(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processGetAllMetadataUpdateHistory(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    MetadataServiceProxy.prototype.processGetAllMetadataUpdateHistory = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfListOfMetadataSetCacheModel.fromJS(resultData200) : new ResponseOfListOfMetadataSetCacheModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @param_accessToken (optional)
+     * @return OK
+     */
+    MetadataServiceProxy.prototype.getMetadataCacheByIds = function (param_ids, param_accessToken) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Metadata/GetMetadataCacheByIds?";
+        if (param_ids === undefined || param_ids === null)
+            throw new Error("The parameter 'param_ids' must be defined and cannot be null.");
+        else
+            param_ids && param_ids.forEach(function (item) { url_ += "param.ids=" + encodeURIComponent("" + item) + "&"; });
+        if (param_accessToken !== undefined)
+            url_ += "param.accessToken=" + encodeURIComponent("" + param_accessToken) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processGetMetadataCacheByIds(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processGetMetadataCacheByIds(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    MetadataServiceProxy.prototype.processGetMetadataCacheByIds = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfListOfMetadataCacheDetailModel.fromJS(resultData200) : new ResponseOfListOfMetadataCacheDetailModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @param_type (optional)
+     * @param_accessToken (optional)
+     * @return OK
+     */
+    MetadataServiceProxy.prototype.getMobileUpdateHistory = function (param_type, param_accessToken) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Metadata/GetMobileUpdateHistory?";
+        if (param_type !== undefined)
+            url_ += "param.type=" + encodeURIComponent("" + param_type) + "&";
+        if (param_accessToken !== undefined)
+            url_ += "param.accessToken=" + encodeURIComponent("" + param_accessToken) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processGetMobileUpdateHistory(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processGetMobileUpdateHistory(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    MetadataServiceProxy.prototype.processGetMobileUpdateHistory = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfMobileCacheHistoryModel.fromJS(resultData200) : new ResponseOfMobileCacheHistoryModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     * @deprecated
+     */
+    MetadataServiceProxy.prototype.renderCache = function () {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Metadata/RenderCache";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processRenderCache(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processRenderCache(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    MetadataServiceProxy.prototype.processRenderCache = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : null;
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @isThrow (optional)
+     * @return OK
+     */
+    MetadataServiceProxy.prototype.validateParam = function (isThrow) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Metadata/ValidateParam?";
+        if (isThrow !== undefined)
+            url_ += "isThrow=" + encodeURIComponent("" + isThrow) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processValidateParam(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processValidateParam(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    MetadataServiceProxy.prototype.processValidateParam = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                if (resultData200) {
+                    result200 = {};
+                    for (var key in resultData200) {
+                        if (resultData200.hasOwnProperty(key))
+                            result200[key] = resultData200[key] ? ModelState.fromJS(resultData200[key]) : new ModelState();
+                    }
+                }
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    MetadataServiceProxy.prototype.parseGuid = function (stringVal) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Metadata/ParseGuid?";
+        if (stringVal === undefined || stringVal === null)
+            throw new Error("The parameter 'stringVal' must be defined and cannot be null.");
+        else
+            url_ += "stringVal=" + encodeURIComponent("" + stringVal) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processParseGuid(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processParseGuid(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    MetadataServiceProxy.prototype.processParseGuid = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : null;
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    MetadataServiceProxy = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Injectable"])(),
+        __param(0, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Inject"])(__WEBPACK_IMPORTED_MODULE_9__angular_common_http__["a" /* HttpClient */])), __param(1, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Optional"])()), __param(1, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Inject"])(API_BASE_URL)),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_9__angular_common_http__["a" /* HttpClient */], String])
+    ], MetadataServiceProxy);
+    return MetadataServiceProxy;
+}());
+
+var PrincipalServiceProxy = /** @class */ (function () {
+    function PrincipalServiceProxy(http, baseUrl) {
+        this.jsonParseReviver = undefined;
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "http://whale.land";
+    }
+    /**
+     * @return OK
+     */
+    PrincipalServiceProxy.prototype.handleDatatable = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Principal/HandleDatatable";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processHandleDatatable(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processHandleDatatable(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    PrincipalServiceProxy.prototype.processHandleDatatable = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? MDataTableResponseOfPrincipalModel.fromJS(resultData200) : new MDataTableResponseOfPrincipalModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    PrincipalServiceProxy.prototype.save = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Principal/Save";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processSave(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processSave(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    PrincipalServiceProxy.prototype.processSave = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfPrincipalModel.fromJS(resultData200) : new ResponseOfPrincipalModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @param_accessToken (optional)
+     * @return OK
+     */
+    PrincipalServiceProxy.prototype.getById = function (param_id, param_accessToken) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Principal/GetById/{Id}?";
+        if (param_id === undefined || param_id === null)
+            throw new Error("The parameter 'param_id' must be defined and cannot be null.");
+        else
+            url_ += "param.id=" + encodeURIComponent("" + param_id) + "&";
+        if (param_accessToken !== undefined)
+            url_ += "param.accessToken=" + encodeURIComponent("" + param_accessToken) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processGetById(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processGetById(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    PrincipalServiceProxy.prototype.processGetById = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfPrincipalModel.fromJS(resultData200) : new ResponseOfPrincipalModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    PrincipalServiceProxy.prototype.delete = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Principal/Delete";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processDelete(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processDelete(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    PrincipalServiceProxy.prototype.processDelete = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfString.fromJS(resultData200) : new ResponseOfString();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @isThrow (optional)
+     * @return OK
+     */
+    PrincipalServiceProxy.prototype.validateParam = function (isThrow) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Principal/ValidateParam?";
+        if (isThrow !== undefined)
+            url_ += "isThrow=" + encodeURIComponent("" + isThrow) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processValidateParam(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processValidateParam(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    PrincipalServiceProxy.prototype.processValidateParam = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                if (resultData200) {
+                    result200 = {};
+                    for (var key in resultData200) {
+                        if (resultData200.hasOwnProperty(key))
+                            result200[key] = resultData200[key] ? ModelState.fromJS(resultData200[key]) : new ModelState();
+                    }
+                }
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    PrincipalServiceProxy.prototype.parseGuid = function (stringVal) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Principal/ParseGuid?";
+        if (stringVal === undefined || stringVal === null)
+            throw new Error("The parameter 'stringVal' must be defined and cannot be null.");
+        else
+            url_ += "stringVal=" + encodeURIComponent("" + stringVal) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processParseGuid(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processParseGuid(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    PrincipalServiceProxy.prototype.processParseGuid = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : null;
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    PrincipalServiceProxy = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Injectable"])(),
+        __param(0, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Inject"])(__WEBPACK_IMPORTED_MODULE_9__angular_common_http__["a" /* HttpClient */])), __param(1, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Optional"])()), __param(1, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Inject"])(API_BASE_URL)),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_9__angular_common_http__["a" /* HttpClient */], String])
+    ], PrincipalServiceProxy);
+    return PrincipalServiceProxy;
+}());
+
+var SchoolServiceProxy = /** @class */ (function () {
+    function SchoolServiceProxy(http, baseUrl) {
+        this.jsonParseReviver = undefined;
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "http://whale.land";
+    }
+    /**
+     * @return OK
+     */
+    SchoolServiceProxy.prototype.getAllSchoolReviewRequest = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/School/GetAllSchoolReviewRequest";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processGetAllSchoolReviewRequest(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processGetAllSchoolReviewRequest(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    SchoolServiceProxy.prototype.processGetAllSchoolReviewRequest = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? MDataTableResponseOfSchoolModel.fromJS(resultData200) : new MDataTableResponseOfSchoolModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    SchoolServiceProxy.prototype.activeSchool = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/School/ActiveSchool";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processActiveSchool(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processActiveSchool(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    SchoolServiceProxy.prototype.processActiveSchool = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfString.fromJS(resultData200) : new ResponseOfString();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @param_isLoadActiveOnly (optional)
+     * @param_accessToken (optional)
+     * @return OK
+     */
+    SchoolServiceProxy.prototype.loadByCurrentUser = function (param_isLoadActiveOnly, param_accessToken) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/School/LoadByCurrentUser?";
+        if (param_isLoadActiveOnly !== undefined)
+            url_ += "param.isLoadActiveOnly=" + encodeURIComponent("" + param_isLoadActiveOnly) + "&";
+        if (param_accessToken !== undefined)
+            url_ += "param.accessToken=" + encodeURIComponent("" + param_accessToken) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processLoadByCurrentUser(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processLoadByCurrentUser(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    SchoolServiceProxy.prototype.processLoadByCurrentUser = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfListOfSchoolModel.fromJS(resultData200) : new ResponseOfListOfSchoolModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    SchoolServiceProxy.prototype.save = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/School/Save";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processSave(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processSave(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    SchoolServiceProxy.prototype.processSave = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfSchoolModel.fromJS(resultData200) : new ResponseOfSchoolModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @param_accessToken (optional)
+     * @return OK
+     */
+    SchoolServiceProxy.prototype.getById = function (param_id, param_accessToken) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/School/GetById/{Id}?";
+        if (param_id === undefined || param_id === null)
+            throw new Error("The parameter 'param_id' must be defined and cannot be null.");
+        else
+            url_ += "param.id=" + encodeURIComponent("" + param_id) + "&";
+        if (param_accessToken !== undefined)
+            url_ += "param.accessToken=" + encodeURIComponent("" + param_accessToken) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processGetById(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processGetById(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    SchoolServiceProxy.prototype.processGetById = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfSchoolModel.fromJS(resultData200) : new ResponseOfSchoolModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    SchoolServiceProxy.prototype.assign = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/School/Assign";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processAssign(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processAssign(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    SchoolServiceProxy.prototype.processAssign = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfSchoolModel.fromJS(resultData200) : new ResponseOfSchoolModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @isThrow (optional)
+     * @return OK
+     */
+    SchoolServiceProxy.prototype.validateParam = function (isThrow) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/School/ValidateParam?";
+        if (isThrow !== undefined)
+            url_ += "isThrow=" + encodeURIComponent("" + isThrow) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processValidateParam(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processValidateParam(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    SchoolServiceProxy.prototype.processValidateParam = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                if (resultData200) {
+                    result200 = {};
+                    for (var key in resultData200) {
+                        if (resultData200.hasOwnProperty(key))
+                            result200[key] = resultData200[key] ? ModelState.fromJS(resultData200[key]) : new ModelState();
+                    }
+                }
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    SchoolServiceProxy.prototype.parseGuid = function (stringVal) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/School/ParseGuid?";
+        if (stringVal === undefined || stringVal === null)
+            throw new Error("The parameter 'stringVal' must be defined and cannot be null.");
+        else
+            url_ += "stringVal=" + encodeURIComponent("" + stringVal) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processParseGuid(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processParseGuid(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    SchoolServiceProxy.prototype.processParseGuid = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : null;
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    SchoolServiceProxy = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Injectable"])(),
+        __param(0, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Inject"])(__WEBPACK_IMPORTED_MODULE_9__angular_common_http__["a" /* HttpClient */])), __param(1, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Optional"])()), __param(1, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Inject"])(API_BASE_URL)),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_9__angular_common_http__["a" /* HttpClient */], String])
+    ], SchoolServiceProxy);
+    return SchoolServiceProxy;
+}());
+
+var SchoolOwnerServiceProxy = /** @class */ (function () {
+    function SchoolOwnerServiceProxy(http, baseUrl) {
+        this.jsonParseReviver = undefined;
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "http://whale.land";
+    }
+    /**
+     * @return OK
+     */
+    SchoolOwnerServiceProxy.prototype.handleDatatable = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/SchoolOwner/HandleDatatable";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processHandleDatatable(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processHandleDatatable(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    SchoolOwnerServiceProxy.prototype.processHandleDatatable = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? MDataTableResponseOfSchoolOwnerModel.fromJS(resultData200) : new MDataTableResponseOfSchoolOwnerModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    SchoolOwnerServiceProxy.prototype.save = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/SchoolOwner/Save";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processSave(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processSave(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    SchoolOwnerServiceProxy.prototype.processSave = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfSchoolOwnerModel.fromJS(resultData200) : new ResponseOfSchoolOwnerModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @param_accessToken (optional)
+     * @return OK
+     */
+    SchoolOwnerServiceProxy.prototype.getById = function (param_id, param_accessToken) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/SchoolOwner/GetById/{Id}?";
+        if (param_id === undefined || param_id === null)
+            throw new Error("The parameter 'param_id' must be defined and cannot be null.");
+        else
+            url_ += "param.id=" + encodeURIComponent("" + param_id) + "&";
+        if (param_accessToken !== undefined)
+            url_ += "param.accessToken=" + encodeURIComponent("" + param_accessToken) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processGetById(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processGetById(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    SchoolOwnerServiceProxy.prototype.processGetById = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfSchoolOwnerModel.fromJS(resultData200) : new ResponseOfSchoolOwnerModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    SchoolOwnerServiceProxy.prototype.lock = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/SchoolOwner/Lock";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processLock(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processLock(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    SchoolOwnerServiceProxy.prototype.processLock = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfString.fromJS(resultData200) : new ResponseOfString();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    SchoolOwnerServiceProxy.prototype.unLock = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/SchoolOwner/UnLock";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processUnLock(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processUnLock(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    SchoolOwnerServiceProxy.prototype.processUnLock = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfString.fromJS(resultData200) : new ResponseOfString();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    SchoolOwnerServiceProxy.prototype.registerSchool = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/SchoolOwner/RegisterSchool";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processRegisterSchool(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processRegisterSchool(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    SchoolOwnerServiceProxy.prototype.processRegisterSchool = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfString.fromJS(resultData200) : new ResponseOfString();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @isThrow (optional)
+     * @return OK
+     */
+    SchoolOwnerServiceProxy.prototype.validateParam = function (isThrow) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/SchoolOwner/ValidateParam?";
+        if (isThrow !== undefined)
+            url_ += "isThrow=" + encodeURIComponent("" + isThrow) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processValidateParam(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processValidateParam(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    SchoolOwnerServiceProxy.prototype.processValidateParam = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                if (resultData200) {
+                    result200 = {};
+                    for (var key in resultData200) {
+                        if (resultData200.hasOwnProperty(key))
+                            result200[key] = resultData200[key] ? ModelState.fromJS(resultData200[key]) : new ModelState();
+                    }
+                }
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    SchoolOwnerServiceProxy.prototype.parseGuid = function (stringVal) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/SchoolOwner/ParseGuid?";
+        if (stringVal === undefined || stringVal === null)
+            throw new Error("The parameter 'stringVal' must be defined and cannot be null.");
+        else
+            url_ += "stringVal=" + encodeURIComponent("" + stringVal) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processParseGuid(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processParseGuid(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    SchoolOwnerServiceProxy.prototype.processParseGuid = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : null;
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    SchoolOwnerServiceProxy = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Injectable"])(),
+        __param(0, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Inject"])(__WEBPACK_IMPORTED_MODULE_9__angular_common_http__["a" /* HttpClient */])), __param(1, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Optional"])()), __param(1, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Inject"])(API_BASE_URL)),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_9__angular_common_http__["a" /* HttpClient */], String])
+    ], SchoolOwnerServiceProxy);
+    return SchoolOwnerServiceProxy;
+}());
+
+var StudentServiceProxy = /** @class */ (function () {
+    function StudentServiceProxy(http, baseUrl) {
+        this.jsonParseReviver = undefined;
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "http://whale.land";
+    }
+    /**
+     * @return OK
+     */
+    StudentServiceProxy.prototype.handleDatatable = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Student/HandleDatatable";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processHandleDatatable(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processHandleDatatable(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    StudentServiceProxy.prototype.processHandleDatatable = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? MDataTableResponseOfStudentModel.fromJS(resultData200) : new MDataTableResponseOfStudentModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    StudentServiceProxy.prototype.save = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Student/Save";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processSave(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processSave(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    StudentServiceProxy.prototype.processSave = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfStudentModel.fromJS(resultData200) : new ResponseOfStudentModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @param_accessToken (optional)
+     * @return OK
+     */
+    StudentServiceProxy.prototype.getById = function (param_id, param_accessToken) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Student/GetById/{Id}?";
+        if (param_id === undefined || param_id === null)
+            throw new Error("The parameter 'param_id' must be defined and cannot be null.");
+        else
+            url_ += "param.id=" + encodeURIComponent("" + param_id) + "&";
+        if (param_accessToken !== undefined)
+            url_ += "param.accessToken=" + encodeURIComponent("" + param_accessToken) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processGetById(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processGetById(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    StudentServiceProxy.prototype.processGetById = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfStudentModel.fromJS(resultData200) : new ResponseOfStudentModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    StudentServiceProxy.prototype.delete = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Student/Delete";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processDelete(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processDelete(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    StudentServiceProxy.prototype.processDelete = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfString.fromJS(resultData200) : new ResponseOfString();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    StudentServiceProxy.prototype.activeCourse = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Student/ActiveCourse";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processActiveCourse(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processActiveCourse(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    StudentServiceProxy.prototype.processActiveCourse = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfString.fromJS(resultData200) : new ResponseOfString();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @isThrow (optional)
+     * @return OK
+     */
+    StudentServiceProxy.prototype.validateParam = function (isThrow) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Student/ValidateParam?";
+        if (isThrow !== undefined)
+            url_ += "isThrow=" + encodeURIComponent("" + isThrow) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processValidateParam(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processValidateParam(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    StudentServiceProxy.prototype.processValidateParam = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                if (resultData200) {
+                    result200 = {};
+                    for (var key in resultData200) {
+                        if (resultData200.hasOwnProperty(key))
+                            result200[key] = resultData200[key] ? ModelState.fromJS(resultData200[key]) : new ModelState();
+                    }
+                }
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    StudentServiceProxy.prototype.parseGuid = function (stringVal) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Student/ParseGuid?";
+        if (stringVal === undefined || stringVal === null)
+            throw new Error("The parameter 'stringVal' must be defined and cannot be null.");
+        else
+            url_ += "stringVal=" + encodeURIComponent("" + stringVal) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processParseGuid(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processParseGuid(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    StudentServiceProxy.prototype.processParseGuid = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : null;
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    StudentServiceProxy = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Injectable"])(),
+        __param(0, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Inject"])(__WEBPACK_IMPORTED_MODULE_9__angular_common_http__["a" /* HttpClient */])), __param(1, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Optional"])()), __param(1, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Inject"])(API_BASE_URL)),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_9__angular_common_http__["a" /* HttpClient */], String])
+    ], StudentServiceProxy);
+    return StudentServiceProxy;
+}());
+
+var SubscriberServiceProxy = /** @class */ (function () {
+    function SubscriberServiceProxy(http, baseUrl) {
+        this.jsonParseReviver = undefined;
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "http://whale.land";
+    }
+    /**
+     * @return OK
+     */
+    SubscriberServiceProxy.prototype.save = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Subscriber/Save";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processSave(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processSave(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    SubscriberServiceProxy.prototype.processSave = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfSubscriberModel.fromJS(resultData200) : new ResponseOfSubscriberModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @isThrow (optional)
+     * @return OK
+     */
+    SubscriberServiceProxy.prototype.validateParam = function (isThrow) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Subscriber/ValidateParam?";
+        if (isThrow !== undefined)
+            url_ += "isThrow=" + encodeURIComponent("" + isThrow) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processValidateParam(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processValidateParam(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    SubscriberServiceProxy.prototype.processValidateParam = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                if (resultData200) {
+                    result200 = {};
+                    for (var key in resultData200) {
+                        if (resultData200.hasOwnProperty(key))
+                            result200[key] = resultData200[key] ? ModelState.fromJS(resultData200[key]) : new ModelState();
+                    }
+                }
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    SubscriberServiceProxy.prototype.parseGuid = function (stringVal) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Subscriber/ParseGuid?";
+        if (stringVal === undefined || stringVal === null)
+            throw new Error("The parameter 'stringVal' must be defined and cannot be null.");
+        else
+            url_ += "stringVal=" + encodeURIComponent("" + stringVal) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processParseGuid(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processParseGuid(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    SubscriberServiceProxy.prototype.processParseGuid = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : null;
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    SubscriberServiceProxy = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Injectable"])(),
+        __param(0, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Inject"])(__WEBPACK_IMPORTED_MODULE_9__angular_common_http__["a" /* HttpClient */])), __param(1, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Optional"])()), __param(1, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Inject"])(API_BASE_URL)),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_9__angular_common_http__["a" /* HttpClient */], String])
+    ], SubscriberServiceProxy);
+    return SubscriberServiceProxy;
+}());
+
+var TeacherServiceProxy = /** @class */ (function () {
+    function TeacherServiceProxy(http, baseUrl) {
+        this.jsonParseReviver = undefined;
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "http://whale.land";
+    }
+    /**
+     * @return OK
+     */
+    TeacherServiceProxy.prototype.handleDatatable = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Teacher/HandleDatatable";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processHandleDatatable(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processHandleDatatable(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    TeacherServiceProxy.prototype.processHandleDatatable = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? MDataTableResponseOfTeacherModel.fromJS(resultData200) : new MDataTableResponseOfTeacherModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    TeacherServiceProxy.prototype.save = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Teacher/Save";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processSave(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processSave(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    TeacherServiceProxy.prototype.processSave = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfTeacherModel.fromJS(resultData200) : new ResponseOfTeacherModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @param_accessToken (optional)
+     * @return OK
+     */
+    TeacherServiceProxy.prototype.getById = function (param_id, param_accessToken) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Teacher/GetById/{Id}?";
+        if (param_id === undefined || param_id === null)
+            throw new Error("The parameter 'param_id' must be defined and cannot be null.");
+        else
+            url_ += "param.id=" + encodeURIComponent("" + param_id) + "&";
+        if (param_accessToken !== undefined)
+            url_ += "param.accessToken=" + encodeURIComponent("" + param_accessToken) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processGetById(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processGetById(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    TeacherServiceProxy.prototype.processGetById = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfTeacherModel.fromJS(resultData200) : new ResponseOfTeacherModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    TeacherServiceProxy.prototype.delete = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Teacher/Delete";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processDelete(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processDelete(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    TeacherServiceProxy.prototype.processDelete = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfString.fromJS(resultData200) : new ResponseOfString();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @isThrow (optional)
+     * @return OK
+     */
+    TeacherServiceProxy.prototype.validateParam = function (isThrow) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Teacher/ValidateParam?";
+        if (isThrow !== undefined)
+            url_ += "isThrow=" + encodeURIComponent("" + isThrow) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processValidateParam(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processValidateParam(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    TeacherServiceProxy.prototype.processValidateParam = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                if (resultData200) {
+                    result200 = {};
+                    for (var key in resultData200) {
+                        if (resultData200.hasOwnProperty(key))
+                            result200[key] = resultData200[key] ? ModelState.fromJS(resultData200[key]) : new ModelState();
+                    }
+                }
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    TeacherServiceProxy.prototype.parseGuid = function (stringVal) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Teacher/ParseGuid?";
+        if (stringVal === undefined || stringVal === null)
+            throw new Error("The parameter 'stringVal' must be defined and cannot be null.");
+        else
+            url_ += "stringVal=" + encodeURIComponent("" + stringVal) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processParseGuid(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processParseGuid(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    TeacherServiceProxy.prototype.processParseGuid = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : null;
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    TeacherServiceProxy = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Injectable"])(),
+        __param(0, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Inject"])(__WEBPACK_IMPORTED_MODULE_9__angular_common_http__["a" /* HttpClient */])), __param(1, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Optional"])()), __param(1, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Inject"])(API_BASE_URL)),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_9__angular_common_http__["a" /* HttpClient */], String])
+    ], TeacherServiceProxy);
+    return TeacherServiceProxy;
+}());
+
+var UnitServiceProxy = /** @class */ (function () {
+    function UnitServiceProxy(http, baseUrl) {
+        this.jsonParseReviver = undefined;
+        this.http = http;
+        this.baseUrl = baseUrl ? baseUrl : "http://whale.land";
+    }
+    /**
+     * @return OK
+     */
+    UnitServiceProxy.prototype.handleDatatable = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Unit/HandleDatatable";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processHandleDatatable(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processHandleDatatable(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    UnitServiceProxy.prototype.processHandleDatatable = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? MDataTableResponseOfUnitModel.fromJS(resultData200) : new MDataTableResponseOfUnitModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    UnitServiceProxy.prototype.save = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Unit/Save";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processSave(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processSave(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    UnitServiceProxy.prototype.processSave = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfUnitModel.fromJS(resultData200) : new ResponseOfUnitModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @param_accessToken (optional)
+     * @return OK
+     */
+    UnitServiceProxy.prototype.getById = function (param_id, param_accessToken) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Unit/GetById/{Id}?";
+        if (param_id === undefined || param_id === null)
+            throw new Error("The parameter 'param_id' must be defined and cannot be null.");
+        else
+            url_ += "param.id=" + encodeURIComponent("" + param_id) + "&";
+        if (param_accessToken !== undefined)
+            url_ += "param.accessToken=" + encodeURIComponent("" + param_accessToken) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processGetById(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processGetById(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    UnitServiceProxy.prototype.processGetById = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfUnitModel.fromJS(resultData200) : new ResponseOfUnitModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    UnitServiceProxy.prototype.delete = function (param) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Unit/Delete";
+        url_ = url_.replace(/[?&]$/, "");
+        var content_ = JSON.stringify(param);
+        var options_ = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processDelete(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processDelete(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    UnitServiceProxy.prototype.processDelete = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfUnitModel.fromJS(resultData200) : new ResponseOfUnitModel();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @param_ids (optional)
+     * @param_accessToken (optional)
+     * @return OK
+     */
+    UnitServiceProxy.prototype.reOrder = function (param_ids, param_accessToken) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Unit/ReOrder?";
+        if (param_ids !== undefined)
+            param_ids && param_ids.forEach(function (item) { url_ += "param.ids=" + encodeURIComponent("" + item) + "&"; });
+        if (param_accessToken !== undefined)
+            url_ += "param.accessToken=" + encodeURIComponent("" + param_accessToken) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("get", url_, options_).flatMap(function (response_) {
+            return _this.processReOrder(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processReOrder(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    UnitServiceProxy.prototype.processReOrder = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 ? ResponseOfString.fromJS(resultData200) : new ResponseOfString();
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @isThrow (optional)
+     * @return OK
+     */
+    UnitServiceProxy.prototype.validateParam = function (isThrow) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Unit/ValidateParam?";
+        if (isThrow !== undefined)
+            url_ += "isThrow=" + encodeURIComponent("" + isThrow) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processValidateParam(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processValidateParam(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    UnitServiceProxy.prototype.processValidateParam = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                if (resultData200) {
+                    result200 = {};
+                    for (var key in resultData200) {
+                        if (resultData200.hasOwnProperty(key))
+                            result200[key] = resultData200[key] ? ModelState.fromJS(resultData200[key]) : new ModelState();
+                    }
+                }
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    /**
+     * @return OK
+     */
+    UnitServiceProxy.prototype.parseGuid = function (stringVal) {
+        var _this = this;
+        var url_ = this.baseUrl + "/api/Unit/ParseGuid?";
+        if (stringVal === undefined || stringVal === null)
+            throw new Error("The parameter 'stringVal' must be defined and cannot be null.");
+        else
+            url_ += "stringVal=" + encodeURIComponent("" + stringVal) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+        var options_ = {
+            observe: "response",
+            responseType: "blob",
+            headers: new __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["d" /* HttpHeaders */]({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+        return this.http.request("post", url_, options_).flatMap(function (response_) {
+            return _this.processParseGuid(response_);
+        }).catch(function (response_) {
+            if (response_ instanceof __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["e" /* HttpResponse */]) {
+                try {
+                    return _this.processParseGuid(response_);
+                }
+                catch (e) {
+                    return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(e);
+                }
+            }
+            else
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(response_);
+        });
+    };
+    UnitServiceProxy.prototype.processParseGuid = function (response) {
+        var _this = this;
+        var status = response.status;
+        var _headers = {};
+        if (response.headers) {
+            for (var _i = 0, _a = response.headers.keys(); _i < _a.length; _i++) {
+                var key = _a[_i];
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        ;
+        if (status === 200) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                var result200 = null;
+                var resultData200 = _responseText === "" ? null : JSON.parse(_responseText, _this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : null;
+                return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(result200);
+            });
+        }
+        else if (status !== 200 && status !== 204) {
+            return blobToText(response.body).flatMap(function (_responseText) {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].of(null);
+    };
+    UnitServiceProxy = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Injectable"])(),
+        __param(0, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Inject"])(__WEBPACK_IMPORTED_MODULE_9__angular_common_http__["a" /* HttpClient */])), __param(1, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Optional"])()), __param(1, Object(__WEBPACK_IMPORTED_MODULE_8__angular_core__["Inject"])(API_BASE_URL)),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_9__angular_common_http__["a" /* HttpClient */], String])
+    ], UnitServiceProxy);
+    return UnitServiceProxy;
+}());
+
+var LoginParam = /** @class */ (function () {
+    function LoginParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    LoginParam.prototype.init = function (data) {
+        if (data) {
+            this.username = data["Username"];
+            this.password = data["Password"];
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    LoginParam.fromJS = function (data) {
+        var result = new LoginParam();
+        result.init(data);
+        return result;
+    };
+    LoginParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Username"] = this.username;
+        data["Password"] = this.password;
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return LoginParam;
+}());
+
+var ResponseOfUserModel = /** @class */ (function () {
+    function ResponseOfUserModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ResponseOfUserModel.prototype.init = function (data) {
+        if (data) {
+            this.success = data["Success"];
+            this.message = data["Message"];
+            if (data["Exception"]) {
+                this.exception = {};
+                for (var key in data["Exception"]) {
+                    if (data["Exception"].hasOwnProperty(key))
+                        this.exception[key] = data["Exception"][key];
+                }
+            }
+            this.data = data["Data"] ? UserModel.fromJS(data["Data"]) : undefined;
+            this.totalRecord = data["TotalRecord"];
+        }
+    };
+    ResponseOfUserModel.fromJS = function (data) {
+        var result = new ResponseOfUserModel();
+        result.init(data);
+        return result;
+    };
+    ResponseOfUserModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Success"] = this.success;
+        data["Message"] = this.message;
+        if (this.exception) {
+            data["Exception"] = {};
+            for (var key in this.exception) {
+                if (this.exception.hasOwnProperty(key))
+                    data["Exception"][key] = this.exception[key];
+            }
+        }
+        data["Data"] = this.data ? this.data.toJSON() : undefined;
+        data["TotalRecord"] = this.totalRecord;
+        return data;
+    };
+    return ResponseOfUserModel;
+}());
+
+var UserModel = /** @class */ (function () {
+    function UserModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    UserModel.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.userName = data["UserName"];
+            this.fullName = data["FullName"];
+            this.isLock = data["IsLock"];
+            this.redirectUrl = data["RedirectUrl"];
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    UserModel.fromJS = function (data) {
+        var result = new UserModel();
+        result.init(data);
+        return result;
+    };
+    UserModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["UserName"] = this.userName;
+        data["FullName"] = this.fullName;
+        data["IsLock"] = this.isLock;
+        data["RedirectUrl"] = this.redirectUrl;
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return UserModel;
+}());
+
+var UpdateStudentProfileParam = /** @class */ (function () {
+    function UpdateStudentProfileParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    UpdateStudentProfileParam.prototype.init = function (data) {
+        if (data) {
+            this.studentId = data["StudentId"];
+            this.dateOfBirth = data["DateOfBirth"] ? __WEBPACK_IMPORTED_MODULE_10_moment__(data["DateOfBirth"].toString()) : undefined;
+            this.parentName = data["ParentName"];
+            this.phoneNumber = data["PhoneNumber"];
+            this.email = data["Email"];
+            this.address = data["Address"];
+            this.fullName = data["FullName"];
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    UpdateStudentProfileParam.fromJS = function (data) {
+        var result = new UpdateStudentProfileParam();
+        result.init(data);
+        return result;
+    };
+    UpdateStudentProfileParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["StudentId"] = this.studentId;
+        data["DateOfBirth"] = this.dateOfBirth ? this.dateOfBirth.toISOString() : undefined;
+        data["ParentName"] = this.parentName;
+        data["PhoneNumber"] = this.phoneNumber;
+        data["Email"] = this.email;
+        data["Address"] = this.address;
+        data["FullName"] = this.fullName;
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return UpdateStudentProfileParam;
+}());
+
+var ResponseOfString = /** @class */ (function () {
+    function ResponseOfString(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ResponseOfString.prototype.init = function (data) {
+        if (data) {
+            this.success = data["Success"];
+            this.message = data["Message"];
+            if (data["Exception"]) {
+                this.exception = {};
+                for (var key in data["Exception"]) {
+                    if (data["Exception"].hasOwnProperty(key))
+                        this.exception[key] = data["Exception"][key];
+                }
+            }
+            this.data = data["Data"];
+            this.totalRecord = data["TotalRecord"];
+        }
+    };
+    ResponseOfString.fromJS = function (data) {
+        var result = new ResponseOfString();
+        result.init(data);
+        return result;
+    };
+    ResponseOfString.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Success"] = this.success;
+        data["Message"] = this.message;
+        if (this.exception) {
+            data["Exception"] = {};
+            for (var key in this.exception) {
+                if (this.exception.hasOwnProperty(key))
+                    data["Exception"][key] = this.exception[key];
+            }
+        }
+        data["Data"] = this.data;
+        data["TotalRecord"] = this.totalRecord;
+        return data;
+    };
+    return ResponseOfString;
+}());
+
+var ResponseOfListOfPermissionModel = /** @class */ (function () {
+    function ResponseOfListOfPermissionModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ResponseOfListOfPermissionModel.prototype.init = function (data) {
+        if (data) {
+            this.success = data["Success"];
+            this.message = data["Message"];
+            if (data["Exception"]) {
+                this.exception = {};
+                for (var key in data["Exception"]) {
+                    if (data["Exception"].hasOwnProperty(key))
+                        this.exception[key] = data["Exception"][key];
+                }
+            }
+            if (data["Data"] && data["Data"].constructor === Array) {
+                this.data = [];
+                for (var _i = 0, _a = data["Data"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.data.push(PermissionModel.fromJS(item));
+                }
+            }
+            this.totalRecord = data["TotalRecord"];
+        }
+    };
+    ResponseOfListOfPermissionModel.fromJS = function (data) {
+        var result = new ResponseOfListOfPermissionModel();
+        result.init(data);
+        return result;
+    };
+    ResponseOfListOfPermissionModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Success"] = this.success;
+        data["Message"] = this.message;
+        if (this.exception) {
+            data["Exception"] = {};
+            for (var key in this.exception) {
+                if (this.exception.hasOwnProperty(key))
+                    data["Exception"][key] = this.exception[key];
+            }
+        }
+        if (this.data && this.data.constructor === Array) {
+            data["Data"] = [];
+            for (var _i = 0, _a = this.data; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["Data"].push(item.toJSON());
+            }
+        }
+        data["TotalRecord"] = this.totalRecord;
+        return data;
+    };
+    return ResponseOfListOfPermissionModel;
+}());
+
+var PermissionModel = /** @class */ (function () {
+    function PermissionModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    PermissionModel.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.name = data["Name"];
+            if (data["PermissionActions"] && data["PermissionActions"].constructor === Array) {
+                this.permissionActions = [];
+                for (var _i = 0, _a = data["PermissionActions"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.permissionActions.push(item);
+                }
+            }
+        }
+    };
+    PermissionModel.fromJS = function (data) {
+        var result = new PermissionModel();
+        result.init(data);
+        return result;
+    };
+    PermissionModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["Name"] = this.name;
+        if (this.permissionActions && this.permissionActions.constructor === Array) {
+            data["PermissionActions"] = [];
+            for (var _i = 0, _a = this.permissionActions; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["PermissionActions"].push(item);
+            }
+        }
+        return data;
+    };
+    return PermissionModel;
+}());
+
+var ResponseOfListOfMenuItem = /** @class */ (function () {
+    function ResponseOfListOfMenuItem(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ResponseOfListOfMenuItem.prototype.init = function (data) {
+        if (data) {
+            this.success = data["Success"];
+            this.message = data["Message"];
+            if (data["Exception"]) {
+                this.exception = {};
+                for (var key in data["Exception"]) {
+                    if (data["Exception"].hasOwnProperty(key))
+                        this.exception[key] = data["Exception"][key];
+                }
+            }
+            if (data["Data"] && data["Data"].constructor === Array) {
+                this.data = [];
+                for (var _i = 0, _a = data["Data"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.data.push(MenuItem.fromJS(item));
+                }
+            }
+            this.totalRecord = data["TotalRecord"];
+        }
+    };
+    ResponseOfListOfMenuItem.fromJS = function (data) {
+        var result = new ResponseOfListOfMenuItem();
+        result.init(data);
+        return result;
+    };
+    ResponseOfListOfMenuItem.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Success"] = this.success;
+        data["Message"] = this.message;
+        if (this.exception) {
+            data["Exception"] = {};
+            for (var key in this.exception) {
+                if (this.exception.hasOwnProperty(key))
+                    data["Exception"][key] = this.exception[key];
+            }
+        }
+        if (this.data && this.data.constructor === Array) {
+            data["Data"] = [];
+            for (var _i = 0, _a = this.data; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["Data"].push(item.toJSON());
+            }
+        }
+        data["TotalRecord"] = this.totalRecord;
+        return data;
+    };
+    return ResponseOfListOfMenuItem;
+}());
+
+var MenuItem = /** @class */ (function () {
+    function MenuItem(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    MenuItem.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.name = data["Name"];
+            this.displayText = data["DisplayText"];
+            this.url = data["Url"];
+            this.order = data["Order"];
+            this.displayOnMenu = data["DisplayOnMenu"];
+            if (data["Children"] && data["Children"].constructor === Array) {
+                this.children = [];
+                for (var _i = 0, _a = data["Children"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.children.push(MenuItem.fromJS(item));
+                }
+            }
+        }
+    };
+    MenuItem.fromJS = function (data) {
+        var result = new MenuItem();
+        result.init(data);
+        return result;
+    };
+    MenuItem.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["Name"] = this.name;
+        data["DisplayText"] = this.displayText;
+        data["Url"] = this.url;
+        data["Order"] = this.order;
+        data["DisplayOnMenu"] = this.displayOnMenu;
+        if (this.children && this.children.constructor === Array) {
+            data["Children"] = [];
+            for (var _i = 0, _a = this.children; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["Children"].push(item.toJSON());
+            }
+        }
+        return data;
+    };
+    return MenuItem;
+}());
+
+var ModelState = /** @class */ (function () {
+    function ModelState(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ModelState.prototype.init = function (data) {
+        if (data) {
+            if (data["_errors"] && data["_errors"].constructor === Array) {
+                this._errors = [];
+                for (var _i = 0, _a = data["_errors"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this._errors.push(ModelError.fromJS(item));
+                }
+            }
+            this.abc = data["abc"] ? ValueProviderResult.fromJS(data["abc"]) : undefined;
+        }
+    };
+    ModelState.fromJS = function (data) {
+        var result = new ModelState();
+        result.init(data);
+        return result;
+    };
+    ModelState.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        if (this._errors && this._errors.constructor === Array) {
+            data["_errors"] = [];
+            for (var _i = 0, _a = this._errors; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["_errors"].push(item.toJSON());
+            }
+        }
+        data["abc"] = this.abc ? this.abc.toJSON() : undefined;
+        return data;
+    };
+    return ModelState;
+}());
+
+var ModelError = /** @class */ (function () {
+    function ModelError(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ModelError.prototype.init = function (data) {
+        if (data) {
+            if (data["def"]) {
+                this.def = {};
+                for (var key in data["def"]) {
+                    if (data["def"].hasOwnProperty(key))
+                        this.def[key] = data["def"][key];
+                }
+            }
+            this.ghi = data["ghi"];
+        }
+    };
+    ModelError.fromJS = function (data) {
+        var result = new ModelError();
+        result.init(data);
+        return result;
+    };
+    ModelError.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        if (this.def) {
+            data["def"] = {};
+            for (var key in this.def) {
+                if (this.def.hasOwnProperty(key))
+                    data["def"][key] = this.def[key];
+            }
+        }
+        data["ghi"] = this.ghi;
+        return data;
+    };
+    return ModelError;
+}());
+
+var ValueProviderResult = /** @class */ (function () {
+    function ValueProviderResult(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ValueProviderResult.prototype.init = function (data) {
+        if (data) {
+            this._instanceCulture = data["_instanceCulture"];
+            this.klm = data["klm"];
+            if (data["npq"]) {
+                this.npq = {};
+                for (var key in data["npq"]) {
+                    if (data["npq"].hasOwnProperty(key))
+                        this.npq[key] = data["npq"][key];
+                }
+            }
+        }
+    };
+    ValueProviderResult.fromJS = function (data) {
+        var result = new ValueProviderResult();
+        result.init(data);
+        return result;
+    };
+    ValueProviderResult.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["_instanceCulture"] = this._instanceCulture;
+        data["klm"] = this.klm;
+        if (this.npq) {
+            data["npq"] = {};
+            for (var key in this.npq) {
+                if (this.npq.hasOwnProperty(key))
+                    data["npq"][key] = this.npq[key];
+            }
+        }
+        return data;
+    };
+    return ValueProviderResult;
+}());
+
+var HandleActivityDatatableParam = /** @class */ (function () {
+    function HandleActivityDatatableParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    HandleActivityDatatableParam.prototype.init = function (data) {
+        if (data) {
+            this.datatable = data["datatable"] ? MDatatableActivitytParam.fromJS(data["datatable"]) : undefined;
+        }
+    };
+    HandleActivityDatatableParam.fromJS = function (data) {
+        var result = new HandleActivityDatatableParam();
+        result.init(data);
+        return result;
+    };
+    HandleActivityDatatableParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["datatable"] = this.datatable ? this.datatable.toJSON() : undefined;
+        return data;
+    };
+    return HandleActivityDatatableParam;
+}());
+
+var MDatatableActivitytParam = /** @class */ (function () {
+    function MDatatableActivitytParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    MDatatableActivitytParam.prototype.init = function (data) {
+        if (data) {
+            this.pagination = data["pagination"] ? MPagination.fromJS(data["pagination"]) : undefined;
+            this.sort = data["sort"] ? MSort.fromJS(data["sort"]) : undefined;
+            this.query = data["query"] ? MActivityQuery.fromJS(data["query"]) : undefined;
+        }
+    };
+    MDatatableActivitytParam.fromJS = function (data) {
+        var result = new MDatatableActivitytParam();
+        result.init(data);
+        return result;
+    };
+    MDatatableActivitytParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["pagination"] = this.pagination ? this.pagination.toJSON() : undefined;
+        data["sort"] = this.sort ? this.sort.toJSON() : undefined;
+        data["query"] = this.query ? this.query.toJSON() : undefined;
+        return data;
+    };
+    return MDatatableActivitytParam;
+}());
+
+var MPagination = /** @class */ (function () {
+    function MPagination(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    MPagination.prototype.init = function (data) {
+        if (data) {
+            this.page = data["page"];
+            this.pages = data["pages"];
+            this.perpage = data["perpage"];
+            this.total = data["total"];
+            this.sort = data["sort"];
+            this.field = data["field"];
+            this.start = data["start"];
+        }
+    };
+    MPagination.fromJS = function (data) {
+        var result = new MPagination();
+        result.init(data);
+        return result;
+    };
+    MPagination.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["page"] = this.page;
+        data["pages"] = this.pages;
+        data["perpage"] = this.perpage;
+        data["total"] = this.total;
+        data["sort"] = this.sort;
+        data["field"] = this.field;
+        data["start"] = this.start;
+        return data;
+    };
+    return MPagination;
+}());
+
+var MSort = /** @class */ (function () {
+    function MSort(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    MSort.prototype.init = function (data) {
+        if (data) {
+            this.field = data["field"];
+            this.sort = data["sort"];
+        }
+    };
+    MSort.fromJS = function (data) {
+        var result = new MSort();
+        result.init(data);
+        return result;
+    };
+    MSort.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["field"] = this.field;
+        data["sort"] = this.sort;
+        return data;
+    };
+    return MSort;
+}());
+
+var MActivityQuery = /** @class */ (function () {
+    function MActivityQuery(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    MActivityQuery.prototype.init = function (data) {
+        if (data) {
+            this.unitId = data["UnitId"];
+            this.generalSearch = data["generalSearch"];
+        }
+    };
+    MActivityQuery.fromJS = function (data) {
+        var result = new MActivityQuery();
+        result.init(data);
+        return result;
+    };
+    MActivityQuery.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["UnitId"] = this.unitId;
+        data["generalSearch"] = this.generalSearch;
+        return data;
+    };
+    return MActivityQuery;
+}());
+
+var MDataTableResponseOfActivityModel = /** @class */ (function () {
+    function MDataTableResponseOfActivityModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    MDataTableResponseOfActivityModel.prototype.init = function (data) {
+        if (data) {
+            this.meta = data["meta"] ? MPagination.fromJS(data["meta"]) : undefined;
+            if (data["data"] && data["data"].constructor === Array) {
+                this.data = [];
+                for (var _i = 0, _a = data["data"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.data.push(ActivityModel.fromJS(item));
+                }
+            }
+        }
+    };
+    MDataTableResponseOfActivityModel.fromJS = function (data) {
+        var result = new MDataTableResponseOfActivityModel();
+        result.init(data);
+        return result;
+    };
+    MDataTableResponseOfActivityModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["meta"] = this.meta ? this.meta.toJSON() : undefined;
+        if (this.data && this.data.constructor === Array) {
+            data["data"] = [];
+            for (var _i = 0, _a = this.data; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["data"].push(item.toJSON());
+            }
+        }
+        return data;
+    };
+    return MDataTableResponseOfActivityModel;
+}());
+
+var ActivityModel = /** @class */ (function () {
+    function ActivityModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ActivityModel.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.name = data["Name"];
+            this.unitId = data["UnitId"];
+            this.cover = data["Cover"];
+            this.description = data["Description"];
+            this.gameTypeId = data["GameTypeId"];
+            this.gameTypeName = data["GameTypeName"];
+            this.isFreeTrial = data["IsFreeTrial"];
+            this.createdOn = data["CreatedOn"] ? __WEBPACK_IMPORTED_MODULE_10_moment__(data["CreatedOn"].toString()) : undefined;
+            this.modifiedOn = data["ModifiedOn"] ? __WEBPACK_IMPORTED_MODULE_10_moment__(data["ModifiedOn"].toString()) : undefined;
+            if (data["GameDatas"] && data["GameDatas"].constructor === Array) {
+                this.gameDatas = [];
+                for (var _i = 0, _a = data["GameDatas"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.gameDatas.push(GameDataModel.fromJS(item));
+                }
+            }
+            if (data["GameSettings"] && data["GameSettings"].constructor === Array) {
+                this.gameSettings = [];
+                for (var _b = 0, _c = data["GameSettings"]; _b < _c.length; _b++) {
+                    var item = _c[_b];
+                    this.gameSettings.push(FieldDataModel.fromJS(item));
+                }
+            }
+            if (data["GameStages"] && data["GameStages"].constructor === Array) {
+                this.gameStages = [];
+                for (var _d = 0, _e = data["GameStages"]; _d < _e.length; _d++) {
+                    var item = _e[_d];
+                    this.gameStages.push(GameStageModel.fromJS(item));
+                }
+            }
+        }
+    };
+    ActivityModel.fromJS = function (data) {
+        var result = new ActivityModel();
+        result.init(data);
+        return result;
+    };
+    ActivityModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["Name"] = this.name;
+        data["UnitId"] = this.unitId;
+        data["Cover"] = this.cover;
+        data["Description"] = this.description;
+        data["GameTypeId"] = this.gameTypeId;
+        data["GameTypeName"] = this.gameTypeName;
+        data["IsFreeTrial"] = this.isFreeTrial;
+        data["CreatedOn"] = this.createdOn ? this.createdOn.toISOString() : undefined;
+        data["ModifiedOn"] = this.modifiedOn ? this.modifiedOn.toISOString() : undefined;
+        if (this.gameDatas && this.gameDatas.constructor === Array) {
+            data["GameDatas"] = [];
+            for (var _i = 0, _a = this.gameDatas; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["GameDatas"].push(item.toJSON());
+            }
+        }
+        if (this.gameSettings && this.gameSettings.constructor === Array) {
+            data["GameSettings"] = [];
+            for (var _b = 0, _c = this.gameSettings; _b < _c.length; _b++) {
+                var item = _c[_b];
+                data["GameSettings"].push(item.toJSON());
+            }
+        }
+        if (this.gameStages && this.gameStages.constructor === Array) {
+            data["GameStages"] = [];
+            for (var _d = 0, _e = this.gameStages; _d < _e.length; _d++) {
+                var item = _e[_d];
+                data["GameStages"].push(item.toJSON());
+            }
+        }
+        return data;
+    };
+    return ActivityModel;
+}());
+
+var GameDataModel = /** @class */ (function () {
+    function GameDataModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    GameDataModel.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.gameDataTypeId = data["GameDataTypeId"];
+            this.tmpId = data["TmpId"];
+            if (data["Fields"] && data["Fields"].constructor === Array) {
+                this.fields = [];
+                for (var _i = 0, _a = data["Fields"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.fields.push(FieldDataModel.fromJS(item));
+                }
+            }
+        }
+    };
+    GameDataModel.fromJS = function (data) {
+        var result = new GameDataModel();
+        result.init(data);
+        return result;
+    };
+    GameDataModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["GameDataTypeId"] = this.gameDataTypeId;
+        data["TmpId"] = this.tmpId;
+        if (this.fields && this.fields.constructor === Array) {
+            data["Fields"] = [];
+            for (var _i = 0, _a = this.fields; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["Fields"].push(item.toJSON());
+            }
+        }
+        return data;
+    };
+    return GameDataModel;
+}());
+
+var FieldDataModel = /** @class */ (function () {
+    function FieldDataModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    FieldDataModel.prototype.init = function (data) {
+        if (data) {
+            this.parentTypeId = data["ParentTypeId"];
+            this.fieldId = data["FieldId"];
+            this.value = data["Value"];
+        }
+    };
+    FieldDataModel.fromJS = function (data) {
+        var result = new FieldDataModel();
+        result.init(data);
+        return result;
+    };
+    FieldDataModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["ParentTypeId"] = this.parentTypeId;
+        data["FieldId"] = this.fieldId;
+        data["Value"] = this.value;
+        return data;
+    };
+    return FieldDataModel;
+}());
+
+var GameStageModel = /** @class */ (function () {
+    function GameStageModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    GameStageModel.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.activityId = data["ActivityId"];
+            this.order = data["Order"];
+            if (data["Fields"] && data["Fields"].constructor === Array) {
+                this.fields = [];
+                for (var _i = 0, _a = data["Fields"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.fields.push(FieldDataModel.fromJS(item));
+                }
+            }
+        }
+    };
+    GameStageModel.fromJS = function (data) {
+        var result = new GameStageModel();
+        result.init(data);
+        return result;
+    };
+    GameStageModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["ActivityId"] = this.activityId;
+        data["Order"] = this.order;
+        if (this.fields && this.fields.constructor === Array) {
+            data["Fields"] = [];
+            for (var _i = 0, _a = this.fields; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["Fields"].push(item.toJSON());
+            }
+        }
+        return data;
+    };
+    return GameStageModel;
+}());
+
+var SaveActivityParam = /** @class */ (function () {
+    function SaveActivityParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    SaveActivityParam.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.name = data["Name"];
+            this.description = data["Description"];
+            this.cover = data["Cover"];
+            this.unitId = data["UnitId"];
+            this.gameTypeId = data["GameTypeId"];
+            this.isFreeTrial = data["IsFreeTrial"];
+            if (data["GameDatas"] && data["GameDatas"].constructor === Array) {
+                this.gameDatas = [];
+                for (var _i = 0, _a = data["GameDatas"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.gameDatas.push(GameDataParam.fromJS(item));
+                }
+            }
+            if (data["GameSettings"] && data["GameSettings"].constructor === Array) {
+                this.gameSettings = [];
+                for (var _b = 0, _c = data["GameSettings"]; _b < _c.length; _b++) {
+                    var item = _c[_b];
+                    this.gameSettings.push(FieldParam.fromJS(item));
+                }
+            }
+            if (data["GameStages"] && data["GameStages"].constructor === Array) {
+                this.gameStages = [];
+                for (var _d = 0, _e = data["GameStages"]; _d < _e.length; _d++) {
+                    var item = _e[_d];
+                    this.gameStages.push(GameStageParam.fromJS(item));
+                }
+            }
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    SaveActivityParam.fromJS = function (data) {
+        var result = new SaveActivityParam();
+        result.init(data);
+        return result;
+    };
+    SaveActivityParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["Name"] = this.name;
+        data["Description"] = this.description;
+        data["Cover"] = this.cover;
+        data["UnitId"] = this.unitId;
+        data["GameTypeId"] = this.gameTypeId;
+        data["IsFreeTrial"] = this.isFreeTrial;
+        if (this.gameDatas && this.gameDatas.constructor === Array) {
+            data["GameDatas"] = [];
+            for (var _i = 0, _a = this.gameDatas; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["GameDatas"].push(item.toJSON());
+            }
+        }
+        if (this.gameSettings && this.gameSettings.constructor === Array) {
+            data["GameSettings"] = [];
+            for (var _b = 0, _c = this.gameSettings; _b < _c.length; _b++) {
+                var item = _c[_b];
+                data["GameSettings"].push(item.toJSON());
+            }
+        }
+        if (this.gameStages && this.gameStages.constructor === Array) {
+            data["GameStages"] = [];
+            for (var _d = 0, _e = this.gameStages; _d < _e.length; _d++) {
+                var item = _e[_d];
+                data["GameStages"].push(item.toJSON());
+            }
+        }
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return SaveActivityParam;
+}());
+
+var GameDataParam = /** @class */ (function () {
+    function GameDataParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    GameDataParam.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.tmpId = data["TmpId"];
+            this.gameDataTypeId = data["GameDataTypeId"];
+            if (data["Fields"] && data["Fields"].constructor === Array) {
+                this.fields = [];
+                for (var _i = 0, _a = data["Fields"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.fields.push(FieldParam.fromJS(item));
+                }
+            }
+        }
+    };
+    GameDataParam.fromJS = function (data) {
+        var result = new GameDataParam();
+        result.init(data);
+        return result;
+    };
+    GameDataParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["TmpId"] = this.tmpId;
+        data["GameDataTypeId"] = this.gameDataTypeId;
+        if (this.fields && this.fields.constructor === Array) {
+            data["Fields"] = [];
+            for (var _i = 0, _a = this.fields; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["Fields"].push(item.toJSON());
+            }
+        }
+        return data;
+    };
+    return GameDataParam;
+}());
+
+var FieldParam = /** @class */ (function () {
+    function FieldParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    FieldParam.prototype.init = function (data) {
+        if (data) {
+            this.fieldId = data["FieldId"];
+            this.value = data["Value"];
+        }
+    };
+    FieldParam.fromJS = function (data) {
+        var result = new FieldParam();
+        result.init(data);
+        return result;
+    };
+    FieldParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["FieldId"] = this.fieldId;
+        data["Value"] = this.value;
+        return data;
+    };
+    return FieldParam;
+}());
+
+var GameStageParam = /** @class */ (function () {
+    function GameStageParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    GameStageParam.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            if (data["Fields"] && data["Fields"].constructor === Array) {
+                this.fields = [];
+                for (var _i = 0, _a = data["Fields"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.fields.push(FieldParam.fromJS(item));
+                }
+            }
+        }
+    };
+    GameStageParam.fromJS = function (data) {
+        var result = new GameStageParam();
+        result.init(data);
+        return result;
+    };
+    GameStageParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        if (this.fields && this.fields.constructor === Array) {
+            data["Fields"] = [];
+            for (var _i = 0, _a = this.fields; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["Fields"].push(item.toJSON());
+            }
+        }
+        return data;
+    };
+    return GameStageParam;
+}());
+
+var ResponseOfActivityModel = /** @class */ (function () {
+    function ResponseOfActivityModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ResponseOfActivityModel.prototype.init = function (data) {
+        if (data) {
+            this.success = data["Success"];
+            this.message = data["Message"];
+            if (data["Exception"]) {
+                this.exception = {};
+                for (var key in data["Exception"]) {
+                    if (data["Exception"].hasOwnProperty(key))
+                        this.exception[key] = data["Exception"][key];
+                }
+            }
+            this.data = data["Data"] ? ActivityModel.fromJS(data["Data"]) : undefined;
+            this.totalRecord = data["TotalRecord"];
+        }
+    };
+    ResponseOfActivityModel.fromJS = function (data) {
+        var result = new ResponseOfActivityModel();
+        result.init(data);
+        return result;
+    };
+    ResponseOfActivityModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Success"] = this.success;
+        data["Message"] = this.message;
+        if (this.exception) {
+            data["Exception"] = {};
+            for (var key in this.exception) {
+                if (this.exception.hasOwnProperty(key))
+                    data["Exception"][key] = this.exception[key];
+            }
+        }
+        data["Data"] = this.data ? this.data.toJSON() : undefined;
+        data["TotalRecord"] = this.totalRecord;
+        return data;
+    };
+    return ResponseOfActivityModel;
+}());
+
+var GetByIdParam = /** @class */ (function () {
+    function GetByIdParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    GetByIdParam.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    GetByIdParam.fromJS = function (data) {
+        var result = new GetByIdParam();
+        result.init(data);
+        return result;
+    };
+    GetByIdParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return GetByIdParam;
+}());
+
+var DeleteParam = /** @class */ (function () {
+    function DeleteParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    DeleteParam.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    DeleteParam.fromJS = function (data) {
+        var result = new DeleteParam();
+        result.init(data);
+        return result;
+    };
+    DeleteParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return DeleteParam;
+}());
+
+var ReOrderParam = /** @class */ (function () {
+    function ReOrderParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ReOrderParam.prototype.init = function (data) {
+        if (data) {
+            if (data["Ids"] && data["Ids"].constructor === Array) {
+                this.ids = [];
+                for (var _i = 0, _a = data["Ids"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.ids.push(item);
+                }
+            }
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    ReOrderParam.fromJS = function (data) {
+        var result = new ReOrderParam();
+        result.init(data);
+        return result;
+    };
+    ReOrderParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        if (this.ids && this.ids.constructor === Array) {
+            data["Ids"] = [];
+            for (var _i = 0, _a = this.ids; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["Ids"].push(item);
+            }
+        }
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return ReOrderParam;
+}());
+
+var ResponseOfObject = /** @class */ (function () {
+    function ResponseOfObject(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ResponseOfObject.prototype.init = function (data) {
+        if (data) {
+            this.success = data["Success"];
+            this.message = data["Message"];
+            if (data["Exception"]) {
+                this.exception = {};
+                for (var key in data["Exception"]) {
+                    if (data["Exception"].hasOwnProperty(key))
+                        this.exception[key] = data["Exception"][key];
+                }
+            }
+            if (data["Data"]) {
+                this.data = {};
+                for (var key in data["Data"]) {
+                    if (data["Data"].hasOwnProperty(key))
+                        this.data[key] = data["Data"][key];
+                }
+            }
+            this.totalRecord = data["TotalRecord"];
+        }
+    };
+    ResponseOfObject.fromJS = function (data) {
+        var result = new ResponseOfObject();
+        result.init(data);
+        return result;
+    };
+    ResponseOfObject.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Success"] = this.success;
+        data["Message"] = this.message;
+        if (this.exception) {
+            data["Exception"] = {};
+            for (var key in this.exception) {
+                if (this.exception.hasOwnProperty(key))
+                    data["Exception"][key] = this.exception[key];
+            }
+        }
+        if (this.data) {
+            data["Data"] = {};
+            for (var key in this.data) {
+                if (this.data.hasOwnProperty(key))
+                    data["Data"][key] = this.data[key];
+            }
+        }
+        data["TotalRecord"] = this.totalRecord;
+        return data;
+    };
+    return ResponseOfObject;
+}());
+
+var GetByIdsParam = /** @class */ (function () {
+    function GetByIdsParam(data) {
+        this.ids = [];
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    GetByIdsParam.prototype.init = function (data) {
+        if (data) {
+            if (data["Ids"] && data["Ids"].constructor === Array) {
+                this.ids = [];
+                for (var _i = 0, _a = data["Ids"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.ids.push(item);
+                }
+            }
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    GetByIdsParam.fromJS = function (data) {
+        var result = new GetByIdsParam();
+        result.init(data);
+        return result;
+    };
+    GetByIdsParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        if (this.ids && this.ids.constructor === Array) {
+            data["Ids"] = [];
+            for (var _i = 0, _a = this.ids; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["Ids"].push(item);
+            }
+        }
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return GetByIdsParam;
+}());
+
+var ResponseOfListOfFieldConfigurationModel = /** @class */ (function () {
+    function ResponseOfListOfFieldConfigurationModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ResponseOfListOfFieldConfigurationModel.prototype.init = function (data) {
+        if (data) {
+            this.success = data["Success"];
+            this.message = data["Message"];
+            if (data["Exception"]) {
+                this.exception = {};
+                for (var key in data["Exception"]) {
+                    if (data["Exception"].hasOwnProperty(key))
+                        this.exception[key] = data["Exception"][key];
+                }
+            }
+            if (data["Data"] && data["Data"].constructor === Array) {
+                this.data = [];
+                for (var _i = 0, _a = data["Data"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.data.push(FieldConfigurationModel.fromJS(item));
+                }
+            }
+            this.totalRecord = data["TotalRecord"];
+        }
+    };
+    ResponseOfListOfFieldConfigurationModel.fromJS = function (data) {
+        var result = new ResponseOfListOfFieldConfigurationModel();
+        result.init(data);
+        return result;
+    };
+    ResponseOfListOfFieldConfigurationModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Success"] = this.success;
+        data["Message"] = this.message;
+        if (this.exception) {
+            data["Exception"] = {};
+            for (var key in this.exception) {
+                if (this.exception.hasOwnProperty(key))
+                    data["Exception"][key] = this.exception[key];
+            }
+        }
+        if (this.data && this.data.constructor === Array) {
+            data["Data"] = [];
+            for (var _i = 0, _a = this.data; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["Data"].push(item.toJSON());
+            }
+        }
+        data["TotalRecord"] = this.totalRecord;
+        return data;
+    };
+    return ResponseOfListOfFieldConfigurationModel;
+}());
+
+var FieldConfigurationModel = /** @class */ (function () {
+    function FieldConfigurationModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    FieldConfigurationModel.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.name = data["Name"];
+            this.dataType = data["DataType"];
+            this.configJson = data["ConfigJson"];
+            this.isRequired = data["IsRequired"];
+            this.order = data["Order"];
+        }
+    };
+    FieldConfigurationModel.fromJS = function (data) {
+        var result = new FieldConfigurationModel();
+        result.init(data);
+        return result;
+    };
+    FieldConfigurationModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["Name"] = this.name;
+        data["DataType"] = this.dataType;
+        data["ConfigJson"] = this.configJson;
+        data["IsRequired"] = this.isRequired;
+        data["Order"] = this.order;
+        return data;
+    };
+    return FieldConfigurationModel;
+}());
+
+var ResponseOfListOfActivityCacheModel = /** @class */ (function () {
+    function ResponseOfListOfActivityCacheModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ResponseOfListOfActivityCacheModel.prototype.init = function (data) {
+        if (data) {
+            this.success = data["Success"];
+            this.message = data["Message"];
+            if (data["Exception"]) {
+                this.exception = {};
+                for (var key in data["Exception"]) {
+                    if (data["Exception"].hasOwnProperty(key))
+                        this.exception[key] = data["Exception"][key];
+                }
+            }
+            if (data["Data"] && data["Data"].constructor === Array) {
+                this.data = [];
+                for (var _i = 0, _a = data["Data"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.data.push(ActivityCacheModel.fromJS(item));
+                }
+            }
+            this.totalRecord = data["TotalRecord"];
+        }
+    };
+    ResponseOfListOfActivityCacheModel.fromJS = function (data) {
+        var result = new ResponseOfListOfActivityCacheModel();
+        result.init(data);
+        return result;
+    };
+    ResponseOfListOfActivityCacheModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Success"] = this.success;
+        data["Message"] = this.message;
+        if (this.exception) {
+            data["Exception"] = {};
+            for (var key in this.exception) {
+                if (this.exception.hasOwnProperty(key))
+                    data["Exception"][key] = this.exception[key];
+            }
+        }
+        if (this.data && this.data.constructor === Array) {
+            data["Data"] = [];
+            for (var _i = 0, _a = this.data; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["Data"].push(item.toJSON());
+            }
+        }
+        data["TotalRecord"] = this.totalRecord;
+        return data;
+    };
+    return ResponseOfListOfActivityCacheModel;
+}());
+
+var ActivityCacheModel = /** @class */ (function () {
+    function ActivityCacheModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ActivityCacheModel.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.name = data["Name"];
+            this.cover = data["Cover"];
+            this.description = data["Description"];
+            this.gameType = data["GameType"];
+            if (data["MetadataSetIds"] && data["MetadataSetIds"].constructor === Array) {
+                this.metadataSetIds = [];
+                for (var _i = 0, _a = data["MetadataSetIds"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.metadataSetIds.push(item);
+                }
+            }
+            this.isFreeTrial = data["IsFreeTrial"];
+            if (data["GameSettings"]) {
+                this.gameSettings = {};
+                for (var key in data["GameSettings"]) {
+                    if (data["GameSettings"].hasOwnProperty(key))
+                        this.gameSettings[key] = data["GameSettings"][key];
+                }
+            }
+            if (data["GameDatas"] && data["GameDatas"].constructor === Array) {
+                this.gameDatas = [];
+                for (var _b = 0, _c = data["GameDatas"]; _b < _c.length; _b++) {
+                    var item = _c[_b];
+                    this.gameDatas.push(item);
+                }
+            }
+            if (data["GameStages"] && data["GameStages"].constructor === Array) {
+                this.gameStages = [];
+                for (var _d = 0, _e = data["GameStages"]; _d < _e.length; _d++) {
+                    var item = _e[_d];
+                    this.gameStages.push(item);
+                }
+            }
+        }
+    };
+    ActivityCacheModel.fromJS = function (data) {
+        var result = new ActivityCacheModel();
+        result.init(data);
+        return result;
+    };
+    ActivityCacheModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["Name"] = this.name;
+        data["Cover"] = this.cover;
+        data["Description"] = this.description;
+        data["GameType"] = this.gameType;
+        if (this.metadataSetIds && this.metadataSetIds.constructor === Array) {
+            data["MetadataSetIds"] = [];
+            for (var _i = 0, _a = this.metadataSetIds; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["MetadataSetIds"].push(item);
+            }
+        }
+        data["IsFreeTrial"] = this.isFreeTrial;
+        if (this.gameSettings) {
+            data["GameSettings"] = {};
+            for (var key in this.gameSettings) {
+                if (this.gameSettings.hasOwnProperty(key))
+                    data["GameSettings"][key] = this.gameSettings[key];
+            }
+        }
+        if (this.gameDatas && this.gameDatas.constructor === Array) {
+            data["GameDatas"] = [];
+            for (var _b = 0, _c = this.gameDatas; _b < _c.length; _b++) {
+                var item = _c[_b];
+                data["GameDatas"].push(item);
+            }
+        }
+        if (this.gameStages && this.gameStages.constructor === Array) {
+            data["GameStages"] = [];
+            for (var _d = 0, _e = this.gameStages; _d < _e.length; _d++) {
+                var item = _e[_d];
+                data["GameStages"].push(item);
+            }
+        }
+        return data;
+    };
+    return ActivityCacheModel;
+}());
+
+var GetClassByCurrentUser = /** @class */ (function () {
+    function GetClassByCurrentUser(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    GetClassByCurrentUser.prototype.init = function (data) {
+        if (data) {
+            this.schoolId = data["SchoolId"];
+            this.isLoadActiveOnly = data["IsLoadActiveOnly"];
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    GetClassByCurrentUser.fromJS = function (data) {
+        var result = new GetClassByCurrentUser();
+        result.init(data);
+        return result;
+    };
+    GetClassByCurrentUser.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["SchoolId"] = this.schoolId;
+        data["IsLoadActiveOnly"] = this.isLoadActiveOnly;
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return GetClassByCurrentUser;
+}());
+
+var ResponseOfListOfClassModel = /** @class */ (function () {
+    function ResponseOfListOfClassModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ResponseOfListOfClassModel.prototype.init = function (data) {
+        if (data) {
+            this.success = data["Success"];
+            this.message = data["Message"];
+            if (data["Exception"]) {
+                this.exception = {};
+                for (var key in data["Exception"]) {
+                    if (data["Exception"].hasOwnProperty(key))
+                        this.exception[key] = data["Exception"][key];
+                }
+            }
+            if (data["Data"] && data["Data"].constructor === Array) {
+                this.data = [];
+                for (var _i = 0, _a = data["Data"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.data.push(ClassModel.fromJS(item));
+                }
+            }
+            this.totalRecord = data["TotalRecord"];
+        }
+    };
+    ResponseOfListOfClassModel.fromJS = function (data) {
+        var result = new ResponseOfListOfClassModel();
+        result.init(data);
+        return result;
+    };
+    ResponseOfListOfClassModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Success"] = this.success;
+        data["Message"] = this.message;
+        if (this.exception) {
+            data["Exception"] = {};
+            for (var key in this.exception) {
+                if (this.exception.hasOwnProperty(key))
+                    data["Exception"][key] = this.exception[key];
+            }
+        }
+        if (this.data && this.data.constructor === Array) {
+            data["Data"] = [];
+            for (var _i = 0, _a = this.data; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["Data"].push(item.toJSON());
+            }
+        }
+        data["TotalRecord"] = this.totalRecord;
+        return data;
+    };
+    return ResponseOfListOfClassModel;
+}());
+
+var ClassModel = /** @class */ (function () {
+    function ClassModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ClassModel.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.name = data["Name"];
+            this.isActive = data["IsActive"];
+        }
+    };
+    ClassModel.fromJS = function (data) {
+        var result = new ClassModel();
+        result.init(data);
+        return result;
+    };
+    ClassModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["Name"] = this.name;
+        data["IsActive"] = this.isActive;
+        return data;
+    };
+    return ClassModel;
+}());
+
+var SaveClassParam = /** @class */ (function () {
+    function SaveClassParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    SaveClassParam.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.schoolId = data["SchoolId"];
+            this.name = data["Name"];
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    SaveClassParam.fromJS = function (data) {
+        var result = new SaveClassParam();
+        result.init(data);
+        return result;
+    };
+    SaveClassParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["SchoolId"] = this.schoolId;
+        data["Name"] = this.name;
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return SaveClassParam;
+}());
+
+var ResponseOfClassModel = /** @class */ (function () {
+    function ResponseOfClassModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ResponseOfClassModel.prototype.init = function (data) {
+        if (data) {
+            this.success = data["Success"];
+            this.message = data["Message"];
+            if (data["Exception"]) {
+                this.exception = {};
+                for (var key in data["Exception"]) {
+                    if (data["Exception"].hasOwnProperty(key))
+                        this.exception[key] = data["Exception"][key];
+                }
+            }
+            this.data = data["Data"] ? ClassModel.fromJS(data["Data"]) : undefined;
+            this.totalRecord = data["TotalRecord"];
+        }
+    };
+    ResponseOfClassModel.fromJS = function (data) {
+        var result = new ResponseOfClassModel();
+        result.init(data);
+        return result;
+    };
+    ResponseOfClassModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Success"] = this.success;
+        data["Message"] = this.message;
+        if (this.exception) {
+            data["Exception"] = {};
+            for (var key in this.exception) {
+                if (this.exception.hasOwnProperty(key))
+                    data["Exception"][key] = this.exception[key];
+            }
+        }
+        data["Data"] = this.data ? this.data.toJSON() : undefined;
+        data["TotalRecord"] = this.totalRecord;
+        return data;
+    };
+    return ResponseOfClassModel;
+}());
+
+var AssignClassParam = /** @class */ (function () {
+    function AssignClassParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    AssignClassParam.prototype.init = function (data) {
+        if (data) {
+            this.teacherId = data["TeacherId"];
+            if (data["ClassIds"] && data["ClassIds"].constructor === Array) {
+                this.classIds = [];
+                for (var _i = 0, _a = data["ClassIds"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.classIds.push(item);
+                }
+            }
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    AssignClassParam.fromJS = function (data) {
+        var result = new AssignClassParam();
+        result.init(data);
+        return result;
+    };
+    AssignClassParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["TeacherId"] = this.teacherId;
+        if (this.classIds && this.classIds.constructor === Array) {
+            data["ClassIds"] = [];
+            for (var _i = 0, _a = this.classIds; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["ClassIds"].push(item);
+            }
+        }
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return AssignClassParam;
+}());
+
+var ResponseOfDictionaryOfStringAndString = /** @class */ (function () {
+    function ResponseOfDictionaryOfStringAndString(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ResponseOfDictionaryOfStringAndString.prototype.init = function (data) {
+        if (data) {
+            this.success = data["Success"];
+            this.message = data["Message"];
+            if (data["Exception"]) {
+                this.exception = {};
+                for (var key in data["Exception"]) {
+                    if (data["Exception"].hasOwnProperty(key))
+                        this.exception[key] = data["Exception"][key];
+                }
+            }
+            if (data["Data"]) {
+                this.data = {};
+                for (var key in data["Data"]) {
+                    if (data["Data"].hasOwnProperty(key))
+                        this.data[key] = data["Data"][key];
+                }
+            }
+            this.totalRecord = data["TotalRecord"];
+        }
+    };
+    ResponseOfDictionaryOfStringAndString.fromJS = function (data) {
+        var result = new ResponseOfDictionaryOfStringAndString();
+        result.init(data);
+        return result;
+    };
+    ResponseOfDictionaryOfStringAndString.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Success"] = this.success;
+        data["Message"] = this.message;
+        if (this.exception) {
+            data["Exception"] = {};
+            for (var key in this.exception) {
+                if (this.exception.hasOwnProperty(key))
+                    data["Exception"][key] = this.exception[key];
+            }
+        }
+        if (this.data) {
+            data["Data"] = {};
+            for (var key in this.data) {
+                if (this.data.hasOwnProperty(key))
+                    data["Data"][key] = this.data[key];
+            }
+        }
+        data["TotalRecord"] = this.totalRecord;
+        return data;
+    };
+    return ResponseOfDictionaryOfStringAndString;
+}());
+
+var SaveConfigurationParam = /** @class */ (function () {
+    function SaveConfigurationParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    SaveConfigurationParam.prototype.init = function (data) {
+        if (data) {
+            this.key = data["Key"];
+            this.value = data["Value"];
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    SaveConfigurationParam.fromJS = function (data) {
+        var result = new SaveConfigurationParam();
+        result.init(data);
+        return result;
+    };
+    SaveConfigurationParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Key"] = this.key;
+        data["Value"] = this.value;
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return SaveConfigurationParam;
+}());
+
+var MDataTableParamModel = /** @class */ (function () {
+    function MDataTableParamModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    MDataTableParamModel.prototype.init = function (data) {
+        if (data) {
+            this.datatable = data["datatable"] ? MDatatableParam.fromJS(data["datatable"]) : undefined;
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    MDataTableParamModel.fromJS = function (data) {
+        var result = new MDataTableParamModel();
+        result.init(data);
+        return result;
+    };
+    MDataTableParamModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["datatable"] = this.datatable ? this.datatable.toJSON() : undefined;
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return MDataTableParamModel;
+}());
+
+var MDatatableParam = /** @class */ (function () {
+    function MDatatableParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    MDatatableParam.prototype.init = function (data) {
+        if (data) {
+            this.pagination = data["pagination"] ? MPagination.fromJS(data["pagination"]) : undefined;
+            this.sort = data["sort"] ? MSort.fromJS(data["sort"]) : undefined;
+            this.query = data["query"] ? MQuery.fromJS(data["query"]) : undefined;
+        }
+    };
+    MDatatableParam.fromJS = function (data) {
+        var result = new MDatatableParam();
+        result.init(data);
+        return result;
+    };
+    MDatatableParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["pagination"] = this.pagination ? this.pagination.toJSON() : undefined;
+        data["sort"] = this.sort ? this.sort.toJSON() : undefined;
+        data["query"] = this.query ? this.query.toJSON() : undefined;
+        return data;
+    };
+    return MDatatableParam;
+}());
+
+var MQuery = /** @class */ (function () {
+    function MQuery(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    MQuery.prototype.init = function (data) {
+        if (data) {
+            this.generalSearch = data["generalSearch"];
+        }
+    };
+    MQuery.fromJS = function (data) {
+        var result = new MQuery();
+        result.init(data);
+        return result;
+    };
+    MQuery.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["generalSearch"] = this.generalSearch;
+        return data;
+    };
+    return MQuery;
+}());
+
+var MDataTableResponseOfCourseModel = /** @class */ (function () {
+    function MDataTableResponseOfCourseModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    MDataTableResponseOfCourseModel.prototype.init = function (data) {
+        if (data) {
+            this.meta = data["meta"] ? MPagination.fromJS(data["meta"]) : undefined;
+            if (data["data"] && data["data"].constructor === Array) {
+                this.data = [];
+                for (var _i = 0, _a = data["data"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.data.push(CourseModel.fromJS(item));
+                }
+            }
+        }
+    };
+    MDataTableResponseOfCourseModel.fromJS = function (data) {
+        var result = new MDataTableResponseOfCourseModel();
+        result.init(data);
+        return result;
+    };
+    MDataTableResponseOfCourseModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["meta"] = this.meta ? this.meta.toJSON() : undefined;
+        if (this.data && this.data.constructor === Array) {
+            data["data"] = [];
+            for (var _i = 0, _a = this.data; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["data"].push(item.toJSON());
+            }
+        }
+        return data;
+    };
+    return MDataTableResponseOfCourseModel;
+}());
+
+var CourseModel = /** @class */ (function () {
+    function CourseModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    CourseModel.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.name = data["Name"];
+            this.originalPrice = data["OriginalPrice"];
+            this.schoolPrice = data["SchoolPrice"];
+            this.description = data["Description"];
+            this.cover = data["Cover"];
+            this.promotionUrl = data["PromotionUrl"];
+            this.modifiedOn = data["ModifiedOn"] ? __WEBPACK_IMPORTED_MODULE_10_moment__(data["ModifiedOn"].toString()) : undefined;
+            this.createdOn = data["CreatedOn"] ? __WEBPACK_IMPORTED_MODULE_10_moment__(data["CreatedOn"].toString()) : undefined;
+        }
+    };
+    CourseModel.fromJS = function (data) {
+        var result = new CourseModel();
+        result.init(data);
+        return result;
+    };
+    CourseModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["Name"] = this.name;
+        data["OriginalPrice"] = this.originalPrice;
+        data["SchoolPrice"] = this.schoolPrice;
+        data["Description"] = this.description;
+        data["Cover"] = this.cover;
+        data["PromotionUrl"] = this.promotionUrl;
+        data["ModifiedOn"] = this.modifiedOn ? this.modifiedOn.toISOString() : undefined;
+        data["CreatedOn"] = this.createdOn ? this.createdOn.toISOString() : undefined;
+        return data;
+    };
+    return CourseModel;
+}());
+
+var SaveCourseParam = /** @class */ (function () {
+    function SaveCourseParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    SaveCourseParam.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.name = data["Name"];
+            this.originalPrice = data["OriginalPrice"];
+            this.schoolPrice = data["SchoolPrice"];
+            this.description = data["Description"];
+            this.promotionUrl = data["PromotionUrl"];
+            this.cover = data["Cover"] ? UploadBase64Param.fromJS(data["Cover"]) : undefined;
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    SaveCourseParam.fromJS = function (data) {
+        var result = new SaveCourseParam();
+        result.init(data);
+        return result;
+    };
+    SaveCourseParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["Name"] = this.name;
+        data["OriginalPrice"] = this.originalPrice;
+        data["SchoolPrice"] = this.schoolPrice;
+        data["Description"] = this.description;
+        data["PromotionUrl"] = this.promotionUrl;
+        data["Cover"] = this.cover ? this.cover.toJSON() : undefined;
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return SaveCourseParam;
+}());
+
+var UploadBase64Param = /** @class */ (function () {
+    function UploadBase64Param(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    UploadBase64Param.prototype.init = function (data) {
+        if (data) {
+            this.fileName = data["FileName"];
+            this.base64 = data["Base64"];
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    UploadBase64Param.fromJS = function (data) {
+        var result = new UploadBase64Param();
+        result.init(data);
+        return result;
+    };
+    UploadBase64Param.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["FileName"] = this.fileName;
+        data["Base64"] = this.base64;
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return UploadBase64Param;
+}());
+
+var ResponseOfCourseModel = /** @class */ (function () {
+    function ResponseOfCourseModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ResponseOfCourseModel.prototype.init = function (data) {
+        if (data) {
+            this.success = data["Success"];
+            this.message = data["Message"];
+            if (data["Exception"]) {
+                this.exception = {};
+                for (var key in data["Exception"]) {
+                    if (data["Exception"].hasOwnProperty(key))
+                        this.exception[key] = data["Exception"][key];
+                }
+            }
+            this.data = data["Data"] ? CourseModel.fromJS(data["Data"]) : undefined;
+            this.totalRecord = data["TotalRecord"];
+        }
+    };
+    ResponseOfCourseModel.fromJS = function (data) {
+        var result = new ResponseOfCourseModel();
+        result.init(data);
+        return result;
+    };
+    ResponseOfCourseModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Success"] = this.success;
+        data["Message"] = this.message;
+        if (this.exception) {
+            data["Exception"] = {};
+            for (var key in this.exception) {
+                if (this.exception.hasOwnProperty(key))
+                    data["Exception"][key] = this.exception[key];
+            }
+        }
+        data["Data"] = this.data ? this.data.toJSON() : undefined;
+        data["TotalRecord"] = this.totalRecord;
+        return data;
+    };
+    return ResponseOfCourseModel;
+}());
+
+var ResponseOfListOfSchoolCourseModel = /** @class */ (function () {
+    function ResponseOfListOfSchoolCourseModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ResponseOfListOfSchoolCourseModel.prototype.init = function (data) {
+        if (data) {
+            this.success = data["Success"];
+            this.message = data["Message"];
+            if (data["Exception"]) {
+                this.exception = {};
+                for (var key in data["Exception"]) {
+                    if (data["Exception"].hasOwnProperty(key))
+                        this.exception[key] = data["Exception"][key];
+                }
+            }
+            if (data["Data"] && data["Data"].constructor === Array) {
+                this.data = [];
+                for (var _i = 0, _a = data["Data"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.data.push(SchoolCourseModel.fromJS(item));
+                }
+            }
+            this.totalRecord = data["TotalRecord"];
+        }
+    };
+    ResponseOfListOfSchoolCourseModel.fromJS = function (data) {
+        var result = new ResponseOfListOfSchoolCourseModel();
+        result.init(data);
+        return result;
+    };
+    ResponseOfListOfSchoolCourseModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Success"] = this.success;
+        data["Message"] = this.message;
+        if (this.exception) {
+            data["Exception"] = {};
+            for (var key in this.exception) {
+                if (this.exception.hasOwnProperty(key))
+                    data["Exception"][key] = this.exception[key];
+            }
+        }
+        if (this.data && this.data.constructor === Array) {
+            data["Data"] = [];
+            for (var _i = 0, _a = this.data; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["Data"].push(item.toJSON());
+            }
+        }
+        data["TotalRecord"] = this.totalRecord;
+        return data;
+    };
+    return ResponseOfListOfSchoolCourseModel;
+}());
+
+var SchoolCourseModel = /** @class */ (function () {
+    function SchoolCourseModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    SchoolCourseModel.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.name = data["Name"];
+            this.originalPrice = data["OriginalPrice"];
+            this.schoolBuyPrice = data["SchoolBuyPrice"];
+            this.schoolSellPrice = data["SchoolSellPrice"];
+            this.description = data["Description"];
+            this.cover = data["Cover"];
+            this.promotionUrl = data["PromotionUrl"];
+            this.isActive = data["IsActive"];
+        }
+    };
+    SchoolCourseModel.fromJS = function (data) {
+        var result = new SchoolCourseModel();
+        result.init(data);
+        return result;
+    };
+    SchoolCourseModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["Name"] = this.name;
+        data["OriginalPrice"] = this.originalPrice;
+        data["SchoolBuyPrice"] = this.schoolBuyPrice;
+        data["SchoolSellPrice"] = this.schoolSellPrice;
+        data["Description"] = this.description;
+        data["Cover"] = this.cover;
+        data["PromotionUrl"] = this.promotionUrl;
+        data["IsActive"] = this.isActive;
+        return data;
+    };
+    return SchoolCourseModel;
+}());
+
+var ActiveSchoolCourseParam = /** @class */ (function () {
+    function ActiveSchoolCourseParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ActiveSchoolCourseParam.prototype.init = function (data) {
+        if (data) {
+            this.schoolId = data["SchoolId"];
+            this.courseId = data["CourseId"];
+            this.isActive = data["IsActive"];
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    ActiveSchoolCourseParam.fromJS = function (data) {
+        var result = new ActiveSchoolCourseParam();
+        result.init(data);
+        return result;
+    };
+    ActiveSchoolCourseParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["SchoolId"] = this.schoolId;
+        data["CourseId"] = this.courseId;
+        data["IsActive"] = this.isActive;
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return ActiveSchoolCourseParam;
+}());
+
+var ChangeSellSchoolCoursePriceParam = /** @class */ (function () {
+    function ChangeSellSchoolCoursePriceParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ChangeSellSchoolCoursePriceParam.prototype.init = function (data) {
+        if (data) {
+            this.schoolId = data["SchoolId"];
+            this.courseId = data["CourseId"];
+            this.sellPrice = data["SellPrice"];
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    ChangeSellSchoolCoursePriceParam.fromJS = function (data) {
+        var result = new ChangeSellSchoolCoursePriceParam();
+        result.init(data);
+        return result;
+    };
+    ChangeSellSchoolCoursePriceParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["SchoolId"] = this.schoolId;
+        data["CourseId"] = this.courseId;
+        data["SellPrice"] = this.sellPrice;
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return ChangeSellSchoolCoursePriceParam;
+}());
+
+var ResponseOfListOfCourseCacheModel = /** @class */ (function () {
+    function ResponseOfListOfCourseCacheModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ResponseOfListOfCourseCacheModel.prototype.init = function (data) {
+        if (data) {
+            this.success = data["Success"];
+            this.message = data["Message"];
+            if (data["Exception"]) {
+                this.exception = {};
+                for (var key in data["Exception"]) {
+                    if (data["Exception"].hasOwnProperty(key))
+                        this.exception[key] = data["Exception"][key];
+                }
+            }
+            if (data["Data"] && data["Data"].constructor === Array) {
+                this.data = [];
+                for (var _i = 0, _a = data["Data"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.data.push(CourseCacheModel.fromJS(item));
+                }
+            }
+            this.totalRecord = data["TotalRecord"];
+        }
+    };
+    ResponseOfListOfCourseCacheModel.fromJS = function (data) {
+        var result = new ResponseOfListOfCourseCacheModel();
+        result.init(data);
+        return result;
+    };
+    ResponseOfListOfCourseCacheModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Success"] = this.success;
+        data["Message"] = this.message;
+        if (this.exception) {
+            data["Exception"] = {};
+            for (var key in this.exception) {
+                if (this.exception.hasOwnProperty(key))
+                    data["Exception"][key] = this.exception[key];
+            }
+        }
+        if (this.data && this.data.constructor === Array) {
+            data["Data"] = [];
+            for (var _i = 0, _a = this.data; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["Data"].push(item.toJSON());
+            }
+        }
+        data["TotalRecord"] = this.totalRecord;
+        return data;
+    };
+    return ResponseOfListOfCourseCacheModel;
+}());
+
+var CourseCacheModel = /** @class */ (function () {
+    function CourseCacheModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    CourseCacheModel.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.name = data["Name"];
+            this.cover = data["Cover"];
+            this.updatedDate = data["UpdatedDate"] ? __WEBPACK_IMPORTED_MODULE_10_moment__(data["UpdatedDate"].toString()) : undefined;
+            if (data["Units"] && data["Units"].constructor === Array) {
+                this.units = [];
+                for (var _i = 0, _a = data["Units"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.units.push(UnitCourseCacheModel.fromJS(item));
+                }
+            }
+        }
+    };
+    CourseCacheModel.fromJS = function (data) {
+        var result = new CourseCacheModel();
+        result.init(data);
+        return result;
+    };
+    CourseCacheModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["Name"] = this.name;
+        data["Cover"] = this.cover;
+        data["UpdatedDate"] = this.updatedDate ? this.updatedDate.toISOString() : undefined;
+        if (this.units && this.units.constructor === Array) {
+            data["Units"] = [];
+            for (var _i = 0, _a = this.units; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["Units"].push(item.toJSON());
+            }
+        }
+        return data;
+    };
+    return CourseCacheModel;
+}());
+
+var UnitCourseCacheModel = /** @class */ (function () {
+    function UnitCourseCacheModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    UnitCourseCacheModel.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.name = data["Name"];
+            this.cover = data["Cover"];
+            this.updatedDate = data["UpdatedDate"] ? __WEBPACK_IMPORTED_MODULE_10_moment__(data["UpdatedDate"].toString()) : undefined;
+            if (data["Activities"] && data["Activities"].constructor === Array) {
+                this.activities = [];
+                for (var _i = 0, _a = data["Activities"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.activities.push(ActivityCourseCacheModel.fromJS(item));
+                }
+            }
+        }
+    };
+    UnitCourseCacheModel.fromJS = function (data) {
+        var result = new UnitCourseCacheModel();
+        result.init(data);
+        return result;
+    };
+    UnitCourseCacheModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["Name"] = this.name;
+        data["Cover"] = this.cover;
+        data["UpdatedDate"] = this.updatedDate ? this.updatedDate.toISOString() : undefined;
+        if (this.activities && this.activities.constructor === Array) {
+            data["Activities"] = [];
+            for (var _i = 0, _a = this.activities; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["Activities"].push(item.toJSON());
+            }
+        }
+        return data;
+    };
+    return UnitCourseCacheModel;
+}());
+
+var ActivityCourseCacheModel = /** @class */ (function () {
+    function ActivityCourseCacheModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ActivityCourseCacheModel.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.updatedDate = data["UpdatedDate"] ? __WEBPACK_IMPORTED_MODULE_10_moment__(data["UpdatedDate"].toString()) : undefined;
+        }
+    };
+    ActivityCourseCacheModel.fromJS = function (data) {
+        var result = new ActivityCourseCacheModel();
+        result.init(data);
+        return result;
+    };
+    ActivityCourseCacheModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["UpdatedDate"] = this.updatedDate ? this.updatedDate.toISOString() : undefined;
+        return data;
+    };
+    return ActivityCourseCacheModel;
+}());
+
+var GetStudentCourseParam = /** @class */ (function () {
+    function GetStudentCourseParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    GetStudentCourseParam.prototype.init = function (data) {
+        if (data) {
+            this.type = data["Type"];
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    GetStudentCourseParam.fromJS = function (data) {
+        var result = new GetStudentCourseParam();
+        result.init(data);
+        return result;
+    };
+    GetStudentCourseParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Type"] = this.type;
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return GetStudentCourseParam;
+}());
+
+var GetFieldConfigurationByGameTypeParam = /** @class */ (function () {
+    function GetFieldConfigurationByGameTypeParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    GetFieldConfigurationByGameTypeParam.prototype.init = function (data) {
+        if (data) {
+            this.gameTypeId = data["GameTypeId"];
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    GetFieldConfigurationByGameTypeParam.fromJS = function (data) {
+        var result = new GetFieldConfigurationByGameTypeParam();
+        result.init(data);
+        return result;
+    };
+    GetFieldConfigurationByGameTypeParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["GameTypeId"] = this.gameTypeId;
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return GetFieldConfigurationByGameTypeParam;
+}());
+
+var ResponseOfGameTypeModel = /** @class */ (function () {
+    function ResponseOfGameTypeModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ResponseOfGameTypeModel.prototype.init = function (data) {
+        if (data) {
+            this.success = data["Success"];
+            this.message = data["Message"];
+            if (data["Exception"]) {
+                this.exception = {};
+                for (var key in data["Exception"]) {
+                    if (data["Exception"].hasOwnProperty(key))
+                        this.exception[key] = data["Exception"][key];
+                }
+            }
+            this.data = data["Data"] ? GameTypeModel.fromJS(data["Data"]) : undefined;
+            this.totalRecord = data["TotalRecord"];
+        }
+    };
+    ResponseOfGameTypeModel.fromJS = function (data) {
+        var result = new ResponseOfGameTypeModel();
+        result.init(data);
+        return result;
+    };
+    ResponseOfGameTypeModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Success"] = this.success;
+        data["Message"] = this.message;
+        if (this.exception) {
+            data["Exception"] = {};
+            for (var key in this.exception) {
+                if (this.exception.hasOwnProperty(key))
+                    data["Exception"][key] = this.exception[key];
+            }
+        }
+        data["Data"] = this.data ? this.data.toJSON() : undefined;
+        data["TotalRecord"] = this.totalRecord;
+        return data;
+    };
+    return ResponseOfGameTypeModel;
+}());
+
+var GameTypeModel = /** @class */ (function () {
+    function GameTypeModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    GameTypeModel.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.name = data["Name"];
+            this.cover = data["Cover"];
+            this.enable = data["Enable"];
+            if (data["MetadataSets"] && data["MetadataSets"].constructor === Array) {
+                this.metadataSets = [];
+                for (var _i = 0, _a = data["MetadataSets"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.metadataSets.push(MetadataSetModel.fromJS(item));
+                }
+            }
+            if (data["GameDataTypes"] && data["GameDataTypes"].constructor === Array) {
+                this.gameDataTypes = [];
+                for (var _b = 0, _c = data["GameDataTypes"]; _b < _c.length; _b++) {
+                    var item = _c[_b];
+                    this.gameDataTypes.push(GameDataTypeModel.fromJS(item));
+                }
+            }
+            if (data["GameSettingFields"] && data["GameSettingFields"].constructor === Array) {
+                this.gameSettingFields = [];
+                for (var _d = 0, _e = data["GameSettingFields"]; _d < _e.length; _d++) {
+                    var item = _e[_d];
+                    this.gameSettingFields.push(FieldConfigurationModel.fromJS(item));
+                }
+            }
+            if (data["GameStageFields"] && data["GameStageFields"].constructor === Array) {
+                this.gameStageFields = [];
+                for (var _f = 0, _g = data["GameStageFields"]; _f < _g.length; _f++) {
+                    var item = _g[_f];
+                    this.gameStageFields.push(FieldConfigurationModel.fromJS(item));
+                }
+            }
+        }
+    };
+    GameTypeModel.fromJS = function (data) {
+        var result = new GameTypeModel();
+        result.init(data);
+        return result;
+    };
+    GameTypeModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["Name"] = this.name;
+        data["Cover"] = this.cover;
+        data["Enable"] = this.enable;
+        if (this.metadataSets && this.metadataSets.constructor === Array) {
+            data["MetadataSets"] = [];
+            for (var _i = 0, _a = this.metadataSets; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["MetadataSets"].push(item.toJSON());
+            }
+        }
+        if (this.gameDataTypes && this.gameDataTypes.constructor === Array) {
+            data["GameDataTypes"] = [];
+            for (var _b = 0, _c = this.gameDataTypes; _b < _c.length; _b++) {
+                var item = _c[_b];
+                data["GameDataTypes"].push(item.toJSON());
+            }
+        }
+        if (this.gameSettingFields && this.gameSettingFields.constructor === Array) {
+            data["GameSettingFields"] = [];
+            for (var _d = 0, _e = this.gameSettingFields; _d < _e.length; _d++) {
+                var item = _e[_d];
+                data["GameSettingFields"].push(item.toJSON());
+            }
+        }
+        if (this.gameStageFields && this.gameStageFields.constructor === Array) {
+            data["GameStageFields"] = [];
+            for (var _f = 0, _g = this.gameStageFields; _f < _g.length; _f++) {
+                var item = _g[_f];
+                data["GameStageFields"].push(item.toJSON());
+            }
+        }
+        return data;
+    };
+    return GameTypeModel;
+}());
+
+var MetadataSetModel = /** @class */ (function () {
+    function MetadataSetModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    MetadataSetModel.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.name = data["Name"];
+            if (data["Metadatas"] && data["Metadatas"].constructor === Array) {
+                this.metadatas = [];
+                for (var _i = 0, _a = data["Metadatas"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.metadatas.push(MetadataModel.fromJS(item));
+                }
+            }
+            if (data["Fields"] && data["Fields"].constructor === Array) {
+                this.fields = [];
+                for (var _b = 0, _c = data["Fields"]; _b < _c.length; _b++) {
+                    var item = _c[_b];
+                    this.fields.push(FieldConfigurationModel.fromJS(item));
+                }
+            }
+        }
+    };
+    MetadataSetModel.fromJS = function (data) {
+        var result = new MetadataSetModel();
+        result.init(data);
+        return result;
+    };
+    MetadataSetModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["Name"] = this.name;
+        if (this.metadatas && this.metadatas.constructor === Array) {
+            data["Metadatas"] = [];
+            for (var _i = 0, _a = this.metadatas; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["Metadatas"].push(item.toJSON());
+            }
+        }
+        if (this.fields && this.fields.constructor === Array) {
+            data["Fields"] = [];
+            for (var _b = 0, _c = this.fields; _b < _c.length; _b++) {
+                var item = _c[_b];
+                data["Fields"].push(item.toJSON());
+            }
+        }
+        return data;
+    };
+    return MetadataSetModel;
+}());
+
+var GameDataTypeModel = /** @class */ (function () {
+    function GameDataTypeModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    GameDataTypeModel.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.name = data["Name"];
+            if (data["FieldConfigurations"] && data["FieldConfigurations"].constructor === Array) {
+                this.fieldConfigurations = [];
+                for (var _i = 0, _a = data["FieldConfigurations"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.fieldConfigurations.push(FieldConfigurationModel.fromJS(item));
+                }
+            }
+        }
+    };
+    GameDataTypeModel.fromJS = function (data) {
+        var result = new GameDataTypeModel();
+        result.init(data);
+        return result;
+    };
+    GameDataTypeModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["Name"] = this.name;
+        if (this.fieldConfigurations && this.fieldConfigurations.constructor === Array) {
+            data["FieldConfigurations"] = [];
+            for (var _i = 0, _a = this.fieldConfigurations; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["FieldConfigurations"].push(item.toJSON());
+            }
+        }
+        return data;
+    };
+    return GameDataTypeModel;
+}());
+
+var MetadataModel = /** @class */ (function () {
+    function MetadataModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    MetadataModel.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.metadataSetId = data["MetadataSetId"];
+            if (data["MetadataDetails"] && data["MetadataDetails"].constructor === Array) {
+                this.metadataDetails = [];
+                for (var _i = 0, _a = data["MetadataDetails"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.metadataDetails.push(FieldDataModel.fromJS(item));
+                }
+            }
+        }
+    };
+    MetadataModel.fromJS = function (data) {
+        var result = new MetadataModel();
+        result.init(data);
+        return result;
+    };
+    MetadataModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["MetadataSetId"] = this.metadataSetId;
+        if (this.metadataDetails && this.metadataDetails.constructor === Array) {
+            data["MetadataDetails"] = [];
+            for (var _i = 0, _a = this.metadataDetails; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["MetadataDetails"].push(item.toJSON());
+            }
+        }
+        return data;
+    };
+    return MetadataModel;
+}());
+
+var ResponseOfListOfGameTypeModel = /** @class */ (function () {
+    function ResponseOfListOfGameTypeModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ResponseOfListOfGameTypeModel.prototype.init = function (data) {
+        if (data) {
+            this.success = data["Success"];
+            this.message = data["Message"];
+            if (data["Exception"]) {
+                this.exception = {};
+                for (var key in data["Exception"]) {
+                    if (data["Exception"].hasOwnProperty(key))
+                        this.exception[key] = data["Exception"][key];
+                }
+            }
+            if (data["Data"] && data["Data"].constructor === Array) {
+                this.data = [];
+                for (var _i = 0, _a = data["Data"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.data.push(GameTypeModel.fromJS(item));
+                }
+            }
+            this.totalRecord = data["TotalRecord"];
+        }
+    };
+    ResponseOfListOfGameTypeModel.fromJS = function (data) {
+        var result = new ResponseOfListOfGameTypeModel();
+        result.init(data);
+        return result;
+    };
+    ResponseOfListOfGameTypeModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Success"] = this.success;
+        data["Message"] = this.message;
+        if (this.exception) {
+            data["Exception"] = {};
+            for (var key in this.exception) {
+                if (this.exception.hasOwnProperty(key))
+                    data["Exception"][key] = this.exception[key];
+            }
+        }
+        if (this.data && this.data.constructor === Array) {
+            data["Data"] = [];
+            for (var _i = 0, _a = this.data; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["Data"].push(item.toJSON());
+            }
+        }
+        data["TotalRecord"] = this.totalRecord;
+        return data;
+    };
+    return ResponseOfListOfGameTypeModel;
+}());
+
+var SaveGameTypeParam = /** @class */ (function () {
+    function SaveGameTypeParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    SaveGameTypeParam.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.name = data["Name"];
+            this.cover = data["Cover"] ? UploadBase64Param.fromJS(data["Cover"]) : undefined;
+            this.enable = data["Enable"];
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    SaveGameTypeParam.fromJS = function (data) {
+        var result = new SaveGameTypeParam();
+        result.init(data);
+        return result;
+    };
+    SaveGameTypeParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["Name"] = this.name;
+        data["Cover"] = this.cover ? this.cover.toJSON() : undefined;
+        data["Enable"] = this.enable;
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return SaveGameTypeParam;
+}());
+
+var MDataTableResponseOfGameTypeModel = /** @class */ (function () {
+    function MDataTableResponseOfGameTypeModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    MDataTableResponseOfGameTypeModel.prototype.init = function (data) {
+        if (data) {
+            this.meta = data["meta"] ? MPagination.fromJS(data["meta"]) : undefined;
+            if (data["data"] && data["data"].constructor === Array) {
+                this.data = [];
+                for (var _i = 0, _a = data["data"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.data.push(GameTypeModel.fromJS(item));
+                }
+            }
+        }
+    };
+    MDataTableResponseOfGameTypeModel.fromJS = function (data) {
+        var result = new MDataTableResponseOfGameTypeModel();
+        result.init(data);
+        return result;
+    };
+    MDataTableResponseOfGameTypeModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["meta"] = this.meta ? this.meta.toJSON() : undefined;
+        if (this.data && this.data.constructor === Array) {
+            data["data"] = [];
+            for (var _i = 0, _a = this.data; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["data"].push(item.toJSON());
+            }
+        }
+        return data;
+    };
+    return MDataTableResponseOfGameTypeModel;
+}());
+
+var ResponseOfListOfMetadataSetModel = /** @class */ (function () {
+    function ResponseOfListOfMetadataSetModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ResponseOfListOfMetadataSetModel.prototype.init = function (data) {
+        if (data) {
+            this.success = data["Success"];
+            this.message = data["Message"];
+            if (data["Exception"]) {
+                this.exception = {};
+                for (var key in data["Exception"]) {
+                    if (data["Exception"].hasOwnProperty(key))
+                        this.exception[key] = data["Exception"][key];
+                }
+            }
+            if (data["Data"] && data["Data"].constructor === Array) {
+                this.data = [];
+                for (var _i = 0, _a = data["Data"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.data.push(MetadataSetModel.fromJS(item));
+                }
+            }
+            this.totalRecord = data["TotalRecord"];
+        }
+    };
+    ResponseOfListOfMetadataSetModel.fromJS = function (data) {
+        var result = new ResponseOfListOfMetadataSetModel();
+        result.init(data);
+        return result;
+    };
+    ResponseOfListOfMetadataSetModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Success"] = this.success;
+        data["Message"] = this.message;
+        if (this.exception) {
+            data["Exception"] = {};
+            for (var key in this.exception) {
+                if (this.exception.hasOwnProperty(key))
+                    data["Exception"][key] = this.exception[key];
+            }
+        }
+        if (this.data && this.data.constructor === Array) {
+            data["Data"] = [];
+            for (var _i = 0, _a = this.data; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["Data"].push(item.toJSON());
+            }
+        }
+        data["TotalRecord"] = this.totalRecord;
+        return data;
+    };
+    return ResponseOfListOfMetadataSetModel;
+}());
+
+var ResponseOfListOfMetadataModel = /** @class */ (function () {
+    function ResponseOfListOfMetadataModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ResponseOfListOfMetadataModel.prototype.init = function (data) {
+        if (data) {
+            this.success = data["Success"];
+            this.message = data["Message"];
+            if (data["Exception"]) {
+                this.exception = {};
+                for (var key in data["Exception"]) {
+                    if (data["Exception"].hasOwnProperty(key))
+                        this.exception[key] = data["Exception"][key];
+                }
+            }
+            if (data["Data"] && data["Data"].constructor === Array) {
+                this.data = [];
+                for (var _i = 0, _a = data["Data"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.data.push(MetadataModel.fromJS(item));
+                }
+            }
+            this.totalRecord = data["TotalRecord"];
+        }
+    };
+    ResponseOfListOfMetadataModel.fromJS = function (data) {
+        var result = new ResponseOfListOfMetadataModel();
+        result.init(data);
+        return result;
+    };
+    ResponseOfListOfMetadataModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Success"] = this.success;
+        data["Message"] = this.message;
+        if (this.exception) {
+            data["Exception"] = {};
+            for (var key in this.exception) {
+                if (this.exception.hasOwnProperty(key))
+                    data["Exception"][key] = this.exception[key];
+            }
+        }
+        if (this.data && this.data.constructor === Array) {
+            data["Data"] = [];
+            for (var _i = 0, _a = this.data; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["Data"].push(item.toJSON());
+            }
+        }
+        data["TotalRecord"] = this.totalRecord;
+        return data;
+    };
+    return ResponseOfListOfMetadataModel;
+}());
+
+var ResponseOfMetadataSetModel = /** @class */ (function () {
+    function ResponseOfMetadataSetModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ResponseOfMetadataSetModel.prototype.init = function (data) {
+        if (data) {
+            this.success = data["Success"];
+            this.message = data["Message"];
+            if (data["Exception"]) {
+                this.exception = {};
+                for (var key in data["Exception"]) {
+                    if (data["Exception"].hasOwnProperty(key))
+                        this.exception[key] = data["Exception"][key];
+                }
+            }
+            this.data = data["Data"] ? MetadataSetModel.fromJS(data["Data"]) : undefined;
+            this.totalRecord = data["TotalRecord"];
+        }
+    };
+    ResponseOfMetadataSetModel.fromJS = function (data) {
+        var result = new ResponseOfMetadataSetModel();
+        result.init(data);
+        return result;
+    };
+    ResponseOfMetadataSetModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Success"] = this.success;
+        data["Message"] = this.message;
+        if (this.exception) {
+            data["Exception"] = {};
+            for (var key in this.exception) {
+                if (this.exception.hasOwnProperty(key))
+                    data["Exception"][key] = this.exception[key];
+            }
+        }
+        data["Data"] = this.data ? this.data.toJSON() : undefined;
+        data["TotalRecord"] = this.totalRecord;
+        return data;
+    };
+    return ResponseOfMetadataSetModel;
+}());
+
+var SaveMetadataParam = /** @class */ (function () {
+    function SaveMetadataParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    SaveMetadataParam.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.metadataSetId = data["MetadataSetId"];
+            if (data["Fields"] && data["Fields"].constructor === Array) {
+                this.fields = [];
+                for (var _i = 0, _a = data["Fields"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.fields.push(FieldParam.fromJS(item));
+                }
+            }
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    SaveMetadataParam.fromJS = function (data) {
+        var result = new SaveMetadataParam();
+        result.init(data);
+        return result;
+    };
+    SaveMetadataParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["MetadataSetId"] = this.metadataSetId;
+        if (this.fields && this.fields.constructor === Array) {
+            data["Fields"] = [];
+            for (var _i = 0, _a = this.fields; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["Fields"].push(item.toJSON());
+            }
+        }
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return SaveMetadataParam;
+}());
+
+var ResponseOfMetadataModel = /** @class */ (function () {
+    function ResponseOfMetadataModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ResponseOfMetadataModel.prototype.init = function (data) {
+        if (data) {
+            this.success = data["Success"];
+            this.message = data["Message"];
+            if (data["Exception"]) {
+                this.exception = {};
+                for (var key in data["Exception"]) {
+                    if (data["Exception"].hasOwnProperty(key))
+                        this.exception[key] = data["Exception"][key];
+                }
+            }
+            this.data = data["Data"] ? MetadataModel.fromJS(data["Data"]) : undefined;
+            this.totalRecord = data["TotalRecord"];
+        }
+    };
+    ResponseOfMetadataModel.fromJS = function (data) {
+        var result = new ResponseOfMetadataModel();
+        result.init(data);
+        return result;
+    };
+    ResponseOfMetadataModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Success"] = this.success;
+        data["Message"] = this.message;
+        if (this.exception) {
+            data["Exception"] = {};
+            for (var key in this.exception) {
+                if (this.exception.hasOwnProperty(key))
+                    data["Exception"][key] = this.exception[key];
+            }
+        }
+        data["Data"] = this.data ? this.data.toJSON() : undefined;
+        data["TotalRecord"] = this.totalRecord;
+        return data;
+    };
+    return ResponseOfMetadataModel;
+}());
+
+var ResponseOfListOfMetadataSetCacheModel = /** @class */ (function () {
+    function ResponseOfListOfMetadataSetCacheModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ResponseOfListOfMetadataSetCacheModel.prototype.init = function (data) {
+        if (data) {
+            this.success = data["Success"];
+            this.message = data["Message"];
+            if (data["Exception"]) {
+                this.exception = {};
+                for (var key in data["Exception"]) {
+                    if (data["Exception"].hasOwnProperty(key))
+                        this.exception[key] = data["Exception"][key];
+                }
+            }
+            if (data["Data"] && data["Data"].constructor === Array) {
+                this.data = [];
+                for (var _i = 0, _a = data["Data"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.data.push(MetadataSetCacheModel.fromJS(item));
+                }
+            }
+            this.totalRecord = data["TotalRecord"];
+        }
+    };
+    ResponseOfListOfMetadataSetCacheModel.fromJS = function (data) {
+        var result = new ResponseOfListOfMetadataSetCacheModel();
+        result.init(data);
+        return result;
+    };
+    ResponseOfListOfMetadataSetCacheModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Success"] = this.success;
+        data["Message"] = this.message;
+        if (this.exception) {
+            data["Exception"] = {};
+            for (var key in this.exception) {
+                if (this.exception.hasOwnProperty(key))
+                    data["Exception"][key] = this.exception[key];
+            }
+        }
+        if (this.data && this.data.constructor === Array) {
+            data["Data"] = [];
+            for (var _i = 0, _a = this.data; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["Data"].push(item.toJSON());
+            }
+        }
+        data["TotalRecord"] = this.totalRecord;
+        return data;
+    };
+    return ResponseOfListOfMetadataSetCacheModel;
+}());
+
+var MetadataSetCacheModel = /** @class */ (function () {
+    function MetadataSetCacheModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    MetadataSetCacheModel.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.updatedDate = data["UpdatedDate"] ? __WEBPACK_IMPORTED_MODULE_10_moment__(data["UpdatedDate"].toString()) : undefined;
+            if (data["Metadatas"] && data["Metadatas"].constructor === Array) {
+                this.metadatas = [];
+                for (var _i = 0, _a = data["Metadatas"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.metadatas.push(MetadataCacheModel.fromJS(item));
+                }
+            }
+        }
+    };
+    MetadataSetCacheModel.fromJS = function (data) {
+        var result = new MetadataSetCacheModel();
+        result.init(data);
+        return result;
+    };
+    MetadataSetCacheModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["UpdatedDate"] = this.updatedDate ? this.updatedDate.toISOString() : undefined;
+        if (this.metadatas && this.metadatas.constructor === Array) {
+            data["Metadatas"] = [];
+            for (var _i = 0, _a = this.metadatas; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["Metadatas"].push(item.toJSON());
+            }
+        }
+        return data;
+    };
+    return MetadataSetCacheModel;
+}());
+
+var MetadataCacheModel = /** @class */ (function () {
+    function MetadataCacheModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    MetadataCacheModel.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.updatedDate = data["UpdatedDate"] ? __WEBPACK_IMPORTED_MODULE_10_moment__(data["UpdatedDate"].toString()) : undefined;
+        }
+    };
+    MetadataCacheModel.fromJS = function (data) {
+        var result = new MetadataCacheModel();
+        result.init(data);
+        return result;
+    };
+    MetadataCacheModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["UpdatedDate"] = this.updatedDate ? this.updatedDate.toISOString() : undefined;
+        return data;
+    };
+    return MetadataCacheModel;
+}());
+
+var ResponseOfListOfMetadataCacheDetailModel = /** @class */ (function () {
+    function ResponseOfListOfMetadataCacheDetailModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ResponseOfListOfMetadataCacheDetailModel.prototype.init = function (data) {
+        if (data) {
+            this.success = data["Success"];
+            this.message = data["Message"];
+            if (data["Exception"]) {
+                this.exception = {};
+                for (var key in data["Exception"]) {
+                    if (data["Exception"].hasOwnProperty(key))
+                        this.exception[key] = data["Exception"][key];
+                }
+            }
+            if (data["Data"] && data["Data"].constructor === Array) {
+                this.data = [];
+                for (var _i = 0, _a = data["Data"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.data.push(MetadataCacheDetailModel.fromJS(item));
+                }
+            }
+            this.totalRecord = data["TotalRecord"];
+        }
+    };
+    ResponseOfListOfMetadataCacheDetailModel.fromJS = function (data) {
+        var result = new ResponseOfListOfMetadataCacheDetailModel();
+        result.init(data);
+        return result;
+    };
+    ResponseOfListOfMetadataCacheDetailModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Success"] = this.success;
+        data["Message"] = this.message;
+        if (this.exception) {
+            data["Exception"] = {};
+            for (var key in this.exception) {
+                if (this.exception.hasOwnProperty(key))
+                    data["Exception"][key] = this.exception[key];
+            }
+        }
+        if (this.data && this.data.constructor === Array) {
+            data["Data"] = [];
+            for (var _i = 0, _a = this.data; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["Data"].push(item.toJSON());
+            }
+        }
+        data["TotalRecord"] = this.totalRecord;
+        return data;
+    };
+    return ResponseOfListOfMetadataCacheDetailModel;
+}());
+
+var MetadataCacheDetailModel = /** @class */ (function () {
+    function MetadataCacheDetailModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    MetadataCacheDetailModel.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.metadataSetId = data["MetadataSetId"];
+            if (data["MetadataDetails"]) {
+                this.metadataDetails = {};
+                for (var key in data["MetadataDetails"]) {
+                    if (data["MetadataDetails"].hasOwnProperty(key))
+                        this.metadataDetails[key] = data["MetadataDetails"][key];
+                }
+            }
+        }
+    };
+    MetadataCacheDetailModel.fromJS = function (data) {
+        var result = new MetadataCacheDetailModel();
+        result.init(data);
+        return result;
+    };
+    MetadataCacheDetailModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["MetadataSetId"] = this.metadataSetId;
+        if (this.metadataDetails) {
+            data["MetadataDetails"] = {};
+            for (var key in this.metadataDetails) {
+                if (this.metadataDetails.hasOwnProperty(key))
+                    data["MetadataDetails"][key] = this.metadataDetails[key];
+            }
+        }
+        return data;
+    };
+    return MetadataCacheDetailModel;
+}());
+
+var ResponseOfMobileCacheHistoryModel = /** @class */ (function () {
+    function ResponseOfMobileCacheHistoryModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ResponseOfMobileCacheHistoryModel.prototype.init = function (data) {
+        if (data) {
+            this.success = data["Success"];
+            this.message = data["Message"];
+            if (data["Exception"]) {
+                this.exception = {};
+                for (var key in data["Exception"]) {
+                    if (data["Exception"].hasOwnProperty(key))
+                        this.exception[key] = data["Exception"][key];
+                }
+            }
+            this.data = data["Data"] ? MobileCacheHistoryModel.fromJS(data["Data"]) : undefined;
+            this.totalRecord = data["TotalRecord"];
+        }
+    };
+    ResponseOfMobileCacheHistoryModel.fromJS = function (data) {
+        var result = new ResponseOfMobileCacheHistoryModel();
+        result.init(data);
+        return result;
+    };
+    ResponseOfMobileCacheHistoryModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Success"] = this.success;
+        data["Message"] = this.message;
+        if (this.exception) {
+            data["Exception"] = {};
+            for (var key in this.exception) {
+                if (this.exception.hasOwnProperty(key))
+                    data["Exception"][key] = this.exception[key];
+            }
+        }
+        data["Data"] = this.data ? this.data.toJSON() : undefined;
+        data["TotalRecord"] = this.totalRecord;
+        return data;
+    };
+    return ResponseOfMobileCacheHistoryModel;
+}());
+
+var MobileCacheHistoryModel = /** @class */ (function () {
+    function MobileCacheHistoryModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    MobileCacheHistoryModel.prototype.init = function (data) {
+        if (data) {
+            if (data["MetadataHistory"] && data["MetadataHistory"].constructor === Array) {
+                this.metadataHistory = [];
+                for (var _i = 0, _a = data["MetadataHistory"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.metadataHistory.push(MetadataSetCacheModel.fromJS(item));
+                }
+            }
+            if (data["WhaleCourseHistory"] && data["WhaleCourseHistory"].constructor === Array) {
+                this.whaleCourseHistory = [];
+                for (var _b = 0, _c = data["WhaleCourseHistory"]; _b < _c.length; _b++) {
+                    var item = _c[_b];
+                    this.whaleCourseHistory.push(CourseCacheModel.fromJS(item));
+                }
+            }
+            if (data["SchoolCourseHistory"] && data["SchoolCourseHistory"].constructor === Array) {
+                this.schoolCourseHistory = [];
+                for (var _d = 0, _e = data["SchoolCourseHistory"]; _d < _e.length; _d++) {
+                    var item = _e[_d];
+                    this.schoolCourseHistory.push(CourseCacheModel.fromJS(item));
+                }
+            }
+            if (data["FreeCourseHistory"] && data["FreeCourseHistory"].constructor === Array) {
+                this.freeCourseHistory = [];
+                for (var _f = 0, _g = data["FreeCourseHistory"]; _f < _g.length; _f++) {
+                    var item = _g[_f];
+                    this.freeCourseHistory.push(CourseCacheModel.fromJS(item));
+                }
+            }
+        }
+    };
+    MobileCacheHistoryModel.fromJS = function (data) {
+        var result = new MobileCacheHistoryModel();
+        result.init(data);
+        return result;
+    };
+    MobileCacheHistoryModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        if (this.metadataHistory && this.metadataHistory.constructor === Array) {
+            data["MetadataHistory"] = [];
+            for (var _i = 0, _a = this.metadataHistory; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["MetadataHistory"].push(item.toJSON());
+            }
+        }
+        if (this.whaleCourseHistory && this.whaleCourseHistory.constructor === Array) {
+            data["WhaleCourseHistory"] = [];
+            for (var _b = 0, _c = this.whaleCourseHistory; _b < _c.length; _b++) {
+                var item = _c[_b];
+                data["WhaleCourseHistory"].push(item.toJSON());
+            }
+        }
+        if (this.schoolCourseHistory && this.schoolCourseHistory.constructor === Array) {
+            data["SchoolCourseHistory"] = [];
+            for (var _d = 0, _e = this.schoolCourseHistory; _d < _e.length; _d++) {
+                var item = _e[_d];
+                data["SchoolCourseHistory"].push(item.toJSON());
+            }
+        }
+        if (this.freeCourseHistory && this.freeCourseHistory.constructor === Array) {
+            data["FreeCourseHistory"] = [];
+            for (var _f = 0, _g = this.freeCourseHistory; _f < _g.length; _f++) {
+                var item = _g[_f];
+                data["FreeCourseHistory"].push(item.toJSON());
+            }
+        }
+        return data;
+    };
+    return MobileCacheHistoryModel;
+}());
+
+var MDataTableResponseOfPrincipalModel = /** @class */ (function () {
+    function MDataTableResponseOfPrincipalModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    MDataTableResponseOfPrincipalModel.prototype.init = function (data) {
+        if (data) {
+            this.meta = data["meta"] ? MPagination.fromJS(data["meta"]) : undefined;
+            if (data["data"] && data["data"].constructor === Array) {
+                this.data = [];
+                for (var _i = 0, _a = data["data"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.data.push(PrincipalModel.fromJS(item));
+                }
+            }
+        }
+    };
+    MDataTableResponseOfPrincipalModel.fromJS = function (data) {
+        var result = new MDataTableResponseOfPrincipalModel();
+        result.init(data);
+        return result;
+    };
+    MDataTableResponseOfPrincipalModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["meta"] = this.meta ? this.meta.toJSON() : undefined;
+        if (this.data && this.data.constructor === Array) {
+            data["data"] = [];
+            for (var _i = 0, _a = this.data; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["data"].push(item.toJSON());
+            }
+        }
+        return data;
+    };
+    return MDataTableResponseOfPrincipalModel;
+}());
+
+var PrincipalModel = /** @class */ (function () {
+    function PrincipalModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    PrincipalModel.prototype.init = function (data) {
+        if (data) {
+            this.principalId = data["PrincipalId"];
+            this.email = data["Email"];
+            if (data["SchoolNames"] && data["SchoolNames"].constructor === Array) {
+                this.schoolNames = [];
+                for (var _i = 0, _a = data["SchoolNames"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.schoolNames.push(item);
+                }
+            }
+            this.id = data["Id"];
+            this.userName = data["UserName"];
+            this.fullName = data["FullName"];
+            this.isLock = data["IsLock"];
+            this.redirectUrl = data["RedirectUrl"];
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    PrincipalModel.fromJS = function (data) {
+        var result = new PrincipalModel();
+        result.init(data);
+        return result;
+    };
+    PrincipalModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["PrincipalId"] = this.principalId;
+        data["Email"] = this.email;
+        if (this.schoolNames && this.schoolNames.constructor === Array) {
+            data["SchoolNames"] = [];
+            for (var _i = 0, _a = this.schoolNames; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["SchoolNames"].push(item);
+            }
+        }
+        data["Id"] = this.id;
+        data["UserName"] = this.userName;
+        data["FullName"] = this.fullName;
+        data["IsLock"] = this.isLock;
+        data["RedirectUrl"] = this.redirectUrl;
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return PrincipalModel;
+}());
+
+var SavePricipalParam = /** @class */ (function () {
+    function SavePricipalParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    SavePricipalParam.prototype.init = function (data) {
+        if (data) {
+            this.principalId = data["PrincipalId"];
+            this.email = data["Email"];
+            this.userName = data["UserName"];
+            this.password = data["Password"];
+            this.fullName = data["FullName"];
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    SavePricipalParam.fromJS = function (data) {
+        var result = new SavePricipalParam();
+        result.init(data);
+        return result;
+    };
+    SavePricipalParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["PrincipalId"] = this.principalId;
+        data["Email"] = this.email;
+        data["UserName"] = this.userName;
+        data["Password"] = this.password;
+        data["FullName"] = this.fullName;
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return SavePricipalParam;
+}());
+
+var ResponseOfPrincipalModel = /** @class */ (function () {
+    function ResponseOfPrincipalModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ResponseOfPrincipalModel.prototype.init = function (data) {
+        if (data) {
+            this.success = data["Success"];
+            this.message = data["Message"];
+            if (data["Exception"]) {
+                this.exception = {};
+                for (var key in data["Exception"]) {
+                    if (data["Exception"].hasOwnProperty(key))
+                        this.exception[key] = data["Exception"][key];
+                }
+            }
+            this.data = data["Data"] ? PrincipalModel.fromJS(data["Data"]) : undefined;
+            this.totalRecord = data["TotalRecord"];
+        }
+    };
+    ResponseOfPrincipalModel.fromJS = function (data) {
+        var result = new ResponseOfPrincipalModel();
+        result.init(data);
+        return result;
+    };
+    ResponseOfPrincipalModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Success"] = this.success;
+        data["Message"] = this.message;
+        if (this.exception) {
+            data["Exception"] = {};
+            for (var key in this.exception) {
+                if (this.exception.hasOwnProperty(key))
+                    data["Exception"][key] = this.exception[key];
+            }
+        }
+        data["Data"] = this.data ? this.data.toJSON() : undefined;
+        data["TotalRecord"] = this.totalRecord;
+        return data;
+    };
+    return ResponseOfPrincipalModel;
+}());
+
+var MDataTableResponseOfSchoolModel = /** @class */ (function () {
+    function MDataTableResponseOfSchoolModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    MDataTableResponseOfSchoolModel.prototype.init = function (data) {
+        if (data) {
+            this.meta = data["meta"] ? MPagination.fromJS(data["meta"]) : undefined;
+            if (data["data"] && data["data"].constructor === Array) {
+                this.data = [];
+                for (var _i = 0, _a = data["data"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.data.push(SchoolModel.fromJS(item));
+                }
+            }
+        }
+    };
+    MDataTableResponseOfSchoolModel.fromJS = function (data) {
+        var result = new MDataTableResponseOfSchoolModel();
+        result.init(data);
+        return result;
+    };
+    MDataTableResponseOfSchoolModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["meta"] = this.meta ? this.meta.toJSON() : undefined;
+        if (this.data && this.data.constructor === Array) {
+            data["data"] = [];
+            for (var _i = 0, _a = this.data; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["data"].push(item.toJSON());
+            }
+        }
+        return data;
+    };
+    return MDataTableResponseOfSchoolModel;
+}());
+
+var SchoolModel = /** @class */ (function () {
+    function SchoolModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    SchoolModel.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.name = data["Name"];
+            this.email = data["Email"];
+            this.phone = data["Phone"];
+            this.address = data["Address"];
+            this.schoolSize = data["SchoolSize"];
+            this.isActive = data["IsActive"];
+            this.principal = data["Principal"] ? PrincipalModel.fromJS(data["Principal"]) : undefined;
+        }
+    };
+    SchoolModel.fromJS = function (data) {
+        var result = new SchoolModel();
+        result.init(data);
+        return result;
+    };
+    SchoolModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["Name"] = this.name;
+        data["Email"] = this.email;
+        data["Phone"] = this.phone;
+        data["Address"] = this.address;
+        data["SchoolSize"] = this.schoolSize;
+        data["IsActive"] = this.isActive;
+        data["Principal"] = this.principal ? this.principal.toJSON() : undefined;
+        return data;
+    };
+    return SchoolModel;
+}());
+
+var ActiveSchoolParam = /** @class */ (function () {
+    function ActiveSchoolParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ActiveSchoolParam.prototype.init = function (data) {
+        if (data) {
+            this.schoolId = data["SchoolId"];
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    ActiveSchoolParam.fromJS = function (data) {
+        var result = new ActiveSchoolParam();
+        result.init(data);
+        return result;
+    };
+    ActiveSchoolParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["SchoolId"] = this.schoolId;
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return ActiveSchoolParam;
+}());
+
+var GetSchoolByCurrentUser = /** @class */ (function () {
+    function GetSchoolByCurrentUser(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    GetSchoolByCurrentUser.prototype.init = function (data) {
+        if (data) {
+            this.isLoadActiveOnly = data["IsLoadActiveOnly"];
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    GetSchoolByCurrentUser.fromJS = function (data) {
+        var result = new GetSchoolByCurrentUser();
+        result.init(data);
+        return result;
+    };
+    GetSchoolByCurrentUser.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["IsLoadActiveOnly"] = this.isLoadActiveOnly;
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return GetSchoolByCurrentUser;
+}());
+
+var ResponseOfListOfSchoolModel = /** @class */ (function () {
+    function ResponseOfListOfSchoolModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ResponseOfListOfSchoolModel.prototype.init = function (data) {
+        if (data) {
+            this.success = data["Success"];
+            this.message = data["Message"];
+            if (data["Exception"]) {
+                this.exception = {};
+                for (var key in data["Exception"]) {
+                    if (data["Exception"].hasOwnProperty(key))
+                        this.exception[key] = data["Exception"][key];
+                }
+            }
+            if (data["Data"] && data["Data"].constructor === Array) {
+                this.data = [];
+                for (var _i = 0, _a = data["Data"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.data.push(SchoolModel.fromJS(item));
+                }
+            }
+            this.totalRecord = data["TotalRecord"];
+        }
+    };
+    ResponseOfListOfSchoolModel.fromJS = function (data) {
+        var result = new ResponseOfListOfSchoolModel();
+        result.init(data);
+        return result;
+    };
+    ResponseOfListOfSchoolModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Success"] = this.success;
+        data["Message"] = this.message;
+        if (this.exception) {
+            data["Exception"] = {};
+            for (var key in this.exception) {
+                if (this.exception.hasOwnProperty(key))
+                    data["Exception"][key] = this.exception[key];
+            }
+        }
+        if (this.data && this.data.constructor === Array) {
+            data["Data"] = [];
+            for (var _i = 0, _a = this.data; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["Data"].push(item.toJSON());
+            }
+        }
+        data["TotalRecord"] = this.totalRecord;
+        return data;
+    };
+    return ResponseOfListOfSchoolModel;
+}());
+
+var SaveSchoolParam = /** @class */ (function () {
+    function SaveSchoolParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    SaveSchoolParam.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.name = data["Name"];
+            this.email = data["Email"];
+            this.schoolSize = data["SchoolSize"];
+            this.address = data["Address"];
+            this.phone = data["Phone"];
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    SaveSchoolParam.fromJS = function (data) {
+        var result = new SaveSchoolParam();
+        result.init(data);
+        return result;
+    };
+    SaveSchoolParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["Name"] = this.name;
+        data["Email"] = this.email;
+        data["SchoolSize"] = this.schoolSize;
+        data["Address"] = this.address;
+        data["Phone"] = this.phone;
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return SaveSchoolParam;
+}());
+
+var ResponseOfSchoolModel = /** @class */ (function () {
+    function ResponseOfSchoolModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ResponseOfSchoolModel.prototype.init = function (data) {
+        if (data) {
+            this.success = data["Success"];
+            this.message = data["Message"];
+            if (data["Exception"]) {
+                this.exception = {};
+                for (var key in data["Exception"]) {
+                    if (data["Exception"].hasOwnProperty(key))
+                        this.exception[key] = data["Exception"][key];
+                }
+            }
+            this.data = data["Data"] ? SchoolModel.fromJS(data["Data"]) : undefined;
+            this.totalRecord = data["TotalRecord"];
+        }
+    };
+    ResponseOfSchoolModel.fromJS = function (data) {
+        var result = new ResponseOfSchoolModel();
+        result.init(data);
+        return result;
+    };
+    ResponseOfSchoolModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Success"] = this.success;
+        data["Message"] = this.message;
+        if (this.exception) {
+            data["Exception"] = {};
+            for (var key in this.exception) {
+                if (this.exception.hasOwnProperty(key))
+                    data["Exception"][key] = this.exception[key];
+            }
+        }
+        data["Data"] = this.data ? this.data.toJSON() : undefined;
+        data["TotalRecord"] = this.totalRecord;
+        return data;
+    };
+    return ResponseOfSchoolModel;
+}());
+
+var AssignSchoolParam = /** @class */ (function () {
+    function AssignSchoolParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    AssignSchoolParam.prototype.init = function (data) {
+        if (data) {
+            this.principalId = data["PrincipalId"];
+            if (data["SchoolIds"] && data["SchoolIds"].constructor === Array) {
+                this.schoolIds = [];
+                for (var _i = 0, _a = data["SchoolIds"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.schoolIds.push(item);
+                }
+            }
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    AssignSchoolParam.fromJS = function (data) {
+        var result = new AssignSchoolParam();
+        result.init(data);
+        return result;
+    };
+    AssignSchoolParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["PrincipalId"] = this.principalId;
+        if (this.schoolIds && this.schoolIds.constructor === Array) {
+            data["SchoolIds"] = [];
+            for (var _i = 0, _a = this.schoolIds; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["SchoolIds"].push(item);
+            }
+        }
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return AssignSchoolParam;
+}());
+
+var MDataTableResponseOfSchoolOwnerModel = /** @class */ (function () {
+    function MDataTableResponseOfSchoolOwnerModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    MDataTableResponseOfSchoolOwnerModel.prototype.init = function (data) {
+        if (data) {
+            this.meta = data["meta"] ? MPagination.fromJS(data["meta"]) : undefined;
+            if (data["data"] && data["data"].constructor === Array) {
+                this.data = [];
+                for (var _i = 0, _a = data["data"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.data.push(SchoolOwnerModel.fromJS(item));
+                }
+            }
+        }
+    };
+    MDataTableResponseOfSchoolOwnerModel.fromJS = function (data) {
+        var result = new MDataTableResponseOfSchoolOwnerModel();
+        result.init(data);
+        return result;
+    };
+    MDataTableResponseOfSchoolOwnerModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["meta"] = this.meta ? this.meta.toJSON() : undefined;
+        if (this.data && this.data.constructor === Array) {
+            data["data"] = [];
+            for (var _i = 0, _a = this.data; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["data"].push(item.toJSON());
+            }
+        }
+        return data;
+    };
+    return MDataTableResponseOfSchoolOwnerModel;
+}());
+
+var SchoolOwnerModel = /** @class */ (function () {
+    function SchoolOwnerModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    SchoolOwnerModel.prototype.init = function (data) {
+        if (data) {
+            this.schoolSystem = data["SchoolSystem"] ? SchoolSystemModel.fromJS(data["SchoolSystem"]) : undefined;
+            this.id = data["Id"];
+            this.userName = data["UserName"];
+            this.fullName = data["FullName"];
+            this.isLock = data["IsLock"];
+            this.redirectUrl = data["RedirectUrl"];
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    SchoolOwnerModel.fromJS = function (data) {
+        var result = new SchoolOwnerModel();
+        result.init(data);
+        return result;
+    };
+    SchoolOwnerModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["SchoolSystem"] = this.schoolSystem ? this.schoolSystem.toJSON() : undefined;
+        data["Id"] = this.id;
+        data["UserName"] = this.userName;
+        data["FullName"] = this.fullName;
+        data["IsLock"] = this.isLock;
+        data["RedirectUrl"] = this.redirectUrl;
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return SchoolOwnerModel;
+}());
+
+var SchoolSystemModel = /** @class */ (function () {
+    function SchoolSystemModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    SchoolSystemModel.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.schoolOwnerId = data["SchoolOwnerId"];
+            this.logo = data["Logo"];
+            this.name = data["Name"];
+            this.email = data["Email"];
+        }
+    };
+    SchoolSystemModel.fromJS = function (data) {
+        var result = new SchoolSystemModel();
+        result.init(data);
+        return result;
+    };
+    SchoolSystemModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["SchoolOwnerId"] = this.schoolOwnerId;
+        data["Logo"] = this.logo;
+        data["Name"] = this.name;
+        data["Email"] = this.email;
+        return data;
+    };
+    return SchoolSystemModel;
+}());
+
+var SaveSchoolOwnerParam = /** @class */ (function () {
+    function SaveSchoolOwnerParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    SaveSchoolOwnerParam.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.userName = data["UserName"];
+            this.password = data["Password"];
+            this.fullName = data["FullName"];
+            this.schoolName = data["SchoolName"];
+            this.schoolEmail = data["SchoolEmail"];
+            this.schoolLogo = data["SchoolLogo"] ? UploadBase64Param.fromJS(data["SchoolLogo"]) : undefined;
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    SaveSchoolOwnerParam.fromJS = function (data) {
+        var result = new SaveSchoolOwnerParam();
+        result.init(data);
+        return result;
+    };
+    SaveSchoolOwnerParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["UserName"] = this.userName;
+        data["Password"] = this.password;
+        data["FullName"] = this.fullName;
+        data["SchoolName"] = this.schoolName;
+        data["SchoolEmail"] = this.schoolEmail;
+        data["SchoolLogo"] = this.schoolLogo ? this.schoolLogo.toJSON() : undefined;
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return SaveSchoolOwnerParam;
+}());
+
+var ResponseOfSchoolOwnerModel = /** @class */ (function () {
+    function ResponseOfSchoolOwnerModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ResponseOfSchoolOwnerModel.prototype.init = function (data) {
+        if (data) {
+            this.success = data["Success"];
+            this.message = data["Message"];
+            if (data["Exception"]) {
+                this.exception = {};
+                for (var key in data["Exception"]) {
+                    if (data["Exception"].hasOwnProperty(key))
+                        this.exception[key] = data["Exception"][key];
+                }
+            }
+            this.data = data["Data"] ? SchoolOwnerModel.fromJS(data["Data"]) : undefined;
+            this.totalRecord = data["TotalRecord"];
+        }
+    };
+    ResponseOfSchoolOwnerModel.fromJS = function (data) {
+        var result = new ResponseOfSchoolOwnerModel();
+        result.init(data);
+        return result;
+    };
+    ResponseOfSchoolOwnerModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Success"] = this.success;
+        data["Message"] = this.message;
+        if (this.exception) {
+            data["Exception"] = {};
+            for (var key in this.exception) {
+                if (this.exception.hasOwnProperty(key))
+                    data["Exception"][key] = this.exception[key];
+            }
+        }
+        data["Data"] = this.data ? this.data.toJSON() : undefined;
+        data["TotalRecord"] = this.totalRecord;
+        return data;
+    };
+    return ResponseOfSchoolOwnerModel;
+}());
+
+var RegisterSchoolParam = /** @class */ (function () {
+    function RegisterSchoolParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    RegisterSchoolParam.prototype.init = function (data) {
+        if (data) {
+            this.fullName = data["FullName"];
+            this.schoolName = data["SchoolName"];
+            this.address = data["Address"];
+            this.phoneNumber = data["PhoneNumber"];
+            this.email = data["Email"];
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    RegisterSchoolParam.fromJS = function (data) {
+        var result = new RegisterSchoolParam();
+        result.init(data);
+        return result;
+    };
+    RegisterSchoolParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["FullName"] = this.fullName;
+        data["SchoolName"] = this.schoolName;
+        data["Address"] = this.address;
+        data["PhoneNumber"] = this.phoneNumber;
+        data["Email"] = this.email;
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return RegisterSchoolParam;
+}());
+
+var HandleStudentDatatableParam = /** @class */ (function () {
+    function HandleStudentDatatableParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    HandleStudentDatatableParam.prototype.init = function (data) {
+        if (data) {
+            this.datatable = data["datatable"] ? MDatatableStudentParam.fromJS(data["datatable"]) : undefined;
+        }
+    };
+    HandleStudentDatatableParam.fromJS = function (data) {
+        var result = new HandleStudentDatatableParam();
+        result.init(data);
+        return result;
+    };
+    HandleStudentDatatableParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["datatable"] = this.datatable ? this.datatable.toJSON() : undefined;
+        return data;
+    };
+    return HandleStudentDatatableParam;
+}());
+
+var MDatatableStudentParam = /** @class */ (function () {
+    function MDatatableStudentParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    MDatatableStudentParam.prototype.init = function (data) {
+        if (data) {
+            this.pagination = data["pagination"] ? MPagination.fromJS(data["pagination"]) : undefined;
+            this.sort = data["sort"] ? MSort.fromJS(data["sort"]) : undefined;
+            this.query = data["query"] ? MStudentQuery.fromJS(data["query"]) : undefined;
+        }
+    };
+    MDatatableStudentParam.fromJS = function (data) {
+        var result = new MDatatableStudentParam();
+        result.init(data);
+        return result;
+    };
+    MDatatableStudentParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["pagination"] = this.pagination ? this.pagination.toJSON() : undefined;
+        data["sort"] = this.sort ? this.sort.toJSON() : undefined;
+        data["query"] = this.query ? this.query.toJSON() : undefined;
+        return data;
+    };
+    return MDatatableStudentParam;
+}());
+
+var MStudentQuery = /** @class */ (function () {
+    function MStudentQuery(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    MStudentQuery.prototype.init = function (data) {
+        if (data) {
+            this.classId = data["ClassId"];
+            this.generalSearch = data["generalSearch"];
+        }
+    };
+    MStudentQuery.fromJS = function (data) {
+        var result = new MStudentQuery();
+        result.init(data);
+        return result;
+    };
+    MStudentQuery.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["ClassId"] = this.classId;
+        data["generalSearch"] = this.generalSearch;
+        return data;
+    };
+    return MStudentQuery;
+}());
+
+var MDataTableResponseOfStudentModel = /** @class */ (function () {
+    function MDataTableResponseOfStudentModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    MDataTableResponseOfStudentModel.prototype.init = function (data) {
+        if (data) {
+            this.meta = data["meta"] ? MPagination.fromJS(data["meta"]) : undefined;
+            if (data["data"] && data["data"].constructor === Array) {
+                this.data = [];
+                for (var _i = 0, _a = data["data"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.data.push(StudentModel.fromJS(item));
+                }
+            }
+        }
+    };
+    MDataTableResponseOfStudentModel.fromJS = function (data) {
+        var result = new MDataTableResponseOfStudentModel();
+        result.init(data);
+        return result;
+    };
+    MDataTableResponseOfStudentModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["meta"] = this.meta ? this.meta.toJSON() : undefined;
+        if (this.data && this.data.constructor === Array) {
+            data["data"] = [];
+            for (var _i = 0, _a = this.data; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["data"].push(item.toJSON());
+            }
+        }
+        return data;
+    };
+    return MDataTableResponseOfStudentModel;
+}());
+
+var StudentModel = /** @class */ (function () {
+    function StudentModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    StudentModel.prototype.init = function (data) {
+        if (data) {
+            this.studentId = data["StudentId"];
+            if (data["Schools"] && data["Schools"].constructor === Array) {
+                this.schools = [];
+                for (var _i = 0, _a = data["Schools"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.schools.push(StudentSchool.fromJS(item));
+                }
+            }
+            this.age = data["Age"];
+            this.parentName = data["ParentName"];
+            this.phoneNumber = data["PhoneNumber"];
+            this.email = data["Email"];
+            this.address = data["Address"];
+            if (data["RegistedCourses"] && data["RegistedCourses"].constructor === Array) {
+                this.registedCourses = [];
+                for (var _b = 0, _c = data["RegistedCourses"]; _b < _c.length; _b++) {
+                    var item = _c[_b];
+                    this.registedCourses.push(StudentRegistedCourseModel.fromJS(item));
+                }
+            }
+            this.id = data["Id"];
+            this.userName = data["UserName"];
+            this.fullName = data["FullName"];
+            this.isLock = data["IsLock"];
+            this.redirectUrl = data["RedirectUrl"];
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    StudentModel.fromJS = function (data) {
+        var result = new StudentModel();
+        result.init(data);
+        return result;
+    };
+    StudentModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["StudentId"] = this.studentId;
+        if (this.schools && this.schools.constructor === Array) {
+            data["Schools"] = [];
+            for (var _i = 0, _a = this.schools; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["Schools"].push(item.toJSON());
+            }
+        }
+        data["Age"] = this.age;
+        data["ParentName"] = this.parentName;
+        data["PhoneNumber"] = this.phoneNumber;
+        data["Email"] = this.email;
+        data["Address"] = this.address;
+        if (this.registedCourses && this.registedCourses.constructor === Array) {
+            data["RegistedCourses"] = [];
+            for (var _b = 0, _c = this.registedCourses; _b < _c.length; _b++) {
+                var item = _c[_b];
+                data["RegistedCourses"].push(item.toJSON());
+            }
+        }
+        data["Id"] = this.id;
+        data["UserName"] = this.userName;
+        data["FullName"] = this.fullName;
+        data["IsLock"] = this.isLock;
+        data["RedirectUrl"] = this.redirectUrl;
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return StudentModel;
+}());
+
+var StudentSchool = /** @class */ (function () {
+    function StudentSchool(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    StudentSchool.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.name = data["Name"];
+            if (data["Classes"] && data["Classes"].constructor === Array) {
+                this.classes = [];
+                for (var _i = 0, _a = data["Classes"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.classes.push(StudentSchoolClass.fromJS(item));
+                }
+            }
+        }
+    };
+    StudentSchool.fromJS = function (data) {
+        var result = new StudentSchool();
+        result.init(data);
+        return result;
+    };
+    StudentSchool.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["Name"] = this.name;
+        if (this.classes && this.classes.constructor === Array) {
+            data["Classes"] = [];
+            for (var _i = 0, _a = this.classes; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["Classes"].push(item.toJSON());
+            }
+        }
+        return data;
+    };
+    return StudentSchool;
+}());
+
+var StudentRegistedCourseModel = /** @class */ (function () {
+    function StudentRegistedCourseModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    StudentRegistedCourseModel.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.name = data["Name"];
+        }
+    };
+    StudentRegistedCourseModel.fromJS = function (data) {
+        var result = new StudentRegistedCourseModel();
+        result.init(data);
+        return result;
+    };
+    StudentRegistedCourseModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["Name"] = this.name;
+        return data;
+    };
+    return StudentRegistedCourseModel;
+}());
+
+var StudentSchoolClass = /** @class */ (function () {
+    function StudentSchoolClass(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    StudentSchoolClass.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.name = data["Name"];
+        }
+    };
+    StudentSchoolClass.fromJS = function (data) {
+        var result = new StudentSchoolClass();
+        result.init(data);
+        return result;
+    };
+    StudentSchoolClass.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["Name"] = this.name;
+        return data;
+    };
+    return StudentSchoolClass;
+}());
+
+var SaveStudentParam = /** @class */ (function () {
+    function SaveStudentParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    SaveStudentParam.prototype.init = function (data) {
+        if (data) {
+            this.studentId = data["StudentId"];
+            this.classId = data["ClassId"];
+            this.age = data["Age"];
+            this.parentName = data["ParentName"];
+            this.phoneNumber = data["PhoneNumber"];
+            this.address = data["Address"];
+            this.email = data["Email"];
+            this.userName = data["UserName"];
+            this.password = data["Password"];
+            this.fullName = data["FullName"];
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    SaveStudentParam.fromJS = function (data) {
+        var result = new SaveStudentParam();
+        result.init(data);
+        return result;
+    };
+    SaveStudentParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["StudentId"] = this.studentId;
+        data["ClassId"] = this.classId;
+        data["Age"] = this.age;
+        data["ParentName"] = this.parentName;
+        data["PhoneNumber"] = this.phoneNumber;
+        data["Address"] = this.address;
+        data["Email"] = this.email;
+        data["UserName"] = this.userName;
+        data["Password"] = this.password;
+        data["FullName"] = this.fullName;
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return SaveStudentParam;
+}());
+
+var ResponseOfStudentModel = /** @class */ (function () {
+    function ResponseOfStudentModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ResponseOfStudentModel.prototype.init = function (data) {
+        if (data) {
+            this.success = data["Success"];
+            this.message = data["Message"];
+            if (data["Exception"]) {
+                this.exception = {};
+                for (var key in data["Exception"]) {
+                    if (data["Exception"].hasOwnProperty(key))
+                        this.exception[key] = data["Exception"][key];
+                }
+            }
+            this.data = data["Data"] ? StudentModel.fromJS(data["Data"]) : undefined;
+            this.totalRecord = data["TotalRecord"];
+        }
+    };
+    ResponseOfStudentModel.fromJS = function (data) {
+        var result = new ResponseOfStudentModel();
+        result.init(data);
+        return result;
+    };
+    ResponseOfStudentModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Success"] = this.success;
+        data["Message"] = this.message;
+        if (this.exception) {
+            data["Exception"] = {};
+            for (var key in this.exception) {
+                if (this.exception.hasOwnProperty(key))
+                    data["Exception"][key] = this.exception[key];
+            }
+        }
+        data["Data"] = this.data ? this.data.toJSON() : undefined;
+        data["TotalRecord"] = this.totalRecord;
+        return data;
+    };
+    return ResponseOfStudentModel;
+}());
+
+var DeleteStudentParam = /** @class */ (function () {
+    function DeleteStudentParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    DeleteStudentParam.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.classId = data["ClassId"];
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    DeleteStudentParam.fromJS = function (data) {
+        var result = new DeleteStudentParam();
+        result.init(data);
+        return result;
+    };
+    DeleteStudentParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["ClassId"] = this.classId;
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return DeleteStudentParam;
+}());
+
+var ActiveStudentCourseParam = /** @class */ (function () {
+    function ActiveStudentCourseParam(data) {
+        this.studentIds = [];
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ActiveStudentCourseParam.prototype.init = function (data) {
+        if (data) {
+            if (data["StudentIds"] && data["StudentIds"].constructor === Array) {
+                this.studentIds = [];
+                for (var _i = 0, _a = data["StudentIds"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.studentIds.push(item);
+                }
+            }
+            this.courseId = data["CourseId"];
+            this.schoolId = data["SchoolId"];
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    ActiveStudentCourseParam.fromJS = function (data) {
+        var result = new ActiveStudentCourseParam();
+        result.init(data);
+        return result;
+    };
+    ActiveStudentCourseParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        if (this.studentIds && this.studentIds.constructor === Array) {
+            data["StudentIds"] = [];
+            for (var _i = 0, _a = this.studentIds; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["StudentIds"].push(item);
+            }
+        }
+        data["CourseId"] = this.courseId;
+        data["SchoolId"] = this.schoolId;
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return ActiveStudentCourseParam;
+}());
+
+var SaveSubscribeParam = /** @class */ (function () {
+    function SaveSubscribeParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    SaveSubscribeParam.prototype.init = function (data) {
+        if (data) {
+            this.email = data["Email"];
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    SaveSubscribeParam.fromJS = function (data) {
+        var result = new SaveSubscribeParam();
+        result.init(data);
+        return result;
+    };
+    SaveSubscribeParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Email"] = this.email;
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return SaveSubscribeParam;
+}());
+
+var ResponseOfSubscriberModel = /** @class */ (function () {
+    function ResponseOfSubscriberModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ResponseOfSubscriberModel.prototype.init = function (data) {
+        if (data) {
+            this.success = data["Success"];
+            this.message = data["Message"];
+            if (data["Exception"]) {
+                this.exception = {};
+                for (var key in data["Exception"]) {
+                    if (data["Exception"].hasOwnProperty(key))
+                        this.exception[key] = data["Exception"][key];
+                }
+            }
+            this.data = data["Data"] ? SubscriberModel.fromJS(data["Data"]) : undefined;
+            this.totalRecord = data["TotalRecord"];
+        }
+    };
+    ResponseOfSubscriberModel.fromJS = function (data) {
+        var result = new ResponseOfSubscriberModel();
+        result.init(data);
+        return result;
+    };
+    ResponseOfSubscriberModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Success"] = this.success;
+        data["Message"] = this.message;
+        if (this.exception) {
+            data["Exception"] = {};
+            for (var key in this.exception) {
+                if (this.exception.hasOwnProperty(key))
+                    data["Exception"][key] = this.exception[key];
+            }
+        }
+        data["Data"] = this.data ? this.data.toJSON() : undefined;
+        data["TotalRecord"] = this.totalRecord;
+        return data;
+    };
+    return ResponseOfSubscriberModel;
+}());
+
+var SubscriberModel = /** @class */ (function () {
+    function SubscriberModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    SubscriberModel.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.email = data["Email"];
+            this.iPAddress = data["IPAddress"];
+        }
+    };
+    SubscriberModel.fromJS = function (data) {
+        var result = new SubscriberModel();
+        result.init(data);
+        return result;
+    };
+    SubscriberModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["Email"] = this.email;
+        data["IPAddress"] = this.iPAddress;
+        return data;
+    };
+    return SubscriberModel;
+}());
+
+var HandleTeacherDatatableParam = /** @class */ (function () {
+    function HandleTeacherDatatableParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    HandleTeacherDatatableParam.prototype.init = function (data) {
+        if (data) {
+            this.datatable = data["datatable"] ? MDatatableTeachertParam.fromJS(data["datatable"]) : undefined;
+        }
+    };
+    HandleTeacherDatatableParam.fromJS = function (data) {
+        var result = new HandleTeacherDatatableParam();
+        result.init(data);
+        return result;
+    };
+    HandleTeacherDatatableParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["datatable"] = this.datatable ? this.datatable.toJSON() : undefined;
+        return data;
+    };
+    return HandleTeacherDatatableParam;
+}());
+
+var MDatatableTeachertParam = /** @class */ (function () {
+    function MDatatableTeachertParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    MDatatableTeachertParam.prototype.init = function (data) {
+        if (data) {
+            this.pagination = data["pagination"] ? MPagination.fromJS(data["pagination"]) : undefined;
+            this.sort = data["sort"] ? MSort.fromJS(data["sort"]) : undefined;
+            this.query = data["query"] ? MTeacherQuery.fromJS(data["query"]) : undefined;
+        }
+    };
+    MDatatableTeachertParam.fromJS = function (data) {
+        var result = new MDatatableTeachertParam();
+        result.init(data);
+        return result;
+    };
+    MDatatableTeachertParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["pagination"] = this.pagination ? this.pagination.toJSON() : undefined;
+        data["sort"] = this.sort ? this.sort.toJSON() : undefined;
+        data["query"] = this.query ? this.query.toJSON() : undefined;
+        return data;
+    };
+    return MDatatableTeachertParam;
+}());
+
+var MTeacherQuery = /** @class */ (function () {
+    function MTeacherQuery(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    MTeacherQuery.prototype.init = function (data) {
+        if (data) {
+            this.schoolId = data["SchoolId"];
+            this.generalSearch = data["generalSearch"];
+        }
+    };
+    MTeacherQuery.fromJS = function (data) {
+        var result = new MTeacherQuery();
+        result.init(data);
+        return result;
+    };
+    MTeacherQuery.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["SchoolId"] = this.schoolId;
+        data["generalSearch"] = this.generalSearch;
+        return data;
+    };
+    return MTeacherQuery;
+}());
+
+var MDataTableResponseOfTeacherModel = /** @class */ (function () {
+    function MDataTableResponseOfTeacherModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    MDataTableResponseOfTeacherModel.prototype.init = function (data) {
+        if (data) {
+            this.meta = data["meta"] ? MPagination.fromJS(data["meta"]) : undefined;
+            if (data["data"] && data["data"].constructor === Array) {
+                this.data = [];
+                for (var _i = 0, _a = data["data"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.data.push(TeacherModel.fromJS(item));
+                }
+            }
+        }
+    };
+    MDataTableResponseOfTeacherModel.fromJS = function (data) {
+        var result = new MDataTableResponseOfTeacherModel();
+        result.init(data);
+        return result;
+    };
+    MDataTableResponseOfTeacherModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["meta"] = this.meta ? this.meta.toJSON() : undefined;
+        if (this.data && this.data.constructor === Array) {
+            data["data"] = [];
+            for (var _i = 0, _a = this.data; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["data"].push(item.toJSON());
+            }
+        }
+        return data;
+    };
+    return MDataTableResponseOfTeacherModel;
+}());
+
+var TeacherModel = /** @class */ (function () {
+    function TeacherModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    TeacherModel.prototype.init = function (data) {
+        if (data) {
+            this.teacherId = data["TeacherId"];
+            this.schoolName = data["SchoolName"];
+            this.id = data["Id"];
+            this.userName = data["UserName"];
+            this.fullName = data["FullName"];
+            this.isLock = data["IsLock"];
+            this.redirectUrl = data["RedirectUrl"];
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    TeacherModel.fromJS = function (data) {
+        var result = new TeacherModel();
+        result.init(data);
+        return result;
+    };
+    TeacherModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["TeacherId"] = this.teacherId;
+        data["SchoolName"] = this.schoolName;
+        data["Id"] = this.id;
+        data["UserName"] = this.userName;
+        data["FullName"] = this.fullName;
+        data["IsLock"] = this.isLock;
+        data["RedirectUrl"] = this.redirectUrl;
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return TeacherModel;
+}());
+
+var SaveTeacherParam = /** @class */ (function () {
+    function SaveTeacherParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    SaveTeacherParam.prototype.init = function (data) {
+        if (data) {
+            this.teacherId = data["TeacherId"];
+            this.schoolId = data["SchoolId"];
+            this.email = data["Email"];
+            this.userName = data["UserName"];
+            this.password = data["Password"];
+            this.fullName = data["FullName"];
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    SaveTeacherParam.fromJS = function (data) {
+        var result = new SaveTeacherParam();
+        result.init(data);
+        return result;
+    };
+    SaveTeacherParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["TeacherId"] = this.teacherId;
+        data["SchoolId"] = this.schoolId;
+        data["Email"] = this.email;
+        data["UserName"] = this.userName;
+        data["Password"] = this.password;
+        data["FullName"] = this.fullName;
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return SaveTeacherParam;
+}());
+
+var ResponseOfTeacherModel = /** @class */ (function () {
+    function ResponseOfTeacherModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ResponseOfTeacherModel.prototype.init = function (data) {
+        if (data) {
+            this.success = data["Success"];
+            this.message = data["Message"];
+            if (data["Exception"]) {
+                this.exception = {};
+                for (var key in data["Exception"]) {
+                    if (data["Exception"].hasOwnProperty(key))
+                        this.exception[key] = data["Exception"][key];
+                }
+            }
+            this.data = data["Data"] ? TeacherModel.fromJS(data["Data"]) : undefined;
+            this.totalRecord = data["TotalRecord"];
+        }
+    };
+    ResponseOfTeacherModel.fromJS = function (data) {
+        var result = new ResponseOfTeacherModel();
+        result.init(data);
+        return result;
+    };
+    ResponseOfTeacherModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Success"] = this.success;
+        data["Message"] = this.message;
+        if (this.exception) {
+            data["Exception"] = {};
+            for (var key in this.exception) {
+                if (this.exception.hasOwnProperty(key))
+                    data["Exception"][key] = this.exception[key];
+            }
+        }
+        data["Data"] = this.data ? this.data.toJSON() : undefined;
+        data["TotalRecord"] = this.totalRecord;
+        return data;
+    };
+    return ResponseOfTeacherModel;
+}());
+
+var HandleUnitDatatableParam = /** @class */ (function () {
+    function HandleUnitDatatableParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    HandleUnitDatatableParam.prototype.init = function (data) {
+        if (data) {
+            this.datatable = data["datatable"] ? MDatatableUnitParam.fromJS(data["datatable"]) : undefined;
+        }
+    };
+    HandleUnitDatatableParam.fromJS = function (data) {
+        var result = new HandleUnitDatatableParam();
+        result.init(data);
+        return result;
+    };
+    HandleUnitDatatableParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["datatable"] = this.datatable ? this.datatable.toJSON() : undefined;
+        return data;
+    };
+    return HandleUnitDatatableParam;
+}());
+
+var MDatatableUnitParam = /** @class */ (function () {
+    function MDatatableUnitParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    MDatatableUnitParam.prototype.init = function (data) {
+        if (data) {
+            this.pagination = data["pagination"] ? MPagination.fromJS(data["pagination"]) : undefined;
+            this.sort = data["sort"] ? MSort.fromJS(data["sort"]) : undefined;
+            this.query = data["query"] ? MUnitQuery.fromJS(data["query"]) : undefined;
+        }
+    };
+    MDatatableUnitParam.fromJS = function (data) {
+        var result = new MDatatableUnitParam();
+        result.init(data);
+        return result;
+    };
+    MDatatableUnitParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["pagination"] = this.pagination ? this.pagination.toJSON() : undefined;
+        data["sort"] = this.sort ? this.sort.toJSON() : undefined;
+        data["query"] = this.query ? this.query.toJSON() : undefined;
+        return data;
+    };
+    return MDatatableUnitParam;
+}());
+
+var MUnitQuery = /** @class */ (function () {
+    function MUnitQuery(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    MUnitQuery.prototype.init = function (data) {
+        if (data) {
+            this.courseId = data["CourseId"];
+            this.generalSearch = data["generalSearch"];
+        }
+    };
+    MUnitQuery.fromJS = function (data) {
+        var result = new MUnitQuery();
+        result.init(data);
+        return result;
+    };
+    MUnitQuery.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["CourseId"] = this.courseId;
+        data["generalSearch"] = this.generalSearch;
+        return data;
+    };
+    return MUnitQuery;
+}());
+
+var MDataTableResponseOfUnitModel = /** @class */ (function () {
+    function MDataTableResponseOfUnitModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    MDataTableResponseOfUnitModel.prototype.init = function (data) {
+        if (data) {
+            this.meta = data["meta"] ? MPagination.fromJS(data["meta"]) : undefined;
+            if (data["data"] && data["data"].constructor === Array) {
+                this.data = [];
+                for (var _i = 0, _a = data["data"]; _i < _a.length; _i++) {
+                    var item = _a[_i];
+                    this.data.push(UnitModel.fromJS(item));
+                }
+            }
+        }
+    };
+    MDataTableResponseOfUnitModel.fromJS = function (data) {
+        var result = new MDataTableResponseOfUnitModel();
+        result.init(data);
+        return result;
+    };
+    MDataTableResponseOfUnitModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["meta"] = this.meta ? this.meta.toJSON() : undefined;
+        if (this.data && this.data.constructor === Array) {
+            data["data"] = [];
+            for (var _i = 0, _a = this.data; _i < _a.length; _i++) {
+                var item = _a[_i];
+                data["data"].push(item.toJSON());
+            }
+        }
+        return data;
+    };
+    return MDataTableResponseOfUnitModel;
+}());
+
+var UnitModel = /** @class */ (function () {
+    function UnitModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    UnitModel.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.name = data["Name"];
+            this.description = data["Description"];
+            this.cover = data["Cover"];
+            this.courseId = data["CourseId"];
+            this.order = data["Order"];
+            this.isFreeTrial = data["IsFreeTrial"];
+            this.createdOn = data["CreatedOn"] ? __WEBPACK_IMPORTED_MODULE_10_moment__(data["CreatedOn"].toString()) : undefined;
+            this.modifiedOn = data["ModifiedOn"] ? __WEBPACK_IMPORTED_MODULE_10_moment__(data["ModifiedOn"].toString()) : undefined;
+        }
+    };
+    UnitModel.fromJS = function (data) {
+        var result = new UnitModel();
+        result.init(data);
+        return result;
+    };
+    UnitModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["Name"] = this.name;
+        data["Description"] = this.description;
+        data["Cover"] = this.cover;
+        data["CourseId"] = this.courseId;
+        data["Order"] = this.order;
+        data["IsFreeTrial"] = this.isFreeTrial;
+        data["CreatedOn"] = this.createdOn ? this.createdOn.toISOString() : undefined;
+        data["ModifiedOn"] = this.modifiedOn ? this.modifiedOn.toISOString() : undefined;
+        return data;
+    };
+    return UnitModel;
+}());
+
+var SaveUnitParam = /** @class */ (function () {
+    function SaveUnitParam(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    SaveUnitParam.prototype.init = function (data) {
+        if (data) {
+            this.id = data["Id"];
+            this.name = data["Name"];
+            this.description = data["Description"];
+            this.cover = data["Cover"] ? UploadBase64Param.fromJS(data["Cover"]) : undefined;
+            this.courseId = data["CourseId"];
+            this.isFreeTrial = data["IsFreeTrial"];
+            this.accessToken = data["AccessToken"];
+        }
+    };
+    SaveUnitParam.fromJS = function (data) {
+        var result = new SaveUnitParam();
+        result.init(data);
+        return result;
+    };
+    SaveUnitParam.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Id"] = this.id;
+        data["Name"] = this.name;
+        data["Description"] = this.description;
+        data["Cover"] = this.cover ? this.cover.toJSON() : undefined;
+        data["CourseId"] = this.courseId;
+        data["IsFreeTrial"] = this.isFreeTrial;
+        data["AccessToken"] = this.accessToken;
+        return data;
+    };
+    return SaveUnitParam;
+}());
+
+var ResponseOfUnitModel = /** @class */ (function () {
+    function ResponseOfUnitModel(data) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    this[property] = data[property];
+            }
+        }
+    }
+    ResponseOfUnitModel.prototype.init = function (data) {
+        if (data) {
+            this.success = data["Success"];
+            this.message = data["Message"];
+            if (data["Exception"]) {
+                this.exception = {};
+                for (var key in data["Exception"]) {
+                    if (data["Exception"].hasOwnProperty(key))
+                        this.exception[key] = data["Exception"][key];
+                }
+            }
+            this.data = data["Data"] ? UnitModel.fromJS(data["Data"]) : undefined;
+            this.totalRecord = data["TotalRecord"];
+        }
+    };
+    ResponseOfUnitModel.fromJS = function (data) {
+        var result = new ResponseOfUnitModel();
+        result.init(data);
+        return result;
+    };
+    ResponseOfUnitModel.prototype.toJSON = function (data) {
+        data = typeof data === 'object' ? data : {};
+        data["Success"] = this.success;
+        data["Message"] = this.message;
+        if (this.exception) {
+            data["Exception"] = {};
+            for (var key in this.exception) {
+                if (this.exception.hasOwnProperty(key))
+                    data["Exception"][key] = this.exception[key];
+            }
+        }
+        data["Data"] = this.data ? this.data.toJSON() : undefined;
+        data["TotalRecord"] = this.totalRecord;
+        return data;
+    };
+    return ResponseOfUnitModel;
+}());
+
+var SwaggerException = /** @class */ (function (_super) {
+    __extends(SwaggerException, _super);
+    function SwaggerException(message, status, response, headers, result) {
+        var _this = _super.call(this) || this;
+        _this.isSwaggerException = true;
+        _this.message = message;
+        _this.status = status;
+        _this.response = response;
+        _this.headers = headers;
+        _this.result = result;
+        return _this;
+    }
+    SwaggerException.isSwaggerException = function (obj) {
+        return obj.isSwaggerException === true;
+    };
+    return SwaggerException;
+}(Error));
+
+function throwException(message, status, response, headers, result) {
+    if (result !== null && result !== undefined)
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(result);
+    else
+        return __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"].throw(new SwaggerException(message, status, response, headers, null));
+}
+function blobToText(blob) {
+    return new __WEBPACK_IMPORTED_MODULE_7_rxjs_Observable__["Observable"](function (observer) {
+        if (!blob) {
+            observer.next("");
+            observer.complete();
+        }
+        else {
+            var reader = new FileReader();
+            reader.onload = function () {
+                observer.next(this.result);
+                observer.complete();
+            };
+            reader.readAsText(blob);
+        }
+    });
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/moment/locale recursive ^\\.\\/.*$":
+/***/ (function(module, exports, __webpack_require__) {
+
+var map = {
+	"./af": "./node_modules/moment/locale/af.js",
+	"./af.js": "./node_modules/moment/locale/af.js",
+	"./ar": "./node_modules/moment/locale/ar.js",
+	"./ar-dz": "./node_modules/moment/locale/ar-dz.js",
+	"./ar-dz.js": "./node_modules/moment/locale/ar-dz.js",
+	"./ar-kw": "./node_modules/moment/locale/ar-kw.js",
+	"./ar-kw.js": "./node_modules/moment/locale/ar-kw.js",
+	"./ar-ly": "./node_modules/moment/locale/ar-ly.js",
+	"./ar-ly.js": "./node_modules/moment/locale/ar-ly.js",
+	"./ar-ma": "./node_modules/moment/locale/ar-ma.js",
+	"./ar-ma.js": "./node_modules/moment/locale/ar-ma.js",
+	"./ar-sa": "./node_modules/moment/locale/ar-sa.js",
+	"./ar-sa.js": "./node_modules/moment/locale/ar-sa.js",
+	"./ar-tn": "./node_modules/moment/locale/ar-tn.js",
+	"./ar-tn.js": "./node_modules/moment/locale/ar-tn.js",
+	"./ar.js": "./node_modules/moment/locale/ar.js",
+	"./az": "./node_modules/moment/locale/az.js",
+	"./az.js": "./node_modules/moment/locale/az.js",
+	"./be": "./node_modules/moment/locale/be.js",
+	"./be.js": "./node_modules/moment/locale/be.js",
+	"./bg": "./node_modules/moment/locale/bg.js",
+	"./bg.js": "./node_modules/moment/locale/bg.js",
+	"./bm": "./node_modules/moment/locale/bm.js",
+	"./bm.js": "./node_modules/moment/locale/bm.js",
+	"./bn": "./node_modules/moment/locale/bn.js",
+	"./bn.js": "./node_modules/moment/locale/bn.js",
+	"./bo": "./node_modules/moment/locale/bo.js",
+	"./bo.js": "./node_modules/moment/locale/bo.js",
+	"./br": "./node_modules/moment/locale/br.js",
+	"./br.js": "./node_modules/moment/locale/br.js",
+	"./bs": "./node_modules/moment/locale/bs.js",
+	"./bs.js": "./node_modules/moment/locale/bs.js",
+	"./ca": "./node_modules/moment/locale/ca.js",
+	"./ca.js": "./node_modules/moment/locale/ca.js",
+	"./cs": "./node_modules/moment/locale/cs.js",
+	"./cs.js": "./node_modules/moment/locale/cs.js",
+	"./cv": "./node_modules/moment/locale/cv.js",
+	"./cv.js": "./node_modules/moment/locale/cv.js",
+	"./cy": "./node_modules/moment/locale/cy.js",
+	"./cy.js": "./node_modules/moment/locale/cy.js",
+	"./da": "./node_modules/moment/locale/da.js",
+	"./da.js": "./node_modules/moment/locale/da.js",
+	"./de": "./node_modules/moment/locale/de.js",
+	"./de-at": "./node_modules/moment/locale/de-at.js",
+	"./de-at.js": "./node_modules/moment/locale/de-at.js",
+	"./de-ch": "./node_modules/moment/locale/de-ch.js",
+	"./de-ch.js": "./node_modules/moment/locale/de-ch.js",
+	"./de.js": "./node_modules/moment/locale/de.js",
+	"./dv": "./node_modules/moment/locale/dv.js",
+	"./dv.js": "./node_modules/moment/locale/dv.js",
+	"./el": "./node_modules/moment/locale/el.js",
+	"./el.js": "./node_modules/moment/locale/el.js",
+	"./en-au": "./node_modules/moment/locale/en-au.js",
+	"./en-au.js": "./node_modules/moment/locale/en-au.js",
+	"./en-ca": "./node_modules/moment/locale/en-ca.js",
+	"./en-ca.js": "./node_modules/moment/locale/en-ca.js",
+	"./en-gb": "./node_modules/moment/locale/en-gb.js",
+	"./en-gb.js": "./node_modules/moment/locale/en-gb.js",
+	"./en-ie": "./node_modules/moment/locale/en-ie.js",
+	"./en-ie.js": "./node_modules/moment/locale/en-ie.js",
+	"./en-il": "./node_modules/moment/locale/en-il.js",
+	"./en-il.js": "./node_modules/moment/locale/en-il.js",
+	"./en-nz": "./node_modules/moment/locale/en-nz.js",
+	"./en-nz.js": "./node_modules/moment/locale/en-nz.js",
+	"./eo": "./node_modules/moment/locale/eo.js",
+	"./eo.js": "./node_modules/moment/locale/eo.js",
+	"./es": "./node_modules/moment/locale/es.js",
+	"./es-do": "./node_modules/moment/locale/es-do.js",
+	"./es-do.js": "./node_modules/moment/locale/es-do.js",
+	"./es-us": "./node_modules/moment/locale/es-us.js",
+	"./es-us.js": "./node_modules/moment/locale/es-us.js",
+	"./es.js": "./node_modules/moment/locale/es.js",
+	"./et": "./node_modules/moment/locale/et.js",
+	"./et.js": "./node_modules/moment/locale/et.js",
+	"./eu": "./node_modules/moment/locale/eu.js",
+	"./eu.js": "./node_modules/moment/locale/eu.js",
+	"./fa": "./node_modules/moment/locale/fa.js",
+	"./fa.js": "./node_modules/moment/locale/fa.js",
+	"./fi": "./node_modules/moment/locale/fi.js",
+	"./fi.js": "./node_modules/moment/locale/fi.js",
+	"./fo": "./node_modules/moment/locale/fo.js",
+	"./fo.js": "./node_modules/moment/locale/fo.js",
+	"./fr": "./node_modules/moment/locale/fr.js",
+	"./fr-ca": "./node_modules/moment/locale/fr-ca.js",
+	"./fr-ca.js": "./node_modules/moment/locale/fr-ca.js",
+	"./fr-ch": "./node_modules/moment/locale/fr-ch.js",
+	"./fr-ch.js": "./node_modules/moment/locale/fr-ch.js",
+	"./fr.js": "./node_modules/moment/locale/fr.js",
+	"./fy": "./node_modules/moment/locale/fy.js",
+	"./fy.js": "./node_modules/moment/locale/fy.js",
+	"./gd": "./node_modules/moment/locale/gd.js",
+	"./gd.js": "./node_modules/moment/locale/gd.js",
+	"./gl": "./node_modules/moment/locale/gl.js",
+	"./gl.js": "./node_modules/moment/locale/gl.js",
+	"./gom-latn": "./node_modules/moment/locale/gom-latn.js",
+	"./gom-latn.js": "./node_modules/moment/locale/gom-latn.js",
+	"./gu": "./node_modules/moment/locale/gu.js",
+	"./gu.js": "./node_modules/moment/locale/gu.js",
+	"./he": "./node_modules/moment/locale/he.js",
+	"./he.js": "./node_modules/moment/locale/he.js",
+	"./hi": "./node_modules/moment/locale/hi.js",
+	"./hi.js": "./node_modules/moment/locale/hi.js",
+	"./hr": "./node_modules/moment/locale/hr.js",
+	"./hr.js": "./node_modules/moment/locale/hr.js",
+	"./hu": "./node_modules/moment/locale/hu.js",
+	"./hu.js": "./node_modules/moment/locale/hu.js",
+	"./hy-am": "./node_modules/moment/locale/hy-am.js",
+	"./hy-am.js": "./node_modules/moment/locale/hy-am.js",
+	"./id": "./node_modules/moment/locale/id.js",
+	"./id.js": "./node_modules/moment/locale/id.js",
+	"./is": "./node_modules/moment/locale/is.js",
+	"./is.js": "./node_modules/moment/locale/is.js",
+	"./it": "./node_modules/moment/locale/it.js",
+	"./it.js": "./node_modules/moment/locale/it.js",
+	"./ja": "./node_modules/moment/locale/ja.js",
+	"./ja.js": "./node_modules/moment/locale/ja.js",
+	"./jv": "./node_modules/moment/locale/jv.js",
+	"./jv.js": "./node_modules/moment/locale/jv.js",
+	"./ka": "./node_modules/moment/locale/ka.js",
+	"./ka.js": "./node_modules/moment/locale/ka.js",
+	"./kk": "./node_modules/moment/locale/kk.js",
+	"./kk.js": "./node_modules/moment/locale/kk.js",
+	"./km": "./node_modules/moment/locale/km.js",
+	"./km.js": "./node_modules/moment/locale/km.js",
+	"./kn": "./node_modules/moment/locale/kn.js",
+	"./kn.js": "./node_modules/moment/locale/kn.js",
+	"./ko": "./node_modules/moment/locale/ko.js",
+	"./ko.js": "./node_modules/moment/locale/ko.js",
+	"./ky": "./node_modules/moment/locale/ky.js",
+	"./ky.js": "./node_modules/moment/locale/ky.js",
+	"./lb": "./node_modules/moment/locale/lb.js",
+	"./lb.js": "./node_modules/moment/locale/lb.js",
+	"./lo": "./node_modules/moment/locale/lo.js",
+	"./lo.js": "./node_modules/moment/locale/lo.js",
+	"./lt": "./node_modules/moment/locale/lt.js",
+	"./lt.js": "./node_modules/moment/locale/lt.js",
+	"./lv": "./node_modules/moment/locale/lv.js",
+	"./lv.js": "./node_modules/moment/locale/lv.js",
+	"./me": "./node_modules/moment/locale/me.js",
+	"./me.js": "./node_modules/moment/locale/me.js",
+	"./mi": "./node_modules/moment/locale/mi.js",
+	"./mi.js": "./node_modules/moment/locale/mi.js",
+	"./mk": "./node_modules/moment/locale/mk.js",
+	"./mk.js": "./node_modules/moment/locale/mk.js",
+	"./ml": "./node_modules/moment/locale/ml.js",
+	"./ml.js": "./node_modules/moment/locale/ml.js",
+	"./mn": "./node_modules/moment/locale/mn.js",
+	"./mn.js": "./node_modules/moment/locale/mn.js",
+	"./mr": "./node_modules/moment/locale/mr.js",
+	"./mr.js": "./node_modules/moment/locale/mr.js",
+	"./ms": "./node_modules/moment/locale/ms.js",
+	"./ms-my": "./node_modules/moment/locale/ms-my.js",
+	"./ms-my.js": "./node_modules/moment/locale/ms-my.js",
+	"./ms.js": "./node_modules/moment/locale/ms.js",
+	"./mt": "./node_modules/moment/locale/mt.js",
+	"./mt.js": "./node_modules/moment/locale/mt.js",
+	"./my": "./node_modules/moment/locale/my.js",
+	"./my.js": "./node_modules/moment/locale/my.js",
+	"./nb": "./node_modules/moment/locale/nb.js",
+	"./nb.js": "./node_modules/moment/locale/nb.js",
+	"./ne": "./node_modules/moment/locale/ne.js",
+	"./ne.js": "./node_modules/moment/locale/ne.js",
+	"./nl": "./node_modules/moment/locale/nl.js",
+	"./nl-be": "./node_modules/moment/locale/nl-be.js",
+	"./nl-be.js": "./node_modules/moment/locale/nl-be.js",
+	"./nl.js": "./node_modules/moment/locale/nl.js",
+	"./nn": "./node_modules/moment/locale/nn.js",
+	"./nn.js": "./node_modules/moment/locale/nn.js",
+	"./pa-in": "./node_modules/moment/locale/pa-in.js",
+	"./pa-in.js": "./node_modules/moment/locale/pa-in.js",
+	"./pl": "./node_modules/moment/locale/pl.js",
+	"./pl.js": "./node_modules/moment/locale/pl.js",
+	"./pt": "./node_modules/moment/locale/pt.js",
+	"./pt-br": "./node_modules/moment/locale/pt-br.js",
+	"./pt-br.js": "./node_modules/moment/locale/pt-br.js",
+	"./pt.js": "./node_modules/moment/locale/pt.js",
+	"./ro": "./node_modules/moment/locale/ro.js",
+	"./ro.js": "./node_modules/moment/locale/ro.js",
+	"./ru": "./node_modules/moment/locale/ru.js",
+	"./ru.js": "./node_modules/moment/locale/ru.js",
+	"./sd": "./node_modules/moment/locale/sd.js",
+	"./sd.js": "./node_modules/moment/locale/sd.js",
+	"./se": "./node_modules/moment/locale/se.js",
+	"./se.js": "./node_modules/moment/locale/se.js",
+	"./si": "./node_modules/moment/locale/si.js",
+	"./si.js": "./node_modules/moment/locale/si.js",
+	"./sk": "./node_modules/moment/locale/sk.js",
+	"./sk.js": "./node_modules/moment/locale/sk.js",
+	"./sl": "./node_modules/moment/locale/sl.js",
+	"./sl.js": "./node_modules/moment/locale/sl.js",
+	"./sq": "./node_modules/moment/locale/sq.js",
+	"./sq.js": "./node_modules/moment/locale/sq.js",
+	"./sr": "./node_modules/moment/locale/sr.js",
+	"./sr-cyrl": "./node_modules/moment/locale/sr-cyrl.js",
+	"./sr-cyrl.js": "./node_modules/moment/locale/sr-cyrl.js",
+	"./sr.js": "./node_modules/moment/locale/sr.js",
+	"./ss": "./node_modules/moment/locale/ss.js",
+	"./ss.js": "./node_modules/moment/locale/ss.js",
+	"./sv": "./node_modules/moment/locale/sv.js",
+	"./sv.js": "./node_modules/moment/locale/sv.js",
+	"./sw": "./node_modules/moment/locale/sw.js",
+	"./sw.js": "./node_modules/moment/locale/sw.js",
+	"./ta": "./node_modules/moment/locale/ta.js",
+	"./ta.js": "./node_modules/moment/locale/ta.js",
+	"./te": "./node_modules/moment/locale/te.js",
+	"./te.js": "./node_modules/moment/locale/te.js",
+	"./tet": "./node_modules/moment/locale/tet.js",
+	"./tet.js": "./node_modules/moment/locale/tet.js",
+	"./tg": "./node_modules/moment/locale/tg.js",
+	"./tg.js": "./node_modules/moment/locale/tg.js",
+	"./th": "./node_modules/moment/locale/th.js",
+	"./th.js": "./node_modules/moment/locale/th.js",
+	"./tl-ph": "./node_modules/moment/locale/tl-ph.js",
+	"./tl-ph.js": "./node_modules/moment/locale/tl-ph.js",
+	"./tlh": "./node_modules/moment/locale/tlh.js",
+	"./tlh.js": "./node_modules/moment/locale/tlh.js",
+	"./tr": "./node_modules/moment/locale/tr.js",
+	"./tr.js": "./node_modules/moment/locale/tr.js",
+	"./tzl": "./node_modules/moment/locale/tzl.js",
+	"./tzl.js": "./node_modules/moment/locale/tzl.js",
+	"./tzm": "./node_modules/moment/locale/tzm.js",
+	"./tzm-latn": "./node_modules/moment/locale/tzm-latn.js",
+	"./tzm-latn.js": "./node_modules/moment/locale/tzm-latn.js",
+	"./tzm.js": "./node_modules/moment/locale/tzm.js",
+	"./ug-cn": "./node_modules/moment/locale/ug-cn.js",
+	"./ug-cn.js": "./node_modules/moment/locale/ug-cn.js",
+	"./uk": "./node_modules/moment/locale/uk.js",
+	"./uk.js": "./node_modules/moment/locale/uk.js",
+	"./ur": "./node_modules/moment/locale/ur.js",
+	"./ur.js": "./node_modules/moment/locale/ur.js",
+	"./uz": "./node_modules/moment/locale/uz.js",
+	"./uz-latn": "./node_modules/moment/locale/uz-latn.js",
+	"./uz-latn.js": "./node_modules/moment/locale/uz-latn.js",
+	"./uz.js": "./node_modules/moment/locale/uz.js",
+	"./vi": "./node_modules/moment/locale/vi.js",
+	"./vi.js": "./node_modules/moment/locale/vi.js",
+	"./x-pseudo": "./node_modules/moment/locale/x-pseudo.js",
+	"./x-pseudo.js": "./node_modules/moment/locale/x-pseudo.js",
+	"./yo": "./node_modules/moment/locale/yo.js",
+	"./yo.js": "./node_modules/moment/locale/yo.js",
+	"./zh-cn": "./node_modules/moment/locale/zh-cn.js",
+	"./zh-cn.js": "./node_modules/moment/locale/zh-cn.js",
+	"./zh-hk": "./node_modules/moment/locale/zh-hk.js",
+	"./zh-hk.js": "./node_modules/moment/locale/zh-hk.js",
+	"./zh-tw": "./node_modules/moment/locale/zh-tw.js",
+	"./zh-tw.js": "./node_modules/moment/locale/zh-tw.js"
+};
+function webpackContext(req) {
+	return __webpack_require__(webpackContextResolve(req));
+};
+function webpackContextResolve(req) {
+	var id = map[req];
+	if(!(id + 1)) // check for number or string
+		throw new Error("Cannot find module '" + req + "'.");
+	return id;
+};
+webpackContext.keys = function webpackContextKeys() {
+	return Object.keys(map);
+};
+webpackContext.resolve = webpackContextResolve;
+module.exports = webpackContext;
+webpackContext.id = "./node_modules/moment/locale recursive ^\\.\\/.*$";
 
 /***/ }),
 

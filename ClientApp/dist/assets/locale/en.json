@@ -1,5 +1,8 @@
 ﻿{
-  "Main": {
-
+  "main": {
+    "Welcome": "Hello Toàn"
+  },
+  "login": {
+    "Remember": "Remember me"
   }
 }

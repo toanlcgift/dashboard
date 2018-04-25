@@ -12,32 +12,25 @@ namespace SchoolDashboard
 {
     public class Startup
     {
-        public IConfiguration Configuration { get; }
-        //private readonly IHostingEnvironment _hostingEnvironment;
-
-
-
-        public Startup(IConfiguration configuration/*, IHostingEnvironment env*/)
+        public Startup(IHostingEnvironment env)
         {
-            Configuration = configuration;
-            //_hostingEnvironment = env;
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddEnvironmentVariables();
+            Configuration = builder.Build();
         }
 
-
+        public IConfigurationRoot Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
-            services.AddAuthentication(options =>
+            services.AddCors(options =>
             {
-                options.DefaultAuthenticateScheme = OAuthValidationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = OAuthValidationDefaults.AuthenticationScheme;
-            }).AddOAuthValidation();
-
-
-            // Add cors
-            services.AddCors();
+                options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials());
+            });
 
             // Add framework services.
             services.AddMvc();
@@ -52,7 +45,7 @@ namespace SchoolDashboard
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = "SchoolDashboard API", Version = "v1" });
-                
+
             });
         }
 
@@ -77,19 +70,9 @@ namespace SchoolDashboard
 
                 app.UseExceptionHandler("/Home/Error");
             }
-
-
-            //Configure Cors
-            app.UseCors(builder => builder
-                .AllowAnyOrigin()
-                .AllowAnyHeader()
-                .AllowAnyMethod());
-
-
+            app.UseCors("AllowAll");
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
-            app.UseAuthentication();
-
 
             app.UseSwagger();
             app.UseSwaggerUI(c =>
@@ -110,12 +93,12 @@ namespace SchoolDashboard
                 // To learn more about options for serving an Angular SPA from ASP.NET Core,
                 // see https://go.microsoft.com/fwlink/?linkid=864501
 
-                // spa.Options.SourcePath = "ClientApp";
+                //spa.Options.SourcePath = "ClientApp";
 
-                // if (env.IsDevelopment())
-                // {
-                    // spa.UseAngularCliServer(npmScript: "start");
-                // }
+                //if (env.IsDevelopment())
+                //{
+                //    spa.UseAngularCliServer(npmScript: "start");
+                //}
             });
         }
     }

@@ -1,0 +1,22 @@
+.border__color-white {
+    border-color: white;
+}
+.border__radius-25 {
+    border-radius: .25rem;
+}
+
+.mouse__cursor {
+    cursor: pointer;
+}
+.m-widget27 .m-widget27__pic .m-widget27__title>.font__size-32rem {
+    font-size: 3.2rem;
+}
+.full__width-item {
+    width: 100%;
+}
+.center {
+    text-align: center;
+}
+.menu__sub {
+    display: none;
+}

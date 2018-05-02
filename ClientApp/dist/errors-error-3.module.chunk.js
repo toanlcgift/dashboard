@@ -3,7 +3,7 @@ webpackJsonp(["errors-error-3.module"],{
 /***/ "./ClientApp/app/theme/pages/self-layout-blank/snippets/pages/errors/errors-error-3/errors-error-3.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"m-grid__item m-grid__item--fluid m-grid  m-error-3\" style=\"background-image: url(./assets/app/media/img//error/bg3.jpg);\" appunwraptag=\"\">\n\t<div class=\"m-error_container\">\n\t\t<span class=\"m-error_number\">\n\t\t\t<h1>\n\t\t\t\t404\n\t\t\t</h1>\n\t\t</span>\n\t\t<p class=\"m-error_title m--font-light\">\n\t\t\tHow did you get here\n\t\t</p>\n\t\t<p class=\"m-error_subtitle\">\n\t\t\tSorry we can't seem to find the page you're looking for.\n\t\t</p>\n\t\t<p class=\"m-error_description\">\n\t\t\tThere may be amisspelling in the URL entered,\n\t\t\t<br>\n\t\t\tor the page you are looking for may no longer exist.\n\t\t</p>\n\t</div>\n</div>\n"
+module.exports = "<div class=\"m-grid__item m-grid__item--fluid m-grid  m-error-3\" style=\"background-image: url(./assets/app/media/img//error/bg3.jpg);\" appunwraptag=\"\">\r\n\t<div class=\"m-error_container\">\r\n\t\t<span class=\"m-error_number\">\r\n\t\t\t<h1>\r\n\t\t\t\t404\r\n\t\t\t</h1>\r\n\t\t</span>\r\n\t\t<p class=\"m-error_title m--font-light\">\r\n\t\t\tHow did you get here\r\n\t\t</p>\r\n\t\t<p class=\"m-error_subtitle\">\r\n\t\t\tSorry we can't seem to find the page you're looking for.\r\n\t\t</p>\r\n\t\t<p class=\"m-error_description\">\r\n\t\t\tThere may be amisspelling in the URL entered,\r\n\t\t\t<br>\r\n\t\t\tor the page you are looking for may no longer exist.\r\n\t\t</p>\r\n\t</div>\r\n</div>\r\n"
 
 /***/ }),
 

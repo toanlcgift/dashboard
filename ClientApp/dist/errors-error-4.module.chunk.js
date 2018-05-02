@@ -3,7 +3,7 @@ webpackJsonp(["errors-error-4.module"],{
 /***/ "./ClientApp/app/theme/pages/self-layout-blank/snippets/pages/errors/errors-error-4/errors-error-4.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"m-grid__item m-grid__item--fluid m-grid m-error-4\" style=\"background-image: url(./assets/app/media/img//error/bg4.jpg);\" appunwraptag=\"\">\n\t<div class=\"m-error_container\">\n\t\t<h1 class=\"m-error_number\">\n\t\t\t404\n\t\t</h1>\n\t\t<p class=\"m-error_title\">\n\t\t\tERROR\n\t\t</p>\n\t\t<p class=\"m-error_description\">\n\t\t\tNothing left to do here.\n\t\t</p>\n\t</div>\n</div>\n"
+module.exports = "<div class=\"m-grid__item m-grid__item--fluid m-grid m-error-4\" style=\"background-image: url(./assets/app/media/img//error/bg4.jpg);\" appunwraptag=\"\">\r\n\t<div class=\"m-error_container\">\r\n\t\t<h1 class=\"m-error_number\">\r\n\t\t\t404\r\n\t\t</h1>\r\n\t\t<p class=\"m-error_title\">\r\n\t\t\tERROR\r\n\t\t</p>\r\n\t\t<p class=\"m-error_description\">\r\n\t\t\tNothing left to do here.\r\n\t\t</p>\r\n\t</div>\r\n</div>\r\n"
 
 /***/ }),
 

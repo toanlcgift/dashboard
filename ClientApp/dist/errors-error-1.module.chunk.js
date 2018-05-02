@@ -3,7 +3,7 @@ webpackJsonp(["errors-error-1.module"],{
 /***/ "./ClientApp/app/theme/pages/self-layout-blank/snippets/pages/errors/errors-error-1/errors-error-1.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"m-grid__item m-grid__item--fluid m-grid  m-error-1\" style=\"background-image: url(./assets/app/media/img//error/bg1.jpg);\" appunwraptag=\"\">\n\t<div class=\"m-error_container\">\n\t\t<span class=\"m-error_number\">\n\t\t\t<h1>\n\t\t\t\t404\n\t\t\t</h1>\n\t\t</span>\n\t\t<p class=\"m-error_desc\">\n\t\t\tOOPS! Something went wrong here\n\t\t</p>\n\t</div>\n</div>\n"
+module.exports = "<div class=\"m-grid__item m-grid__item--fluid m-grid  m-error-1\" style=\"background-image: url(./assets/app/media/img//error/bg1.jpg);\" appunwraptag=\"\">\r\n\t<div class=\"m-error_container\">\r\n\t\t<span class=\"m-error_number\">\r\n\t\t\t<h1>\r\n\t\t\t\t404\r\n\t\t\t</h1>\r\n\t\t</span>\r\n\t\t<p class=\"m-error_desc\">\r\n\t\t\tOOPS! Something went wrong here\r\n\t\t</p>\r\n\t</div>\r\n</div>\r\n"
 
 /***/ }),
 
